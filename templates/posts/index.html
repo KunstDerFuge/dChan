@@ -1,0 +1,15 @@
+{% if thread_list %}
+    <ul>
+    {% for thread in thread_list %}
+        <li><a href="/{{ thread.thread_id }}/">
+            {% if thread.subject %}
+                {{ thread.subject }}
+            {% else %}
+                [No subject]
+            {% endif %}
+        </a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No threads are available.</p>
+{% endif %}

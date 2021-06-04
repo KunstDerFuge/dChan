@@ -1,0 +1,25 @@
+{% load filters %}
+{% if posts %}
+    <article style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
+        {% for post in posts %}
+            <article id="{{ post.post_id }}" style="margin: 0 5px 3px 16px; display: block">
+                <div style="display: table-cell;
+                            padding: 4px 4px 10px 10px;
+                            background: #d6f0da;
+                            border-bottom: 1px solid #ccc;">
+                    <header>
+                        <div style="padding: 0 6px 0 0;">
+                            <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
+                            <span>{{ post.subject }}</span>
+                            <span>{{ post.timestamp }}</span>
+                            <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+                        </div>
+                    </header>
+                    <div style="padding: 12px">{{ post.body|linebreaksbr|greentext }}</div>
+                </div>
+            </article>
+        {% endfor %}
+    </article>
+{% else %}
+    <p>No threads are available.</p>
+{% endif %}
