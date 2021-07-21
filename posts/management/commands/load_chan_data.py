@@ -1,5 +1,6 @@
 from csv import DictReader
 from django.core.management import BaseCommand
+from tqdm import tqdm
 
 from posts.models import Post
 
@@ -63,13 +64,12 @@ class Command(BaseCommand):
             if delete == 'y':
                 Post.objects.all().delete()
 
-        print('Loading chan data...')
-
         new_posts = []
 
         for platform in ['4chan', '8chan', '8kun']:
+            print(f'Loading {platform} data...')
             try:
-                for row in DictReader(open(platform + '.csv')):
+                for row in tqdm(DictReader(open(platform + '.csv'))):
                     processed_body = parse_formatting(row['body_text'])
                     post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
                                 post_id=row['post_no'], author=row['name'], subject=row['subject'], body=processed_body,
