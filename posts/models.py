@@ -3,6 +3,7 @@ from django.db import models
 
 class Post(models.Model):
     platform = models.CharField(max_length=12)
+    board = models.CharField(max_length=60)
     thread_id = models.IntegerField()
     post_id = models.IntegerField(primary_key=True)
     author = models.CharField(max_length=180)
