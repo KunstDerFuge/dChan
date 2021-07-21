@@ -69,7 +69,9 @@ class Command(BaseCommand):
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
             try:
-                for row in tqdm(DictReader(open(platform + '.csv'))):
+                reader = DictReader(open(f'{platform}.csv'))
+                row_count = sum(1 for row in reader)
+                for row in tqdm(reader, total=row_count):
                     processed_body = parse_formatting(row['body_text'])
                     post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
                                 post_id=row['post_no'], author=row['name'], subject=row['subject'], body=processed_body,
@@ -85,10 +87,8 @@ class Command(BaseCommand):
         # Split list into groups of 10,000
         # from https://www.w3resource.com/python-exercises/itertools/python-itertools-exercise-40.php
         post_chunks = split_list(new_posts, 10000)
-        for chunk in post_chunks:
+        for chunk in tqdm(post_chunks):
             Post.objects.bulk_create(chunk)
             num_objects -= 10000
-            if num_objects > 0:
-                print(f'{num_objects} objects remaining...')
 
         print('Done!')
