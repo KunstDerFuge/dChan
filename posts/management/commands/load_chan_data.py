@@ -45,7 +45,9 @@ def parse_formatting(html):
     final_text = '\n'.join([line.get_text() for line in soup.find_all(attrs={'class': 'body-line'})])
     return final_text
 
+
 def split_list(lst, n):
+    from itertools import islice
     lst = iter(lst)
     result = iter(lambda: tuple(islice(lst, n)), ())
     return list(result)
