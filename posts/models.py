@@ -9,4 +9,5 @@ class Post(models.Model):
     subject = models.CharField(max_length=150)
     body = models.TextField()
     timestamp = models.DateTimeField()
+    tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
