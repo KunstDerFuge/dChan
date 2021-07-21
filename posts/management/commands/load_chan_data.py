@@ -71,7 +71,7 @@ class Command(BaseCommand):
             try:
                 reader = DictReader(open(f'{platform}.csv'))
                 row_count = sum(1 for row in reader)
-                for row in tqdm(reader, total=row_count):
+                for row in tqdm(DictReader(open(f'{platform}.csv')), total=row_count):
                     processed_body = parse_formatting(row['body_text'])
                     post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
                                 post_id=row['post_no'], author=row['name'], subject=row['subject'], body=processed_body,
