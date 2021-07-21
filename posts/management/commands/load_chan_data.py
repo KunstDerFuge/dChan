@@ -5,6 +5,7 @@ from posts.models import Post
 
 
 def parse_formatting(html):
+    from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, 'html.parser')
 
     # Process green text
