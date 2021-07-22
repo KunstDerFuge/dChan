@@ -9,19 +9,13 @@ register = template.Library()
 @stringfilter
 def parse_styled_text(text: SafeString):
     words = text.split()
-    for i in range(len(words)):
+    lines = text.split('\n')
+    for i in range(len(lines)):
         # Check for green text
-        if words[i].startswith('> '):
-            found_end = False
-            for j in range(i, len(words)):
-                if words[j].contains('\n'):
-                    found_end = True
-                    words[i] = '<span class="quote">' + words[i][2:]
-                    words[j] = words[j] + '</span>'
-                    break
-            if not found_end:
-                words.append('</span>')
+        if lines[i].startswith('> '):
+            lines[i] = '<span class="quote">' + lines[i][2:] + '</span>'
 
+    for i in range(len(words)):
         # Check for styled text
         if words[i].startswith('==') or \
                 words[i].startswith("'''") or \
