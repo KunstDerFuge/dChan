@@ -10,4 +10,3 @@ register = template.Library()
 def greentext(value: SafeString):
     with_links = value.replace('>>[0-9]+', '<a>test</>')
     return with_links
-    return value
