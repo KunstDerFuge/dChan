@@ -1,7 +1,7 @@
 {% if thread_list %}
     <ul>
     {% for thread in thread_list %}
-        <li><a href="/dchan/{{ thread.thread_id }}/">
+        <li><a href="/{{ thread.thread_id }}/">
             {% if thread.subject %}
                 {{ thread.subject }}
             {% else %}
