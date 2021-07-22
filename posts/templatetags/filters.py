@@ -28,7 +28,7 @@ def parse_styled_text(text: SafeString):
                 words[i].startswith("''") or \
                 words[i].startswith('__') or \
                 words[i].startswith('~~') or \
-                words[i.startswith('**')]:
+                words[i].startswith('**'):
             style = ''
             if words[i].startswith("'''"):
                 style = "'''"
