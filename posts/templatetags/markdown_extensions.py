@@ -1,5 +1,9 @@
+import re
+
+from markdown.blockprocessors import BlockProcessor
 from markdown.inlinepatterns import SimpleTagInlineProcessor, InlineProcessor
 from markdown.extensions import Extension
+from markdown import util
 import xml.etree.ElementTree as etree
 
 
@@ -22,8 +26,8 @@ class SimpleSpanTagInlineProcessor(InlineProcessor):
 
 class ChanExtensions(Extension):
     def extendMarkdown(self, md):
+        md.parser.blockprocessors.deregister('quote')
+        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()> (.*)($|\n)', 'quote'), 'quote', 175)
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()'''(.*?)'''", 'strong'), 'strong', 175)
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()''(.*?)''", 'em'), 'em', 175)
         md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()==(.*?)==', 'heading'), 'heading', 175)
-        md.parser.blockprocessors.deregister('quote')
-        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()> (.*?)', 'quote'), 'quote', 175)
