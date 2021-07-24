@@ -1,4 +1,6 @@
 {% load filters %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
 {% if posts %}
     <article style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
         {% for post in posts %}
@@ -15,7 +17,7 @@
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
                         </div>
                     </header>
-                    <div style="padding: 12px">{{ post.body|parse_styled_text }}</div>
+                    <div style="padding: 12px">{{ post.body | markdown }}</div>
                 </div>
             </article>
         {% endfor %}
