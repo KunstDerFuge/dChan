@@ -71,10 +71,9 @@ class Command(BaseCommand):
                 row_count = sum(1 for row in reader)
                 new_posts = []
                 for row in tqdm(DictReader(open(f'{platform}.csv')), total=row_count):
-                    processed_body = parse_formatting(row['body_text'])
                     post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
-                                post_id=row['post_no'], author=row['name'], subject=row['subject'], body=processed_body,
-                                timestamp=row['timestamp'], tripcode=row['tripcode'],
+                                post_id=row['post_no'], author=row['name'], subject=row['subject'],
+                                body=row['body_text'], timestamp=row['timestamp'], tripcode=row['tripcode'],
                                 is_op=(row['post_no'] == row['thread_no']))
                     new_posts.append(post)
                     if len(new_posts) >= 10000:
