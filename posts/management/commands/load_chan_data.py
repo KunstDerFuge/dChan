@@ -64,13 +64,12 @@ class Command(BaseCommand):
             if delete == 'y':
                 Post.objects.all().delete()
 
-        new_posts = []
-
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
             try:
                 reader = DictReader(open(f'{platform}.csv'))
                 row_count = sum(1 for row in reader)
+                new_posts = []
                 for row in tqdm(DictReader(open(f'{platform}.csv')), total=row_count):
                     processed_body = parse_formatting(row['body_text'])
                     post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
@@ -78,17 +77,11 @@ class Command(BaseCommand):
                                 timestamp=row['timestamp'], tripcode=row['tripcode'],
                                 is_op=(row['post_no'] == row['thread_no']))
                     new_posts.append(post)
+                    if len(new_posts) >= 10000:
+                        Post.objects.bulk_create(new_posts)
+                        new_posts = []
+
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
-
-        num_objects = len(new_posts)
-        print(f'Finished creating post objects. Committing {num_objects} objects to database...')
-
-        # Split list into groups of 10,000
-        # from https://www.w3resource.com/python-exercises/itertools/python-itertools-exercise-40.php
-        post_chunks = split_list(new_posts, 10000)
-        for chunk in tqdm(post_chunks):
-            Post.objects.bulk_create(chunk)
-            num_objects -= 10000
 
         print('Done!')
