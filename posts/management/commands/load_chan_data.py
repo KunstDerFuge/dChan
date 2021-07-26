@@ -81,6 +81,8 @@ class Command(BaseCommand):
                         Post.objects.bulk_create(new_posts)
                         new_posts = []
 
+                Post.objects.bulk_create(new_posts)
+
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
 
