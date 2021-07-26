@@ -27,6 +27,12 @@ class SimpleSpanTagInlineProcessor(InlineProcessor):
 class ChanExtensions(Extension):
     def extendMarkdown(self, md):
         md.parser.blockprocessors.deregister('quote')
+        md.parser.blockprocessors.deregister('indent')
+        md.parser.blockprocessors.deregister('code')
+        md.parser.blockprocessors.deregister('hashheader')
+        md.parser.blockprocessors.deregister('setextheader')
+        md.parser.blockprocessors.deregister('hr')
+        md.parser.blockprocessors.deregister('reference')
         md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()> (.*)($|\n)', 'quote'), 'quote', 175)
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()'''(.*?)'''", 'strong'), 'strong', 175)
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()''(.*?)''", 'em'), 'em', 175)
