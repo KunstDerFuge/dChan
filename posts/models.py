@@ -12,6 +12,7 @@ class Post(models.Model):
     timestamp = models.DateTimeField()
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
+    links = models.JSONField(default=dict)
 
     class Meta:
         constraints = [
