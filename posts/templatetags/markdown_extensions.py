@@ -28,24 +28,18 @@ class InlinePostLinkProcessor(InlineProcessor):
     Return a link to the >>post, if archived
     """
 
-    def __init__(self, pattern, url):
+    def __init__(self, pattern, links):
         InlineProcessor.__init__(self, pattern)
         self.tag = 'a'
-        self.current_url = url
+        self.links = links
 
     def handleMatch(self, m, data):
         el = etree.Element(self.tag)
         el.text = '>>' + m.group(1)
-        platform = self.current_url.split('/')[-4]
-        board = self.current_url.split('/')[-3]
         post_no = m.group(1)
-        # Does such a Post exist on this board?
-        try:
-            post = Post.objects.get(platform=platform, board=board, post_id=post_no)
-        except Exception:
-            post = None
-        if post is not None:
-            el.attrib = {'href': f'/{platform}/{board}/res/{post.thread_id}.html#{post_no}'}
+
+        if post_no in self.links:
+            el.attrib = {'href': self.links[post_no]}
             return el, m.start(0), m.end(0)
         else:
             return None, None, None
