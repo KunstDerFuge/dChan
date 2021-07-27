@@ -23,6 +23,21 @@ class SimpleSpanTagInlineProcessor(InlineProcessor):
         return el, m.start(0), m.end(0)
 
 
+class InlineEchoesProcessor(InlineProcessor):
+    """
+    Return a link to the Wikipedia page on the triple parentheses
+    """
+
+    def handleMatch(self, m, data):
+        el = etree.Element('a')
+        el.text = m.group(1)
+        el.attrib = {
+            'href': 'https://en.wikipedia.org/wiki/Triple_parentheses',
+            'style': 'text-decoration: inherit; color: inherit;'
+        }
+        return el, m.start(0), m.end(0)
+
+
 class InlinePostLinkProcessor(InlineProcessor):
     """
     Return a link to the >>post, if archived
@@ -30,11 +45,10 @@ class InlinePostLinkProcessor(InlineProcessor):
 
     def __init__(self, pattern, links):
         InlineProcessor.__init__(self, pattern)
-        self.tag = 'a'
         self.links = links
 
     def handleMatch(self, m, data):
-        el = etree.Element(self.tag)
+        el = etree.Element('a')
         el.text = '>>' + m.group(1)
         post_no = m.group(1)
 
@@ -62,3 +76,4 @@ class ChanExtensions(Extension):
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()''(.*?)''", 'em'), 'em', 175)
         md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()==(.*?)==', 'heading'), 'heading', 175)
         md.inlinePatterns.register(InlinePostLinkProcessor(r'>>([0-9]+)', self.url), 'post_link', 175)
+        md.inlinePatterns.register(InlineEchoesProcessor(r'(\(\(\(.{1,20}\)\)\))'), 'triple_parentheses', 175)
