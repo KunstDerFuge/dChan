@@ -1,3 +1,4 @@
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
@@ -13,6 +14,7 @@ class Post(models.Model):
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
     links = models.JSONField(default=dict)
+    search_vector = SearchVectorField(null=True, editable=False)
 
     def get_relative_url(self):
         return f'/{self.platform}/{self.board}/res/{self.thread_id}.html#{self.post_id}'

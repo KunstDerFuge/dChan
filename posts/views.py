@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.views.generic import ListView
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from posts.models import Post
 
@@ -34,6 +35,6 @@ class SearchResultsView(ListView):
     context_object_name = 'results'
 
     def get_queryset(self):
-        query = self.request.GET.get('q')
-        results = Post.objects.filter(body__search=query)[:100]
+        query = SearchQuery(self.request.GET.get('q'))
+        results = Post.objects.filter(search_vector=query)[:100]
         return results
