@@ -10,5 +10,5 @@ register = template.Library()
 
 @register.filter(name='markdown')
 @stringfilter
-def markdown(text):
-    return mark_safe(md.markdown(text, extensions=['nl2br', ChanExtensions()]))
+def markdown(text, url):
+    return mark_safe(md.markdown(text, extensions=['nl2br', ChanExtensions(url)]))

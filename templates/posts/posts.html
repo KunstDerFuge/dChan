@@ -17,7 +17,7 @@
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
                         </div>
                     </header>
-                    <div style="padding: 12px">{{ post.body | markdown }}</div>
+                    <div style="padding: 12px">{{ post.body | markdown:request.path }}</div>
                 </div>
             </article>
         {% endfor %}
