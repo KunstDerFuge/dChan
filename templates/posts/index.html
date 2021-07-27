@@ -1,7 +1,12 @@
+<form action="{% url 'search_results' %}" method="get">
+    <label>
+        <input name="q" type="text" placeholder="Search...">
+    </label>
+</form>
 {% if thread_list %}
     <ul>
     {% for thread in thread_list %}
-        <li><a href="/{{ thread.platform }}/{{ thread.board }}/res/{{ thread.thread_id }}.html">
+        <li><a href="{{ thread.get_relative_url }}">
             {% if thread.subject %}
                 {{ thread.subject }}
             {% else %}

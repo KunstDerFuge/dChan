@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
+from django.views.generic import ListView
+
 from posts.models import Post
 
 
@@ -24,3 +26,14 @@ def thread(request, platform, board, thread_id):
         'posts': thread_posts,
     }
     return HttpResponse(template.render(context, request))
+
+
+class SearchResultsView(ListView):
+    model = Post
+    template_name = 'posts/search_results.html'
+    context_object_name = 'results'
+
+    def get_queryset(self):
+        query = self.request.GET.get('q')
+        results = Post.objects.filter(body__search=query)[:100]
+        return results

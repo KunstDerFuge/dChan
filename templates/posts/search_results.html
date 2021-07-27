@@ -1,0 +1,45 @@
+{% load filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>dChan - Search Results</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<h1 style="text-align: unset">Search Results:</h1>
+<br />
+{% if results %}
+    <article
+            style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
+        {% for post in results %}
+                <article id="{{ post.post_id }}" style="margin: 0 5px 3px 16px; display: block">
+                    <div style="display: table-cell;
+                            padding: 4px 4px 10px 10px;
+                            background: rgb(214, 218, 240);
+                            border-bottom: 1px solid #ccc;">
+                        <header>
+                            <div style="padding: 0 6px 0 0;">
+                                <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
+                                {% if post.tripcode %}
+                                    <span class="trip">{{ post.tripcode }}</span>
+                                {% endif %}
+                                <span>{{ post.subject }}</span>
+                                <span>{{ post.timestamp }}</span>
+                                <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+                                &nbsp;
+                                <span><a href="{{ post.get_relative_url }}">[Go to Post]</a></span>
+                            </div>
+                        </header>
+                        <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:150 }}</div>
+                    </div>
+                </article>
+            </a>
+        {% endfor %}
+    </article>
+{% else %}
+    <p>No results.</p>
+{% endif %}
+</body>
+</html>
