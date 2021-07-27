@@ -435,8 +435,42 @@ a.dashed-underline {
   border-bottom: 1px dashed;
 }
 
-span.trip {
-  color: #228854;
+span.trip, span.capcode {
+	padding: 1px 3px 1px 3px;
+	background-color: black;
+	border-radius: 8px;
+	border: 1px solid #bbbbee;
+	color: gold;
+	background: linear-gradient(300deg, #ff0000, #ff0000, #ff0000, #bbbbbb, #4444ff);
+	background-size: 800% 800%;
+	-webkit-animation: Patriot 5s ease infinite;
+	-moz-animation: Patriot 5s ease infinite;
+	-o-animation: Patriot 5s ease infinite;
+	animation: Patriot 5s ease infinite;
+	-webkit-text-fill-color: transparent;
+	background: -o-linear-gradient(transparent, transparent);
+	-webkit-background-clip: text;
+}
+
+@-webkit-keyframes Patriot {
+    0%{background-position:0% 19%}
+    50%{background-position:100% 82%}
+    100%{background-position:0% 19%}
+}
+@-moz-keyframes Patriot {
+    0%{background-position:0% 19%}
+    50%{background-position:100% 82%}
+    100%{background-position:0% 19%}
+}
+@-o-keyframes Patriot {
+    0%{background-position:0% 19%}
+    50%{background-position:100% 82%}
+    100%{background-position:0% 19%}
+}
+@keyframes Patriot {
+    0%{background-position:0% 19%}
+    50%{background-position:100% 82%}
+    100%{background-position:0% 19%}
 }
 
 .quote {
