@@ -19,8 +19,11 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def get_relative_url(self):
-        return f'/{self.platform}/{self.board}/res/{self.thread_id}.html#{self.post_id}'
+    def get_thread_url(self):
+        return f'/{self.platform}/{self.board}/res/{self.thread_id}.html'
+
+    def get_post_url(self):
+        return self.get_thread_url() + '#' + str(self.post_id)
 
     def process_links(self):
         import re
@@ -36,7 +39,7 @@ class Post(models.Model):
             except Exception:
                 linked_post = None
             if linked_post is not None:
-                matched_links[link] = linked_post.get_relative_url()
+                matched_links[link] = linked_post.get_post_url()
         self.links = matched_links
         self.save()
 
