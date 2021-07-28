@@ -5,16 +5,38 @@
 </form>
 {% if thread_list %}
     <ul>
-    {% for thread in thread_list %}
-        <li><a href="{{ thread.get_relative_url }}">
-            {% if thread.subject %}
-                {{ thread.subject }}
-            {% else %}
-                [No subject]
-            {% endif %}
-        </a></li>
-    {% endfor %}
+        {% for thread in thread_list %}
+            <li>{{ thread.platform }}/{{ thread.board }}/{{ thread.post_id }} &nbsp;
+                <a href="{{ thread.get_relative_url }}">
+                    {% if thread.subject %}
+                        {{ thread.subject }}
+                    {% else %}
+                        [No subject]
+                    {% endif %}
+                </a></li>
+        {% endfor %}
     </ul>
 {% else %}
     <p>No threads are available.</p>
+{% endif %}
+{% if thread_list.has_other_pages %}
+    <span class="pagination">
+    {% if thread_list.has_previous %}
+        <a href="?page={{ thread_list.previous_page_number }}">&laquo;</a>
+    {% else %}
+        <span>&laquo;</span>
+    {% endif %}
+        {% for i in thread_list.paginator.page_range %}
+            {% if thread_list.number == i %}
+                <span>{{ i }} <span class="sr-only">(current)</span></span>
+            {% else %}
+                <a href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if thread_list.has_next %}
+            <a href="?page={{ thread_list.next_page_number }}">&raquo;</a>
+        {% else %}
+            <span>&raquo;</span>
+        {% endif %}
+  </span>
 {% endif %}
