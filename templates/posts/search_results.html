@@ -1,13 +1,6 @@
+{% extends 'posts/8chan_base.html' %}
 {% load filters %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>dChan - Search Results</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-</head>
-<body>
+{% block content %}
 <h1 style="text-align: unset">Search Results:</h1>
 <br />
 {% if results %}
@@ -29,7 +22,7 @@
                                 <span>{{ post.timestamp }}</span>
                                 <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
                                 &nbsp;
-                                <span><a href="{{ post.get_relative_url }}">[Go to Post]</a></span>
+                                <span><a href="{{ post.get_post_url }}">[Go to Post]</a></span>
                             </div>
                         </header>
                         <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:150 }}</div>
@@ -41,5 +34,4 @@
 {% else %}
     <p>No results.</p>
 {% endif %}
-</body>
-</html>
+{% endblock %}

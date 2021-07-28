@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}dChan - Q Origins Project Archive{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body style="background-color:#EEEEEE; font-size: 0.9em; max-width: 100%; overflow-x: hidden">
+<center>
+    <div id="SOLID" style="background-color:#EEEEEE;padding-bottom:15px">
+        <div id="CONTENT"
+             style="background-color:white;position:relative;border:2px #999999 solid;margin:0px -2px;width:1024px;">
+            <div class="html1"
+                 style="width: 1024px;text-align: left;overflow-x: auto;overflow-y: visible; background-color: rgb(238, 242, 255); background-repeat: repeat-x; background-size: auto auto; background-position: 50% 0%;position: relative; z-index: 0">
+                <div class="html" style="text-align:left;overflow-x:visible;overflow-y:hidden;">
+                    <div class="body"
+                         style="vertical-align:bottom;text-align:left;color:black;font-family:arial, helvetica, sans-serif;font-size:10pt;padding-left:4px;padding-right:4px;padding-top:20px;overflow-x:visible;overflow-y:visible;background-position: 50% 0%; background-repeat: repeat-x; margin: 0px 4px; ">
+                        <form action="{% url 'search_results' %}" method="get">
+                            <label>
+                                <input name="q" type="text" placeholder="Search...">
+                            </label>
+                        </form>
+                        {% block content %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</center>
+</body>

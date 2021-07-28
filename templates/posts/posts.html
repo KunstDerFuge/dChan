@@ -1,52 +1,34 @@
+{% extends 'posts/8chan_base.html' %}
 {% load filters %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'style.css' %}">
-<body style="margin:0; background-color:#EEEEEE">
-{% if posts %}
-    <center>
-        <div id="SOLID" style="background-color:#EEEEEE;padding-bottom:15px">
-            <div id="CONTENT"
-                 style="background-color:white;position:relative;border:2px #999999 solid;margin:0px -2px;width:1024px;min-height:768px">
-                <div class="html1"
-                     style="width: 1024px;text-align: left;overflow-x: auto;overflow-y: visible; background-color: rgb(238, 242, 255); background-repeat: repeat-x; background-size: auto auto; background-position: 50% 0%;position: relative;min-height: 105568px;; z-index: 0">
-                    <div class="html" style="text-align:left;overflow-x:visible;overflow-y:hidden;">
-                        <div class="body"
-                             style="vertical-align:bottom;min-height:105538px;text-align:left;color:black;font-family:arial, helvetica, sans-serif;font-size:10pt;padding-left:4px;padding-right:4px;padding-top:20px;overflow-x:visible;overflow-y:visible;background-position: 50% 0%; background-repeat: repeat-x; margin: 0px 4px; ">
-                            <article
-                                    style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
-                                <h2 style="padding: 16px"><a href="/{{ posts.0.platform }}">{{ posts.0.platform }}</a> &gt; <a
-                                        href="/{{ posts.0.platform }}/{{ posts.0.board }}">{{ posts.0.board }}</a></h2>
-                                {% for post in posts %}
-                                    <article id="{{ post.post_id }}"
-                                             style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
-                                        <div style="display: table-cell;
+{% block content %}
+    {% if posts %}
+        <h2 style="padding: 16px"><a href="/{{ posts.0.platform }}">{{ posts.0.platform }}</a> &gt; <a
+                href="/{{ posts.0.platform }}/{{ posts.0.board }}">{{ posts.0.board }}</a></h2>
+        {% for post in posts %}
+            <article id="{{ post.post_id }}"
+                     style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
+                <div style="display: table-cell;
                             padding: 4px 4px 10px 10px;
                             background: rgb(214, 218, 240);
                             border-bottom: 1px solid #ccc;">
-                                            <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; padding: 6px 0px 0.4em;">
-                                                <div style="padding: 0 6px 0 0;">
-                                                    <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
-                                                    <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
-                                                    {% if post.tripcode %}
-                                                        <span class="trip">{{ post.tripcode }}</span>
-                                                    {% endif %}
-                                                    <span>{{ post.subject }}</span>
-                                                    <span>{{ post.timestamp }}</span>
-                                                    <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
-                                                </div>
-                                            </header>
-                                            <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
-                                        </div>
-                                    </article>
-                                {% endfor %}
-                            </article>
+                    <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; padding: 6px 0px 0.4em;">
+                        <div style="padding: 0 6px 0 0;">
+                            <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
+                            <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
+                            {% if post.tripcode %}
+                                <span class="trip">{{ post.tripcode }}</span>
+                            {% endif %}
+                            <span style="font-weight: 700; color: {{ post.poster_hash }};">ID: {{ post.poster_hash }}</span>
+                            <span>{{ post.subject }}</span>
+                            <span>{{ post.timestamp }}</span>
+                            <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
                         </div>
-                    </div>
+                    </header>
+                    <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
                 </div>
-            </div>
-        </div>
-    </center>
-{% else %}
-    <p>No threads are available.</p>
-{% endif %}
-</body>
+            </article>
+        {% endfor %}
+    {% else %}
+        <p>No threads are available.</p>
+    {% endif %}
+{% endblock %}
