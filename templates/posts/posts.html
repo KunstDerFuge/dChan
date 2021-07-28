@@ -14,8 +14,11 @@
                              style="vertical-align:bottom;min-height:105538px;text-align:left;color:black;font-family:arial, helvetica, sans-serif;font-size:10pt;padding-left:4px;padding-right:4px;padding-top:20px;overflow-x:visible;overflow-y:visible;background-position: 50% 0%; background-repeat: repeat-x; margin: 0px 4px; ">
                             <article
                                     style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
+                                <h2 style="padding: 16px"><a href="/{{ posts.0.platform }}">{{ posts.0.platform }}</a> &gt; <a
+                                        href="/{{ posts.0.platform }}/{{ posts.0.board }}">{{ posts.0.board }}</a></h2>
                                 {% for post in posts %}
-                                    <article id="{{ post.post_id }}" style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
+                                    <article id="{{ post.post_id }}"
+                                             style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
                                         <div style="display: table-cell;
                             padding: 4px 4px 10px 10px;
                             background: rgb(214, 218, 240);
