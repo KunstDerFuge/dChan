@@ -8,6 +8,7 @@ class Post(models.Model):
     thread_id = models.IntegerField()
     post_id = models.IntegerField()
     author = models.CharField(max_length=180)
+    poster_hash = models.CharField(max_length=12)
     subject = models.CharField(max_length=150)
     body = models.TextField()
     timestamp = models.DateTimeField()
