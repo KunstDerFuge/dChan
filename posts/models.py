@@ -16,6 +16,8 @@ class Post(models.Model):
     is_op = models.BooleanField(default=False)
     links = models.JSONField(default=dict)
     search_vector = SearchVectorField(null=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
 
     def get_relative_url(self):
         return f'/{self.platform}/{self.board}/res/{self.thread_id}.html#{self.post_id}'
