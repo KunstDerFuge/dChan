@@ -25,10 +25,10 @@
                             &nbsp;
                             <span><a href="{{ post.get_archive_url }}" style="text-decoration: none">🗄️.is</a></span>
                             {% if post.platform == '8kun' %}
-                                <span><a href="{{ post.get_8kun_url }}" style="text-decoration: none">🔗kun</a></span>
+                                <span><a href="{{ post.get_8kun_url }}" target="_blank" style="text-decoration: none">🔗kun</a></span>
                             {% endif %}
                             {% if post.platform == '8chan' and post.board == 'qresearch' %}
-                                <span><a href="{{ post.get_8kun_url }}" style="text-decoration: none">🔗kun</a></span>
+                                <span><a href="{{ post.get_8kun_url }}" target="_blank" style="text-decoration: none">🔗kun</a></span>
                             {% endif %}
                         </div>
                     </header>
