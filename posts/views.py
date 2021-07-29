@@ -48,9 +48,5 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         query = SearchQuery(self.request.GET.get('q'))
-        exact = self.request.GET.get('exact')
-        if exact == 'on':
-            results = Post.objects.filter(body__search=query)[:100]
-        else:
-            results = Post.objects.filter(search_vector=query)[:100]
+        results = Post.objects.filter(search_vector=query)[:100]
         return results
