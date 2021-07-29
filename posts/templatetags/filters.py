@@ -21,3 +21,15 @@ def get_archive_link(path):
     new_path = '/'.join(parts[1:])
     site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
     return f'https://archive.is/{site[parts[0]]}/{new_path}'
+
+
+@register.filter(name='contrast_text')
+@stringfilter
+def contrast_text(bg_color):
+    r = int(bg_color[:2], 16) / 255
+    g = int(bg_color[2:4], 16) / 255
+    b = int(bg_color[4:], 16) / 255
+    luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    if luminance > 0.6:
+        return 'black'
+    return 'white'
