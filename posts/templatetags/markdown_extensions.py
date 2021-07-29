@@ -5,6 +5,7 @@ from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagInlineProcessor, InlineProcessor
 from posts.models import Post
 
+
 class SimpleSpanTagInlineProcessor(InlineProcessor):
     """
     Return element of type `span` with a text attribute of group(2)
@@ -40,7 +41,7 @@ class InlineEchoesProcessor(InlineProcessor):
 
 class InlinePostLinkProcessor(InlineProcessor):
     """
-    Return a link to the >>post, if archived
+    Return a link to the >>post from the original processed link
     """
 
     def __init__(self, pattern, links):
@@ -49,19 +50,19 @@ class InlinePostLinkProcessor(InlineProcessor):
 
     def handleMatch(self, m, data):
         el = etree.Element('a')
-        el.text = '>>' + m.group(1)
-        post_no = m.group(1)
+        el.text = m.group(1)
+        link_text = m.group(1)
 
-        if post_no in self.links:
-            el.attrib = {'href': self.links[post_no]}
+        if link_text in self.links:
+            el.attrib = {'href': f'{self.links[link_text]}'}
             return el, m.start(0), m.end(0)
         else:
             return None, None, None
 
 
 class ChanExtensions(Extension):
-    def __init__(self, url):
-        self.url = url
+    def __init__(self, links):
+        self.links = links
 
     def extendMarkdown(self, md):
         md.parser.blockprocessors.deregister('quote')
@@ -75,5 +76,7 @@ class ChanExtensions(Extension):
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()'''(.*?)'''", 'strong'), 'strong', 175)
         md.inlinePatterns.register(SimpleTagInlineProcessor(r"()''(.*?)''", 'em'), 'em', 175)
         md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()==(.*?)==', 'heading'), 'heading', 175)
-        md.inlinePatterns.register(InlinePostLinkProcessor(r'>>([0-9]+)', self.url), 'post_link', 175)
-        md.inlinePatterns.register(InlineEchoesProcessor(r'(\(\(\(.{1,20}\)\)\))'), 'triple_parentheses', 175)
+        md.inlinePatterns.register(
+            InlinePostLinkProcessor(r'(>>[0-9]+|>>>/[a-zA-Z]+/[0-9]+)', self.links), 'post_link',
+            175)
+        md.inlinePatterns.register(InlineEchoesProcessor(r'(\(\(\(.{1,25}\)\)\))'), 'triple_parentheses', 175)
