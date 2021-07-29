@@ -3,7 +3,7 @@
     {% if thread_list %}
         {% for thread in thread_list %}
             <div>
-                {{ thread.platform }}/{{ thread.board }}/{{ thread.post_id }} &nbsp;
+                {{ thread.timestamp.date }} &nbsp;
                 <a href="{{ thread.get_thread_url }}">
                     {% if thread.subject %}
                         {{ thread.subject }}
