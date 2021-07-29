@@ -2,6 +2,7 @@ import html as html_
 import re
 
 import pandas as pd
+from django.contrib.postgres.search import SearchVector
 from django.core.management import BaseCommand
 from tqdm import tqdm
 
@@ -137,3 +138,4 @@ class Command(BaseCommand):
                 print(f'Could not load {platform} data.', e)
 
         print('Done!')
+        print('Remember to re-generate SearchVectors with python manage.py process_search_vectors')
