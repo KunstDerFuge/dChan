@@ -29,6 +29,8 @@
             </article>
         {% endfor %}
     {% else %}
-        <p>No threads are available.</p>
+        <h1>This page is not archived!</h1>
+        <h2>...Yet.</h2>
+        <p>Go to archive.is: <a href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a></p>
     {% endif %}
 {% endblock %}
