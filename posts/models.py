@@ -11,6 +11,7 @@ class Post(models.Model):
     poster_hash = models.CharField(max_length=12)
     subject = models.CharField(max_length=150)
     body = models.TextField()
+    drop_no = models.PositiveSmallIntegerField(default=0)
     timestamp = models.DateTimeField()
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)

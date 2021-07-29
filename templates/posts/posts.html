@@ -30,6 +30,9 @@
                             {% if post.platform == '8chan' and post.board == 'qresearch' %}
                                 <span><a href="{{ post.get_8kun_url }}" target="_blank" style="text-decoration: none">🔗kun</a></span>
                             {% endif %}
+                            {% if post.drop_no != 0 %}
+                                <span style="float: right; font-size: 2em">&nbsp;{{ post.drop_no }}</span>
+                            {% endif %}
                         </div>
                     </header>
                     <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
