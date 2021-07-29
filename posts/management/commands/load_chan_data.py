@@ -68,9 +68,9 @@ def process_links(row):
                 links[html_.unescape(match[-1])] = f"/{match[0]}/"
             elif match[1] == match[2]:
                 # Special logic for OP post URLs
-                links[html_.unescape(match[-1])] = f"{row['platform']}/{match[0]}/res/{match[1]}.html"
+                links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html"
             else:
-                links[html_.unescape(match[-1])] = f"{row['platform']}/{match[0]}/res/{match[1]}.html#{match[2]}"
+                links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html#{match[2]}"
     return links
 
 
