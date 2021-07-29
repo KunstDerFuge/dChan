@@ -85,22 +85,31 @@ class Command(BaseCommand):
     help = "Load data from CSV files scraped from Chan data. Expects three files, 4chan.csv, 8chan.csv, 8kun.csv"
 
     def handle(self, *args, **options):
-        if Post.objects.exists():
-            delete = input('Data already in database. Delete all data first? (y/n)\n')
-            if delete == 'y':
-                Post.objects.all().delete()
-
         tqdm.pandas()
         import glob
 
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
+            existing_posts = Post.objects.filter(platform=platform)
+            print('Cataloging existing posts in DB...')
+            already_archived = [f'{post.board}/{post.post_id}' for post in tqdm(existing_posts)]
             files = glob.glob(f'data/{platform}/*.csv')
             try:
                 for file in files:
                     print(f'Loading {file}...')
                     df = pd.read_csv(file)
+                    df['id'] = df['board'] + '/' + df['post_no'].astype(str)
                     df['platform'] = platform
+                    size_before = len(df)
+                    # Remove if already archived
+                    df = df[~df.id.isin(already_archived)]
+                    size_after = len(df)
+                    saved = size_before - size_after
+                    if size_after == 0:
+                        print('Already archived all posts.')
+                        continue
+                    elif size_after != size_before:
+                        print(f'Already archived {saved} of {size_before} posts.')
 
                     print('Processing links...')
                     df['links'] = df.progress_apply(process_links, axis=1)
