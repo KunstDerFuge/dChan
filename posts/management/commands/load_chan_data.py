@@ -95,6 +95,7 @@ class Command(BaseCommand):
 
                 print('Parsing HTML to imageboard markup...')
                 df['body_text'] = df.body_text.progress_apply(parse_formatting)
+                df = df.fillna('')
 
                 print('Committing objects to database...')
                 new_posts = []
@@ -105,7 +106,7 @@ class Command(BaseCommand):
                                 tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
                                 links=row['links'])
                     new_posts.append(post)
-                    if len(new_posts) >= 10000:
+                    if len(new_posts) >= 5000:
                         Post.objects.bulk_create(new_posts)
                         new_posts = []
 
