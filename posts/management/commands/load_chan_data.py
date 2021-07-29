@@ -84,33 +84,37 @@ class Command(BaseCommand):
                 Post.objects.all().delete()
 
         tqdm.pandas()
+        import glob
 
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
+            files = glob.glob(f'data/{platform}/*.csv')
             try:
-                df = pd.read_csv(f'{platform}.csv')
+                for file in files:
+                    print(f'Loading {file}...')
+                    df = pd.read_csv(file)
 
-                print('Processing links...')
-                df['links'] = df.body_text.progress_apply(process_links)
+                    print('Processing links...')
+                    df['links'] = df.body_text.progress_apply(process_links)
 
-                print('Parsing HTML to imageboard markup...')
-                df['body_text'] = df.body_text.progress_apply(parse_formatting)
-                df = df.fillna('')
+                    print('Parsing HTML to imageboard markup...')
+                    df['body_text'] = df.body_text.progress_apply(parse_formatting)
+                    df = df.fillna('')
 
-                print('Committing objects to database...')
-                new_posts = []
-                for index, row in tqdm(df.iterrows(), total=len(df)):
-                    post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
-                                post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
-                                subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
-                                tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                                links=row['links'])
-                    new_posts.append(post)
-                    if len(new_posts) >= 5000:
-                        Post.objects.bulk_create(new_posts)
-                        new_posts = []
+                    print('Committing objects to database...')
+                    new_posts = []
+                    for index, row in tqdm(df.iterrows(), total=len(df)):
+                        post = Post(platform=platform, board=row['board'], thread_id=row['thread_no'],
+                                    post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
+                                    subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
+                                    tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
+                                    links=row['links'])
+                        new_posts.append(post)
+                        if len(new_posts) >= 5000:
+                            Post.objects.bulk_create(new_posts)
+                            new_posts = []
 
-                Post.objects.bulk_create(new_posts)
+                    Post.objects.bulk_create(new_posts)
 
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
