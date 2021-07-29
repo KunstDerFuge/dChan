@@ -1,7 +1,8 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.template import loader
-from django.views.generic import ListView
+from django.views.generic import ListView, RedirectView
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 
 from posts.models import Post
@@ -39,6 +40,11 @@ def thread(request, platform, board, thread_id):
         'posts': thread_posts,
     }
     return HttpResponse(template.render(context, request))
+
+
+def drop(request, drop_no):
+    q_drop = Post.objects.get(drop_no=drop_no)
+    return redirect(q_drop.get_post_url())
 
 
 class SearchResultsView(ListView):
