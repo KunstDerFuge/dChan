@@ -18,7 +18,7 @@
                             {% if post.tripcode %}
                                 <span class="trip">{{ post.tripcode }}</span>
                             {% endif %}
-                            <span style="font-weight: 700; background-color: #{{ post.poster_hash }}; border-radius: 8px; padding: 1px 4px; color: {{ post.poster_hash|contrast_text }}">ID: {{ post.poster_hash }}</span>
+                            <span style="font-weight: 700; background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">ID: {{ post.poster_hash }}</span>
                             <span>{{ post.subject }}</span>
                             <span>{{ post.timestamp }}</span>
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
