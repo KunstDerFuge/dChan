@@ -441,7 +441,7 @@ span.trip, span.capcode {
 	border-radius: 8px;
 	border: 1px solid #bbbbee;
 	color: gold;
-	background: linear-gradient(300deg, #ff0000, #ff0000, #ff0000, #bbbbbb, #4444ff);
+	background: linear-gradient(300deg, #ff0000, #bbbbbb, #4444ff, #4444ff, #4444ff);
 	background-size: 800% 800%;
 	-webkit-animation: Patriot 5s ease infinite;
 	-moz-animation: Patriot 5s ease infinite;
