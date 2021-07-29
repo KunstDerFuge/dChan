@@ -18,7 +18,6 @@ def markdown(text, links):
 @stringfilter
 def get_archive_link(path):
     parts = path.split('/')[1:]
-    print(parts)
     new_path = '/'.join(parts[1:])
     site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
     return f'https://archive.is/{site[parts[0]]}/{new_path}'
