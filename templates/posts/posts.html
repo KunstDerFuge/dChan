@@ -22,6 +22,14 @@
                             <span>{{ post.subject }}</span>
                             <span>{{ post.timestamp }}</span>
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+                            &nbsp;
+                            <span><a href="{{ post.get_archive_url }}" style="text-decoration: none">🗄️.is</a></span>
+                            {% if post.platform == '8kun' %}
+                                <span><a href="{{ post.get_8kun_url }}" style="text-decoration: none">🔗kun</a></span>
+                            {% endif %}
+                            {% if post.platform == '8chan' and post.board == 'qresearch' %}
+                                <span><a href="{{ post.get_8kun_url }}" style="text-decoration: none">🔗kun</a></span>
+                            {% endif %}
                         </div>
                     </header>
                     <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>

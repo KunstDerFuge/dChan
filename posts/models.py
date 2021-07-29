@@ -25,6 +25,13 @@ class Post(models.Model):
     def get_post_url(self):
         return self.get_thread_url() + '#' + str(self.post_id)
 
+    def get_archive_url(self):
+        site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
+        return f'https://archive.is/{site[self.platform]}/{self.board}/res/{self.thread_id}.html'
+
+    def get_8kun_url(self):
+        return f'https://8kun.top/{self.board}/res/{self.thread_id}.html#{self.post_id}'
+
     def process_links(self):
         import re
         matched_links = dict()
