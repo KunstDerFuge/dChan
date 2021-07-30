@@ -47,7 +47,14 @@ def thread(request, platform, board, thread_id):
 
 
 def drop(request, drop_no):
-    q_drop = Post.objects.get(drop_no=drop_no)
+    try:
+        q_drop = Post.objects.get(drop_no=drop_no)
+    except Exception:
+        template = loader.get_template('posts/index.html')
+        context = {
+            'posts': [],
+        }
+        return HttpResponse(template.render(context, request))
     return redirect(q_drop.get_post_url())
 
 
