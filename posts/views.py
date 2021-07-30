@@ -18,6 +18,7 @@ def index(request, platform=None, board=None):
 
     page = request.GET.get('page', 1)
     paginator = Paginator(thread_list, 40)
+    page_range = paginator.get_elided_page_range(number=page)
 
     try:
         page_threads = paginator.page(page)
@@ -30,7 +31,8 @@ def index(request, platform=None, board=None):
     context = {
         'thread_list': page_threads,
         'platform': platform,
-        'board': board
+        'board': board,
+        'page_range': page_range
     }
     return HttpResponse(template.render(context, request))
 
