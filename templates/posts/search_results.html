@@ -1,12 +1,12 @@
 {% extends 'posts/8chan_base.html' %}
 {% load filters %}
 {% block content %}
-<h1 style="text-align: unset">Search Results:</h1>
-<br />
-{% if results %}
-    <article
-            style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
-        {% for post in results %}
+    <h4>Search Results:</h4>
+    <br/>
+    {% if results %}
+        <article
+                style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
+            {% for post in results %}
                 <article id="{{ post.post_id }}" style="margin: 0 5px 3px 16px; display: block">
                     <div style="display: table-cell;
                             padding: 4px 4px 10px 10px;
@@ -28,10 +28,10 @@
                         <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:150 }}</div>
                     </div>
                 </article>
-            </a>
-        {% endfor %}
-    </article>
-{% else %}
-    <p>No results.</p>
-{% endif %}
+                </a>
+            {% endfor %}
+        </article>
+    {% else %}
+        <p>No results.</p>
+    {% endif %}
 {% endblock %}

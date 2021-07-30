@@ -1,13 +1,24 @@
 {% extends 'posts/8chan_base.html' %}
 {% load filters %}
+{% load static %}
+{% block head_extras %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
 {% block content %}
     {% if posts %}
-        <h2 style="padding: 16px"><a href="/{{ posts.0.platform }}">{{ posts.0.platform }}</a> &gt; <a
-                href="/{{ posts.0.platform }}/{{ posts.0.board }}">{{ posts.0.board }}</a></h2>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">All</a></li>
+                <li class="breadcrumb-item"><a href="/{{ posts.0.platform }}">{{ posts.0.platform }}</a></li>
+                <li class="breadcrumb-item"><a
+                        href="/{{ posts.0.platform }}/{{ posts.0.board }}">{{ posts.0.board }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ posts.0.post_id }}</li>
+            </ol>
+        </nav>
         {% for post in posts %}
             <article id="{{ post.post_id }}"
                      style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
-                <div style="display: table-cell;
+                <div class="card" style="display: table-cell;
                             padding: 4px 4px 10px 10px;
                             background: rgb(214, 218, 240);
                             border-bottom: 1px solid #ccc;">
@@ -35,13 +46,16 @@
                             {% endif %}
                         </div>
                     </header>
-                    <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
+                    <div style="padding: 12px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
                 </div>
             </article>
         {% endfor %}
     {% else %}
-        <h1>This page is not archived!</h1>
-        <h2>...Yet.</h2>
-        <p>Go to archive.is: <a href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a></p>
+        <div class="text-center pt-2">
+            <h4>This page is not archived!</h4>
+            <h5>...Yet.</h5>
+            <p>Go to archive.is: <a href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a>
+            </p>
+        </div>
     {% endif %}
 {% endblock %}

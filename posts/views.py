@@ -17,7 +17,7 @@ def index(request, platform=None, board=None):
         thread_list = Post.objects.filter(is_op=True).order_by('-timestamp')
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(thread_list, 50)
+    paginator = Paginator(thread_list, 40)
 
     try:
         page_threads = paginator.page(page)
@@ -29,6 +29,8 @@ def index(request, platform=None, board=None):
     template = loader.get_template('posts/index.html')
     context = {
         'thread_list': page_threads,
+        'platform': platform,
+        'board': board
     }
     return HttpResponse(template.render(context, request))
 
@@ -56,3 +58,16 @@ class SearchResultsView(ListView):
         query = SearchQuery(self.request.GET.get('q'))
         results = Post.objects.filter(search_vector=query)[:100]
         return results
+
+
+class AdvancedSearch(ListView):
+    model = Post
+    template_name = 'posts/advanced_search.html'
+    context_object_name = 'results'
+
+    def get_queryset(self):
+        query = SearchQuery(self.request.GET.get('q'))
+        results = Post.objects.filter(search_vector=query)[:100]
+        return results
+
+
