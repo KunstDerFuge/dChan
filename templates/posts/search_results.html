@@ -7,12 +7,13 @@
         <article
                 style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
             {% for post in results %}
-                <article id="{{ post.post_id }}" style="margin: 0 5px 3px 16px; display: block">
-                    <div style="display: table-cell;
+                <article id="{{ post.post_id }}"
+                         style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
+                    <div class="card" style="display: table-cell;
                             padding: 4px 4px 10px 10px;
                             background: rgb(214, 218, 240);
                             border-bottom: 1px solid #ccc;">
-                        <header>
+                        <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; padding: 6px 0px 0.4em;">
                             <div style="padding: 0 6px 0 0;">
                                 <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
                                 {% if post.tripcode %}
@@ -25,7 +26,7 @@
                                 <span><a href="{{ post.get_post_url }}">[Go to Post]</a></span>
                             </div>
                         </header>
-                        <div style="padding: 12px; margin-top: -20px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:150 }}</div>
+                        <div style="padding: 12px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:150 }}</div>
                     </div>
                 </article>
                 </a>
