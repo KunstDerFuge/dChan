@@ -55,7 +55,10 @@ class SearchResultsView(ListView):
     context_object_name = 'results'
 
     def get_queryset(self):
-        query = SearchQuery(self.request.GET.get('q'))
+        q = self.request.GET.get('q')
+        if q == '':
+            return []
+        query = SearchQuery(q)
         results = Post.objects.filter(search_vector=query)[:100]
         return results
 
