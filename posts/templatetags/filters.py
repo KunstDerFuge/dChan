@@ -49,6 +49,8 @@ def contrast_text(bg_color):
 @register.filter(name='pastelize')
 @stringfilter
 def pastelize(poster_hash):
+    if poster_hash == '000000':
+        return '#000000'
     r, g, b = hex_to_rgb(poster_hash)
     r += (1 - r) / 2
     g += (1 - g) / 2
