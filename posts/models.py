@@ -25,10 +25,10 @@ class Post(models.Model):
         return [(reply.get_reply_string(self), reply.get_post_url()) for reply in self.replies.order_by('post_id')]
 
     def get_reply_string(self):
-        return f'>>{self.post_id % 10000}'
+        return f'>>{str(self.post_id)[-4:]}'
 
     def get_cross_board_reply_string(self):
-        return f'>>>/{self.board}/{self.post_id % 10000}'
+        return f'>>>/{self.board}/{str(self.post_id)[-4:]}'
 
     def get_thread_url(self):
         return f'/{self.platform}/{self.board}/res/{self.thread_id}.html'
