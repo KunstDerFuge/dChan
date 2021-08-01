@@ -9,18 +9,27 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         posts = Post.objects.all()
-        for post in tqdm(posts):
-            for link, url in post.links.items():
-                try:
-                    _, platform, board, _, _ = url.split('/')
-                    post_no = int(_.split('.')[0].split('#')[-1])
+        threads = Post.objects.values_list('thread_id').distinct()
+        through_model = Post.reply_to.through
+        for thread in tqdm(threads):
+            posts = Post.objects.filter(thread_id=thread[0])
+            replies = []
+            for post in posts:
+                for link, url in post.links.items():
+                    try:
+                        _, platform, board, _, end = url.split('/')
+                        if '#' in end:
+                            post_no = int(end.split('.')[-1].split('#')[-1])
+                        else:
+                            post_no = int(end.split('.')[0])
 
-                    replied_to = posts.get(platform=platform, board=board, post_id=post_no)
-                    replied_to.reply_to.add(post)
+                        replied_to = posts.get(platform=platform, board=board, post_id=post_no)
+                        replies.append(through_model(from_post_id=post.pk, to_post_id=replied_to.pk))
 
-                except Exception as e:
-                    # print(f'Couldn\'t parse link: {url}')
-                    # print(e)
-                    continue
+                    except Exception as e:
+                        if not 'does not exist' in str(e):
+                            print(f'Couldn\'t parse link: {url}')
+                            print(e)
+                        continue
 
-        Post.objects.bulk_update(posts, ['replied_to'], 10000)
+            through_model.objects.bulk_create(replies, ignore_conflicts=True)

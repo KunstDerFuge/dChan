@@ -33,6 +33,9 @@
                             <span>{{ post.subject }}</span>
                             <span>{{ post.timestamp }}</span>
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+                            {% for reply in post.get_replies %}
+                                <a href="{{ reply.1 }}">{{ reply.0 }}</a>
+                            {% endfor %}
                             &nbsp;
                             <span><a href="{{ post.get_archive_url }}" style="text-decoration: none">🗄️.is</a></span>
                             {% if post.platform == '8kun' %}

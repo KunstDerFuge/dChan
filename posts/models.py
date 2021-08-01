@@ -21,6 +21,14 @@ class Post(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     reply_to = models.ManyToManyField('Post', related_name='replies')
 
+    def get_replies(self):
+        return [(reply.get_reply_string(self), reply.get_post_url()) for reply in self.replies.order_by('post_id')]
+
+    def get_reply_string(self, to):
+        if to.board == self.board:
+            return f'>>{self.post_id % 10000}'
+        return f'>>>/{self.board}/{self.post_id % 10000}'
+
     def get_thread_url(self):
         return f'/{self.platform}/{self.board}/res/{self.thread_id}.html'
 
