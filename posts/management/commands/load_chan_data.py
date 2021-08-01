@@ -66,7 +66,7 @@ def process_links(row):
         for match in matches:
             if len(match) == 2:
                 # Board index link
-                links[html_.unescape(match[-1])] = f"/{match[0]}/"
+                links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/"
             elif match[1] == match[2]:
                 # Special logic for OP post URLs
                 links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html"
