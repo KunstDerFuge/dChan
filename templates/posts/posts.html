@@ -53,14 +53,23 @@
                             {% if post.replies %}
                                 &nbsp;
                             {% endif %}
-                                    {% for reply in post.replies.all %}
-                                        {% if reply.board == post.board %}
+                                {% for reply in post.replies.all %}
+                                    <span>
+                                    {% if reply.board == post.board %}
+                                        {% if reply.drop_no != 0 %}
+                                            <a class="link-danger"
+                                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a><a
+                                                style="text-decoration: none" href="{{ reply.get_post_url }}"><b
+                                                class="text-black-50">Q!</b></a>
+                                        {% else %}
                                             <a class="link-secondary"
                                                href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
-                                        {% else %}
-                                            <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
                                         {% endif %}
-                                    {% endfor %}
+                                    {% else %}
+                                        <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
+                                    {% endif %}
+                                    </span>
+                                {% endfor %}
                                 </small>
                         </span>
                     </header>
