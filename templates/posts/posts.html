@@ -23,7 +23,12 @@
                             background: rgb(214, 218, 240);
                             border-bottom: 1px solid #ccc;">
                     <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; padding: 6px 0px 0.4em;">
-                        <div style="padding: 0 6px 0 0;">
+                        <span style="padding: 0 6px 0 0;">
+                            <div style="float: right">
+                                {% if post.drop_no != 0 %}
+                                    <span style="float: right; font-size: 2em">&nbsp;{{ post.drop_no }}</span>
+                                {% endif %}
+                            </div>
                             <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
                             <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
                             {% if post.tripcode %}
@@ -33,25 +38,31 @@
                             <span>{{ post.subject }}</span>
                             <span>{{ post.timestamp }}</span>
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
-                            {% for reply in post.replies.all %}
-                                {% if reply.board == post.board %}
-                                    <a href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
-                                {% else %}
-                                    <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
-                                {% endif %}
-                            {% endfor %}
                             &nbsp;
-                            <span><a href="{{ post.get_archive_url }}" style="text-decoration: none">🗄️.is</a></span>
+                            <span><a href="{{ post.get_archive_url }}"
+                                     style="text-decoration: none">🗄️.is</a></span>
                             {% if post.platform == '8kun' %}
-                                <span><a href="{{ post.get_8kun_url }}" target="_blank" style="text-decoration: none">🔗kun</a></span>
+                                <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                                         style="text-decoration: none">🔗kun</a></span>
                             {% endif %}
                             {% if post.platform == '8chan' and post.board == 'qresearch' %}
-                                <span><a href="{{ post.get_8kun_url }}" target="_blank" style="text-decoration: none">🔗kun</a></span>
+                                <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                                         style="text-decoration: none">🔗kun</a></span>
                             {% endif %}
-                            {% if post.drop_no != 0 %}
-                                <span style="float: right; font-size: 2em">&nbsp;{{ post.drop_no }}</span>
+                            <small>
+                            {% if post.replies %}
+                                &nbsp;
                             {% endif %}
-                        </div>
+                                    {% for reply in post.replies.all %}
+                                        {% if reply.board == post.board %}
+                                            <a class="link-secondary"
+                                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
+                                        {% else %}
+                                            <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </small>
+                        </span>
                     </header>
                     <div style="padding: 12px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
                 </div>
