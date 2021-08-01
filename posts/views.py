@@ -38,7 +38,8 @@ def index(request, platform=None, board=None):
 
 
 def thread(request, platform, board, thread_id):
-    thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by('post_id')
+    thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by(
+        'post_id').select_related()
     template = loader.get_template('posts/posts.html')
     context = {
         'posts': thread_posts,
