@@ -64,7 +64,7 @@
                                 </small>
                         </span>
                     </header>
-                    <div style="padding: 12px; margin-bottom: -20px">{{ post.body | markdown:post.links }}</div>
+                    <div style="padding: 12px;">{{ post.body | escape | markdown:post.links }}</div>
                 </div>
             </article>
         {% endfor %}

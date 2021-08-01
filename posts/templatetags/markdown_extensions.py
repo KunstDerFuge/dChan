@@ -1,14 +1,49 @@
+import html
 import xml.etree.ElementTree as etree
 
-from django.core.exceptions import ObjectDoesNotExist
+from markdown.blockparser import BlockParser
+from markdown.blockprocessors import BlockProcessor, ParagraphProcessor
 from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagInlineProcessor, InlineProcessor
-from posts.models import Post
+
+
+class CustomParagraphProcessor(ParagraphProcessor):
+    def run(self, parent, blocks):
+        block = blocks.pop(0)
+        if block.strip():
+            # Not a blank block. Add to parent, otherwise throw it away.
+            if self.parser.state.isstate('list'):
+                # The parent is a tight-list.
+                #
+                # Check for any children. This will likely only happen in a
+                # tight-list when a header isn't followed by a blank line.
+                # For example:
+                #
+                #     * # Header
+                #     Line 2 of list item - not part of header.
+                sibling = self.lastChild(parent)
+                if sibling is not None:
+                    # Insetrt after sibling.
+                    if sibling.tail:
+                        sibling.tail = '{}\n{}'.format(sibling.tail, block)
+                    else:
+                        sibling.tail = '\n%s' % block
+                else:
+                    # Append to parent.text
+                    if parent.text:
+                        parent.text = '{}\n{}'.format(parent.text, block)
+                    else:
+                        parent.text = block.lstrip()
+            else:
+                # Create a regular paragraph
+                p = etree.SubElement(parent, 'p')
+                p.attrib = {'class': 'body-line'}
+                p.text = block.lstrip()
 
 
 class SimpleSpanTagInlineProcessor(InlineProcessor):
     """
-    Return element of type `span` with a text attribute of group(2)
+    Return element of type `span` with a text attribute of group(1)
     of a Pattern.
     """
 
@@ -20,7 +55,7 @@ class SimpleSpanTagInlineProcessor(InlineProcessor):
     def handleMatch(self, m, data):  # pragma: no cover
         el = etree.Element(self.tag)
         el.attrib = self.attr
-        el.text = m.group(2)
+        el.text = m.group(1)
         return el, m.start(0), m.end(0)
 
 
@@ -51,7 +86,7 @@ class InlinePostLinkProcessor(InlineProcessor):
     def handleMatch(self, m, data):
         el = etree.Element('a')
         el.text = m.group(1)
-        link_text = m.group(1)
+        link_text = html.unescape(m.group(1))
 
         if link_text in self.links:
             el.attrib = {'href': f'{self.links[link_text]}'}
@@ -65,6 +100,7 @@ class ChanExtensions(Extension):
         self.links = links
 
     def extendMarkdown(self, md):
+        block_parser = BlockParser(md)
         md.parser.blockprocessors.deregister('quote')
         md.parser.blockprocessors.deregister('indent')
         md.parser.blockprocessors.deregister('code')
@@ -72,11 +108,13 @@ class ChanExtensions(Extension):
         md.parser.blockprocessors.deregister('setextheader')
         md.parser.blockprocessors.deregister('hr')
         md.parser.blockprocessors.deregister('reference')
-        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()> (.*)($|\n)', 'quote'), 'quote', 175)
-        md.inlinePatterns.register(SimpleTagInlineProcessor(r"()'''(.*?)'''", 'strong'), 'strong', 175)
-        md.inlinePatterns.register(SimpleTagInlineProcessor(r"()''(.*?)''", 'em'), 'em', 175)
-        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'()==(.*?)==', 'heading'), 'heading', 175)
+        md.parser.blockprocessors.deregister('paragraph')
+        md.parser.blockprocessors.register(CustomParagraphProcessor(block_parser), 'paragraph', 10)
+        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'&gt; (.*)($|\n)', 'quote'), 'quote', 175)
+        md.inlinePatterns.register(SimpleTagInlineProcessor(r"()&#x27;&#x27;&#x27;(.*?)&#x27;&#x27;&#x27;", 'strong'), 'strong', 175)
+        md.inlinePatterns.register(SimpleTagInlineProcessor(r"()&#x27;&#x27;(.*?)&#x27;&#x27;", 'em'), 'em', 175)
+        md.inlinePatterns.register(SimpleSpanTagInlineProcessor(r'==(.*?)==', 'heading'), 'heading', 175)
         md.inlinePatterns.register(
-            InlinePostLinkProcessor(r'(>>[0-9]+|>>>/[a-zA-Z]+/[0-9]+)', self.links), 'post_link',
+            InlinePostLinkProcessor(r'(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/[0-9]+)', self.links), 'post_link',
             175)
         md.inlinePatterns.register(InlineEchoesProcessor(r'(\(\(\(.{1,25}\)\)\))'), 'triple_parentheses', 175)

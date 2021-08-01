@@ -11,7 +11,11 @@ register = template.Library()
 @register.filter(name='markdown')
 @stringfilter
 def markdown(text, links):
-    return mark_safe(md.markdown(text, extensions=['nl2br', ChanExtensions(links)]))
+    pattern = re.compile(r'(\n\ {1,4}\n)')  # Match two newlines separated by 1-4 spaces
+    text = pattern.sub('\n\n', text)
+    text = '\n\n'.join(text.split('\n'))
+    text = text.replace('\n\n\n\n', '\n\n&nbsp;\n\n')
+    return mark_safe(md.markdown(text, extensions=[ChanExtensions(links)]))
 
 
 @register.filter(name='get_archive_link')
