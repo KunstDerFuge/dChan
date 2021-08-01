@@ -1,0 +1,65 @@
+{% load filters %}
+<article id="{{ post.post_id }}"
+         style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
+    <div class="card" style="display: table-cell;
+                            padding: 4px 4px 10px 10px;
+                            background: rgb(214, 218, 240);
+                            border-bottom: 1px solid #ccc;">
+        <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0; padding: 6px 0 0.4em;">
+        <span style="padding: 0 6px 0 0;">
+            <div style="float: right">
+                {% if post.drop_no != 0 %}
+                    <span style="float: right; font-size: 2rem; padding-bottom: 2px">&nbsp;{{ post.drop_no }}</span>
+                {% endif %}
+            </div>
+            <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
+            <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
+            {% if post.tripcode %}
+                <span class="trip">{{ post.tripcode }}</span>
+            {% endif %}
+            <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">ID: {{ post.poster_hash }}</span>
+            <span>{{ post.subject }}</span>
+            <span>{{ post.timestamp }}</span>
+            <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+            &nbsp;
+            <span><a href="{{ post.get_archive_url }}"
+                     style="text-decoration: none">🗄️.is</a></span>
+            {% if post.platform == '8kun' %}
+                <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                         style="text-decoration: none">🔗kun</a></span>
+            {% endif %}
+            {% if post.platform == '8chan' and post.board == 'qresearch' %}
+                <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                         style="text-decoration: none">🔗kun</a></span>
+            {% endif %}
+            <small>
+            {% if post.replies %}
+                &nbsp;
+            {% endif %}
+                {% for reply in post.replies.all %}
+                    <span>
+                    {% if reply.board == post.board %}
+                        {% if reply.drop_no != 0 %}
+                            <a class="link-danger"
+                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a><a
+                                style="text-decoration: none" href="{{ reply.get_post_url }}"><b
+                                class="text-black-50">Q!</b></a>
+                        {% else %}
+                            <span class="d-inline-block" tabindex="0" data-toggle="popover"
+                                  data-html="true" data-trigger="hover" title="test"
+                                  data-content="<div>Testing</div>">
+                            <a class="link-secondary"
+                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
+                    {% endif %}
+                    </span>
+                {% endfor %}
+                </small>
+        </span>
+        </header>
+        <div style="padding: 12px;">{{ post.body | escape | markdown:post.links }}</div>
+    </div>
+</article>
