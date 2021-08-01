@@ -19,6 +19,7 @@ class Post(models.Model):
     search_vector = SearchVectorField(null=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    reply_to = models.ManyToManyField('Post', related_name='replies')
 
     def get_thread_url(self):
         return f'/{self.platform}/{self.board}/res/{self.thread_id}.html'
