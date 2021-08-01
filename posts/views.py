@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template import loader
@@ -39,7 +40,7 @@ def index(request, platform=None, board=None):
 
 def thread(request, platform, board, thread_id):
     thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by(
-        'post_id').prefetch_related('replies')
+        'post_id').prefetch_related(Prefetch('replies', queryset=Post.objects.order_by('post_id')))
     template = loader.get_template('posts/posts.html')
     context = {
         'posts': thread_posts,
