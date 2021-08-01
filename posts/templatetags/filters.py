@@ -1,3 +1,5 @@
+import re
+
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
@@ -28,10 +30,13 @@ def get_archive_link(path):
 
 
 def hex_to_rgb(hex_):
-    r = int(hex_[:2], 16) / 255
-    g = int(hex_[2:4], 16) / 255
-    b = int(hex_[4:], 16) / 255
-    return r, g, b
+    try:
+        r = int(hex_[:2], 16) / 255
+        g = int(hex_[2:4], 16) / 255
+        b = int(hex_[4:], 16) / 255
+        return r, g, b
+    except Exception:
+        return 0, 0, 0
 
 
 def rgb_to_hex(r, g, b):
