@@ -39,7 +39,7 @@ def index(request, platform=None, board=None):
 
 def thread(request, platform, board, thread_id):
     thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by(
-        'post_id').select_related()
+        'post_id').prefetch_related('replies')
     template = loader.get_template('posts/posts.html')
     context = {
         'posts': thread_posts,
@@ -83,4 +83,8 @@ class AdvancedSearch(ListView):
         results = Post.objects.filter(search_vector=query)[:100]
         return results
 
-
+    def get_context_data(self, **kwargs):
+        context = super(AdvancedSearch, self).get_context_data(**kwargs)
+        boards = Post.objects.values_list('platform', 'board').distinct()
+        context['boards'] = boards
+        return context

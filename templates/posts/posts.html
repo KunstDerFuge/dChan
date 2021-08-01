@@ -33,8 +33,12 @@
                             <span>{{ post.subject }}</span>
                             <span>{{ post.timestamp }}</span>
                             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
-                            {% for reply in post.get_replies %}
-                                <a href="{{ reply.1 }}">{{ reply.0 }}</a>
+                            {% for reply in post.replies.all %}
+                                {% if reply.board == post.board %}
+                                    <a href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
+                                {% else %}
+                                    <a href="{{ reply.get_post_url }}">{{ reply.get_cross_board_reply_string }}</a>
+                                {% endif %}
                             {% endfor %}
                             &nbsp;
                             <span><a href="{{ post.get_archive_url }}" style="text-decoration: none">🗄️.is</a></span>
