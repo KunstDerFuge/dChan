@@ -2,7 +2,6 @@ import html as html_
 import re
 
 import pandas as pd
-from django.contrib.postgres.search import SearchVector
 from django.core.management import BaseCommand
 from tqdm import tqdm
 
@@ -99,6 +98,23 @@ class Command(BaseCommand):
                 for file in files:
                     print(f'Loading {file}...')
                     df = pd.read_csv(file)
+                    if platform == '4chan':
+                        # Rename columns
+                        df['thread_no'] = df['thread_num']
+                        df['post_no'] = df['num']
+                        df['poster_id'] = df['poster_hash']
+                        df['subject'] = df['title']
+                        df['body_text'] = df['comment']
+                        df['tripcode'] = df['trip']
+                        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+                        df = df[['thread_no', 'post_no', 'poster_id', 'subject', 'body_text', 'tripcode', 'timestamp',
+                                 'name', 'board']]
+
+                    before = len(df)
+                    df = df.drop_duplicates()
+                    after = len(df)
+                    if after - before > 0:
+                        print(f'Dropped {after - before} duplicates...')
                     df['id'] = df['board'] + '/' + df['post_no'].astype(str)
                     df['platform'] = platform
                     size_before = len(df)
@@ -112,16 +128,20 @@ class Command(BaseCommand):
                     elif size_after != size_before:
                         print(f'Already archived {saved} of {size_before} posts.')
 
-                    print('Processing links...')
-                    df['links'] = df.progress_apply(process_links, axis=1)
+                    if platform != '4chan':  # No format or link info from 4plebs API
+                        print('Processing links...')
+                        df['links'] = df.progress_apply(process_links, axis=1)
 
-                    print('Parsing HTML to imageboard markup...')
-                    df['body_text'] = df.body_text.progress_apply(parse_formatting)
+                        print('Parsing HTML to imageboard markup...')
+                        df['body_text'] = df.body_text.progress_apply(parse_formatting)
                     df = df.fillna('')
 
                     print('Committing objects to database...')
                     new_posts = []
                     for index, row in tqdm(df.iterrows(), total=len(df)):
+                        if platform == '4chan':
+                            row['links'] = dict()
+
                         post = Post(platform=row['platform'], board=row['board'], thread_id=row['thread_no'],
                                     post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
                                     subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
@@ -136,6 +156,8 @@ class Command(BaseCommand):
 
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
+                print(row)
+                raise e
 
         print('Done!')
         print('Remember to re-generate SearchVectors with python manage.py process_search_vectors')

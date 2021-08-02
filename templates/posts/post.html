@@ -22,8 +22,13 @@
             <span>{{ post.timestamp }}</span>
             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
             &nbsp;
-            <span><a href="{{ post.get_archive_url }}"
-                     style="text-decoration: none">🗄️.is</a></span>
+            {% if post.platform == '4chan' %}
+                <span><a href="{{ post.get_archive_url }}"
+                         style="text-decoration: none">🗄️plebs</a></span>
+            {% else %}
+                <span><a href="{{ post.get_archive_url }}"
+                         style="text-decoration: none">🗄️.is</a></span>
+            {% endif %}
             {% if post.platform == '8kun' %}
                 <span><a href="{{ post.get_8kun_url }}" target="_blank"
                          style="text-decoration: none">🔗kun</a></span>
