@@ -1,3 +1,4 @@
+import hashlib
 import re
 
 from django import template
@@ -58,6 +59,11 @@ def contrast_text(bg_color):
 @register.filter(name='pastelize')
 @stringfilter
 def pastelize(poster_hash):
+    if len(poster_hash) > 6:  # 4chan hash
+        hash_bytes = poster_hash.encode()
+        hash_obj = hashlib.sha1(hash_bytes)
+        poster_hash = hash_obj.hexdigest()[-6:]  # Take last 6 chars
+        print(poster_hash)
     if poster_hash == '000000':
         return '#000000'
     r, g, b = hex_to_rgb(poster_hash)
