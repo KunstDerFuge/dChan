@@ -107,6 +107,7 @@ class Command(BaseCommand):
                         df['body_text'] = df['comment']
                         df['tripcode'] = df['trip']
                         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+                        df['timestamp'] = df['timestamp'].dt.tz_localize(tz='UTC')  # 4plebs timestamps are UTC
                         df = df[['thread_no', 'post_no', 'poster_id', 'subject', 'body_text', 'tripcode', 'timestamp',
                                  'name', 'board']]
 
