@@ -59,7 +59,7 @@ class Post(models.Model):
             except Exception:
                 linked_post = None
             if linked_post is not None:
-                matched_links[link] = linked_post.get_post_url()
+                matched_links[f'>>{link}'] = linked_post.get_post_url()
         self.links = matched_links
         self.save()
 
