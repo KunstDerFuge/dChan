@@ -58,7 +58,8 @@ def process_links(row):
             r'\/([a-zA-Z0-9]+)\/index\.html\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
             row['body_text'])
         matches = re.findall(
-            r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)')
+            r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
+            row['body_text'])
     else:
         board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
                                        row['body_text'])
