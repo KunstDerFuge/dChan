@@ -41,7 +41,7 @@ def index(request, platform=None, board=None):
 def thread(request, platform, board, thread_id):
     thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by(
         'post_id').prefetch_related(Prefetch('replies', queryset=Post.objects.order_by('post_id')))
-    template = loader.get_template('posts/posts.html')
+    template = loader.get_template('posts/thread.html')
     context = {
         'posts': thread_posts,
     }
