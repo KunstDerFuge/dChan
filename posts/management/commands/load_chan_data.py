@@ -53,11 +53,18 @@ def parse_formatting(html):
 
 def process_links(row):
     links = dict()
-    board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
-                                   row['body_text'])
-    matches = re.findall(
-        r'\"\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html#q?([0-9]+)\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/[0-9]+)',
-        row['body_text'])
+    if row['platform'] == '8chan' and row['board'] != 'qresearch':
+        board_index_links = re.findall(
+            r'\/([a-zA-Z0-9]+)\/index\.html\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
+            row['body_text'])
+        matches = re.findall(
+            r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)')
+    else:
+        board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
+                                       row['body_text'])
+        matches = re.findall(
+            r'\"\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html#q?([0-9]+)\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
+            row['body_text'])
     matches.extend(board_index_links)
     if len(matches) == 0:
         return dict()
