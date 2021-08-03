@@ -4,12 +4,12 @@ import re
 import pandas as pd
 from django.core.management import BaseCommand
 from tqdm import tqdm
+from bs4 import BeautifulSoup
 
 from posts.models import Post
 
 
 def parse_formatting(html):
-    from bs4 import BeautifulSoup
     soup = BeautifulSoup(html, 'html.parser')
 
     # Process green text
@@ -81,6 +81,97 @@ def split_list(lst, n):
     return list(result)
 
 
+def parse_8chan_formatting(html):
+    soup = BeautifulSoup(html, 'html.parser')
+
+    # Process green text
+    for result in soup.find_all(attrs={
+        'style': 'text-align:left;color:rgb(120, 153, '
+                 '34);direction:ltr;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; '}):
+        result.insert(0, '> ')
+
+    # Process red text
+    for result in soup.find_all(
+            attrs={'style': 'text-align:left;color:rgb(175, 10, 15);font-size:11pt;font-weight:bold;'}):
+        result.insert_before('==')
+        result.insert_after('==')
+
+    # Process bold text
+    for result in soup.find_all('strong'):
+        result.insert_before("'''")
+        result.insert_after("'''")
+
+    # Process italic text
+    for result in soup.find_all('em'):
+        if result.get_text() != '//':  # For some reason, the // in URLs is wrapped with <em />
+            result.insert_before("''")
+            result.insert_after("''")
+
+    # Process underlined text
+    for result in soup.find_all('u'):
+        result.insert_before("__")
+        result.insert_after("__")
+
+    # Process strikethrough text
+    for result in soup.find_all('s'):
+        result.insert_before("~~")
+        result.insert_after("~~")
+
+    # Process spoiler text
+    for result in soup.find_all(attrs={'class': 'spoiler'}):
+        result.insert_before("**")
+        result.insert_after("**")
+
+    final_text = '\n'.join([line.get_text() for line in soup.find_all('div')])
+    return final_text
+
+
+def parse_archive_is(row):
+    try:
+        soup = BeautifulSoup(row.header, "html.parser")
+        name = soup.find('span', attrs={'style': 'text-align:left;color:rgb(17, 119, 67);font-weight:bold;'})
+        if name is None:
+            name = soup.find('span', attrs={'style': 'text-align:left;font-weight:bold;color:rgb(52, 52, 92);'})
+        name = name.text.rstrip()
+        subject = soup.find('span', attrs={'style': 'text-align:left;color:rgb(15, 12, 93);font-weight:bold;'})
+        if subject is None:
+            subject = ''
+        else:
+            subject = subject.text.rstrip()
+        timestamp = soup.find('time').text.rstrip()
+        poster_id = \
+            soup.find('span', attrs={'style': 'text-align:left;cursor:pointer;white-space:nowrap;'})
+        if poster_id is None:  # /patriotsfight/ apparently had poster IDs turned off
+            poster_id = ''
+        else:
+            poster_id = poster_id.text.split()[-1]
+        tripcode = soup.find('span', attrs={'style': 'text-align:left;color:rgb(34, 136, 84);'})
+        if tripcode is None:
+            tripcode = ''
+        else:
+            tripcode = tripcode.text.rstrip()
+        post_id = soup.find_all('a', attrs={
+            'style': 'text-align:left;text-decoration:none;color:inherit;margin: 0px; padding: 0px; '})[1].text.rstrip()
+        return {
+            'name': name,
+            'subject': subject,
+            'timestamp': timestamp.split('(')[0] + timestamp.split(') ')[-1],
+            'poster_id': poster_id,
+            'tripcode': tripcode,
+            'post_no': post_id,
+            'board': row['board'],
+            'platform': row['platform'],
+            'thread_no': row['thread_no'],
+            'body_text': row['body']
+        }
+
+    except Exception as e:
+        print('Failed on header:')
+        print(row.header)
+        print(e)
+        raise e
+
+
 class Command(BaseCommand):
     help = "Load data from CSV files scraped from Chan data. Expects three files, 4chan.csv, 8chan.csv, 8kun.csv"
 
@@ -98,7 +189,12 @@ class Command(BaseCommand):
                 for file in files:
                     print(f'Loading {file}...')
                     df = pd.read_csv(file)
-                    if platform == '4chan':
+                    if platform == '8chan' and df['board'].loc[0] != 'qresearch':
+                        # Scraped from archive.is
+                        df = pd.DataFrame(list(df.apply(parse_archive_is, axis=1)))
+                        df['timestamp'] = pd.to_datetime(df['timestamp'])
+                        df['timestamp'] = df['timestamp'].dt.tz_localize(tz='UTC')  # 8chan timestamps are UTC
+                    elif platform == '4chan':
                         # Rename columns
                         df['thread_no'] = df['thread_num']
                         df['post_no'] = df['num']
@@ -112,6 +208,8 @@ class Command(BaseCommand):
                                  'name', 'board']]
 
                     before = len(df)
+                    df['post_no'] = df['post_no'].astype(str)
+                    df['thread_no'] = df['thread_no'].astype(str)
                     df = df.drop_duplicates()
                     after = len(df)
                     if after - before > 0:
@@ -134,7 +232,10 @@ class Command(BaseCommand):
                         df['links'] = df.progress_apply(process_links, axis=1)
 
                         print('Parsing HTML to imageboard markup...')
-                        df['body_text'] = df.body_text.progress_apply(parse_formatting)
+                        if platform == '8chan' and df['board'].loc[0] != 'qresearch':
+                            df['body_text'] = df.body_text.progress_apply(parse_8chan_formatting)
+                        else:
+                            df['body_text'] = df.body_text.progress_apply(parse_formatting)
                     df = df.fillna('')
 
                     print('Committing objects to database...')
