@@ -18,7 +18,7 @@
                 <span class="trip" data-bs-toggle="tooltip"
                       title="{{ post.tripcode | get_cracked_pass }}">{{ post.tripcode }}</span>
             {% endif %}
-            {% if post.poster_id %}
+            {% if post.poster_id != '' %}
                 <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">ID:&nbsp;{{ post.poster_hash }}</span>
             {% endif %}
             <span>{{ post.subject }}</span>
