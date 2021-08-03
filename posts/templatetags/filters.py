@@ -72,3 +72,20 @@ def pastelize(poster_hash):
     b += (1 - b) / 2
     return rgb_to_hex(r, g, b)
 
+
+@register.filter(name='get_cracked_pass')
+@stringfilter
+def get_cracked_pass(tripcode):
+    tripcode = tripcode.strip('!')
+    cracked = {
+        'ITPb.qbhqo': 'Matlock',
+        'UW.yye1fxo': 'M@tlock!',
+        'xowAT4Z3VQ': 'Freed@m-',
+        '2jsTvXXmXs': 'F!ghtF!g',
+        '4pRcUA0lBE': 'NowC@mes',
+        'CbboFOtcZs': 'StoRMkiL',
+        'A6yxsPKia.': 'WeAReQ@Q'
+    }
+    if tripcode in cracked:
+        return cracked[tripcode]
+    return ''

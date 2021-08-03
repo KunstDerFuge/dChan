@@ -15,7 +15,8 @@
             <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
             <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
             {% if post.tripcode %}
-                <span class="trip">{{ post.tripcode }}</span>
+                <span class="trip" data-toggle="tooltip"
+                      title="{{ post.tripcode | get_cracked_pass }}">{{ post.tripcode }}</span>
             {% endif %}
             <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">ID:&nbsp;{{ post.poster_hash }}</span>
             <span>{{ post.subject }}</span>
