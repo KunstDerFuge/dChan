@@ -1,19 +1,23 @@
+from django.contrib.postgres.search import SearchQuery
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template import loader
-from django.views.generic import ListView, RedirectView
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.views.generic import ListView
 
-from posts.models import Post
+from posts.models import Post, Board, Platform, Drop
 
 
 def index(request, platform=None, board=None):
     if board:
-        thread_list = Post.objects.filter(is_op=True, platform=platform, board=board).order_by('-timestamp')
+        platform_obj = Platform.objects.get(name=platform)
+        board_obj = Board.objects.get(platform=platform_obj, name=board)
+        thread_list = board_obj.posts.filter(is_op=True).order_by('-timestamp')
     elif platform:
-        thread_list = Post.objects.filter(is_op=True, platform=platform).order_by('-timestamp')
+        platform_obj = Platform.objects.get(name=platform)
+        thread_list = platform_obj.posts.filter(is_op=True).order_by('-timestamp')
     else:
         thread_list = Post.objects.filter(is_op=True).order_by('-timestamp')
 
@@ -31,42 +35,56 @@ def index(request, platform=None, board=None):
     template = loader.get_template('posts/index.html')
     context = {
         'thread_list': page_threads,
-        'platform': platform,
-        'board': board,
+        'platform_name': platform,
+        'board_name': board,
         'page_range': page_range,
     }
     if platform:
-        context['boards_links'] = Post.objects.filter(platform=platform).values_list('board', flat=True).distinct()
+        context['boards_links'] = platform_obj.boards.values_list('name', flat=True).distinct()
 
     return HttpResponse(template.render(context, request))
 
 
 def thread(request, platform, board, thread_id):
-    thread_posts = Post.objects.filter(platform=platform, board=board, thread_id=thread_id).order_by(
-        'post_id').prefetch_related(Prefetch('replies', queryset=Post.objects.order_by('post_id')))
-    template = loader.get_template('posts/thread.html')
-    context = {
-        'posts': thread_posts,
-        'platform': platform,
-        'board': board,
-        'thread': thread_id,
-        'drop_links': [(post.drop_no, post.get_post_url()) for post in
-                       thread_posts.exclude(drop_no=0).order_by('drop_no')],
-        'boards_links': Post.objects.filter(platform=platform).values_list('board', flat=True).distinct()
-    }
-    return HttpResponse(template.render(context, request))
+    context = {}
+    try:
+        platform_obj = Platform.objects.get(name=platform)
+        board_obj = Board.objects.get(platform=platform_obj, name=board)
+        thread_posts = board_obj.posts.filter(thread_id=thread_id).order_by(
+            'post_id').prefetch_related(Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
+        drop_links = [(post.drop.number, post.get_post_url()) for post in thread_posts.order_by('drop__number') if hasattr(post, 'drop')]
+        context = {
+            'posts': thread_posts,
+            'platform_name': platform,
+            'board_name': board,
+            'thread': thread_id,
+            'drop_links': drop_links,
+            'boards_links': platform_obj.boards.values_list('name', flat=True).distinct()
+        }
+
+    except ObjectDoesNotExist:
+        # One of the .gets failed, i.e. this thread is not archived
+        pass
+
+    except Exception as e:
+        print(e)
+        raise e
+
+    finally:
+        template = loader.get_template('posts/thread.html')
+        return HttpResponse(template.render(context, request))
 
 
 def drop(request, drop_no):
     try:
-        q_drop = Post.objects.get(drop_no=drop_no)
-    except Exception:
+        q_drop = Drop.objects.get(number=drop_no)
+    except ObjectDoesNotExist:
         template = loader.get_template('posts/index.html')
         context = {
             'posts': [],
         }
         return HttpResponse(template.render(context, request))
-    return redirect(q_drop.get_post_url())
+    return redirect(q_drop.post.get_post_url())
 
 
 class SearchResultsView(ListView):

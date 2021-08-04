@@ -4,15 +4,15 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item"><a href="/{{ platform }}">{{ platform }}</a></li>
-                <li class="breadcrumb-item">{{ board }}</li>
+                <li class="breadcrumb-item"><a href="/{{ platform.name }}">{{ platform.name }}</a></li>
+                <li class="breadcrumb-item">{{ board.name }}</li>
             </ol>
         </nav>
-    {% elif platform %}
+    {% elif platform_name %}
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item">{{ platform }}</li>
+                <li class="breadcrumb-item">{{ platform.name }}</li>
             </ol>
         </nav>
     {% endif %}

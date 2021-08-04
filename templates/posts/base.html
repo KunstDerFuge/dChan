@@ -53,7 +53,7 @@
                         </ul>
                     </div>
                 </li>
-                {% if platform %}
+                {% if platform_name %}
                     <li class="mb-1">
                         <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
                                 data-bs-target="#boards" aria-expanded="true">
@@ -62,7 +62,7 @@
                         <div class="collapse show" id="boards">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 {% for board in boards_links %}
-                                    <li><a href="/{{ platform }}/{{ board }}"
+                                    <li><a href="/{{ platform_name }}/{{ board }}"
                                            class="link-dark rounded">/{{ board }}/</a></li>
                                 {% endfor %}
                             </ul>

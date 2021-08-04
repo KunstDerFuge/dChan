@@ -6,7 +6,7 @@ from django.core.management import BaseCommand
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
-from posts.models import Post
+from posts.models import Post, Platform, Board
 
 
 def parse_formatting(html):
@@ -189,9 +189,10 @@ class Command(BaseCommand):
 
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
-            existing_posts = Post.objects.filter(platform=platform)
+            platform_obj = Platform.objects.get(name=platform)
             print('Cataloging existing posts in DB...')
-            already_archived = [f'{post.board}/{post.post_id}' for post in tqdm(existing_posts)]
+            already_archived = set(f'{post[0]}/{post[1]}' for post in
+                                   platform_obj.posts.values_list('board__name', 'post_id'))
             files = glob.glob(f'data/{platform}/*.csv')
             try:
                 for file in files:
@@ -228,6 +229,7 @@ class Command(BaseCommand):
                     # Remove if already archived
                     df = df[~df.id.isin(already_archived)]
                     size_after = len(df)
+                    df = df.reset_index()
                     saved = size_before - size_after
                     if size_after == 0:
                         print('Already archived all posts.')
@@ -252,7 +254,9 @@ class Command(BaseCommand):
                         if platform == '4chan':
                             row['links'] = dict()
 
-                        post = Post(platform=row['platform'], board=row['board'], thread_id=row['thread_no'],
+                        board, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
+
+                        post = Post(platform=platform_obj, board=board, thread_id=row['thread_no'],
                                     post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
                                     subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
                                     tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),

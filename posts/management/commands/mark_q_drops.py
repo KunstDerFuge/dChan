@@ -3,7 +3,7 @@ from django.core.management import BaseCommand
 from tqdm import tqdm
 import pandas as pd
 
-from posts.models import Post
+from posts.models import Post, Platform, Board, Drop
 
 
 def mark_posts(row):
@@ -16,11 +16,14 @@ def mark_posts(row):
         else:
             platform = '8kun'
 
-        drop = Post.objects.get(platform=platform, board=post[1], post_id=post[5])
-        drop.drop_no = row['drop']
+        drop_platform = Platform.objects.get(name=platform)
+        drop_board = Board.objects.get(name=post[1])
+        drop_post = Post.objects.get(platform=drop_platform, board=drop_board, post_id=post[5])
+        drop = Drop.objects.get_or_create(post=drop_post, number=row['drop'])
         drop.save()
 
     except Exception as e:
+        # Drop is not yet archived
         pass
 
 

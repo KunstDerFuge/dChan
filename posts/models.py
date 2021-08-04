@@ -8,7 +8,7 @@ class Platform(models.Model):
 
 class Board(models.Model):
     name = models.CharField(max_length=60)
-    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, blank=True, null=True, related_name='boards')
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='boards')
 
     class Meta:
         constraints = [
@@ -16,10 +16,13 @@ class Board(models.Model):
         ]
 
 
+class Drop(models.Model):
+    number = models.SmallIntegerField(unique=True)
+    post = models.OneToOneField('Post', on_delete=models.CASCADE, primary_key=True)
+
+
 class Post(models.Model):
-    # platform = models.CharField(max_length=12)
     platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='posts')
-    # board = models.CharField(max_length=60)
     board = models.ForeignKey('Board', on_delete=models.CASCADE, related_name='posts')
     thread_id = models.IntegerField()
     post_id = models.IntegerField()
@@ -27,7 +30,6 @@ class Post(models.Model):
     poster_hash = models.CharField(max_length=12)
     subject = models.CharField(max_length=150)
     body = models.TextField()
-    drop_no = models.PositiveSmallIntegerField(default=0)
     timestamp = models.DateTimeField()
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
@@ -47,19 +49,19 @@ class Post(models.Model):
         return f'>>>/{self.board}/{str(self.post_id)[-4:]}'
 
     def get_thread_url(self):
-        return f'/{self.platform}/{self.board}/res/{self.thread_id}.html'
+        return f'/{self.platform.name}/{self.board.name}/res/{self.thread_id}.html'
 
     def get_post_url(self):
         return self.get_thread_url() + '#' + str(self.post_id)
 
     def get_archive_url(self):
         if self.platform == '4chan':
-            return f'https://archive.4plebs.org/{self.board}/thread/{self.thread_id}/#{self.post_id}'
+            return f'https://archive.4plebs.org/{self.board.name}/thread/{self.thread_id}/#{self.post_id}'
         site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
-        return f'https://archive.is/{site[self.platform]}/{self.board}/res/{self.thread_id}.html'
+        return f'https://archive.is/{site[self.platform.name]}/{self.board.name}/res/{self.thread_id}.html'
 
     def get_8kun_url(self):
-        return f'https://8kun.top/{self.board}/res/{self.thread_id}.html#{self.post_id}'
+        return f'https://8kun.top/{self.board.name}/res/{self.thread_id}.html#{self.post_id}'
 
     def process_links(self):
         import re
