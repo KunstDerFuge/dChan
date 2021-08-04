@@ -1,18 +1,18 @@
 {% extends 'posts/base.html' %}
 {% block content %}
-    {% if board %}
+    {% if board_name %}
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item"><a href="/{{ platform.name }}">{{ platform.name }}</a></li>
-                <li class="breadcrumb-item">{{ board.name }}</li>
+                <li class="breadcrumb-item"><a href="/{{ platform_name }}">{{ platform_name }}</a></li>
+                <li class="breadcrumb-item">{{ board_name }}</li>
             </ol>
         </nav>
     {% elif platform_name %}
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item">{{ platform.name }}</li>
+                <li class="breadcrumb-item">{{ platform_name }}</li>
             </ol>
         </nav>
     {% endif %}
