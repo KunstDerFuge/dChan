@@ -2,9 +2,25 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
+class Platform(models.Model):
+    name = models.CharField(max_length=12, unique=True)
+
+
+class Board(models.Model):
+    name = models.CharField(max_length=60)
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, blank=True, null=True, related_name='boards')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['platform', 'name'], name='unique_board')
+        ]
+
+
 class Post(models.Model):
     platform = models.CharField(max_length=12)
+    platform_rel = models.ForeignKey('Platform', on_delete=models.CASCADE, blank=True, null=True, related_name='posts')
     board = models.CharField(max_length=60)
+    board_rel = models.ForeignKey('Board', on_delete=models.CASCADE, blank=True, null=True, related_name='posts')
     thread_id = models.IntegerField()
     post_id = models.IntegerField()
     author = models.CharField(max_length=180)
