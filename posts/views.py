@@ -51,8 +51,7 @@ def thread(request, platform, board, thread_id):
         'board': board,
         'thread': thread_id,
         'drop_links': [(post.drop_no, post.get_post_url()) for post in
-                       Post.objects.filter(platform=platform, board=board, thread_id=thread_id).exclude(
-                           drop_no=0).order_by('drop_no')],
+                       thread_posts.exclude(drop_no=0).order_by('drop_no')],
         'boards_links': Post.objects.filter(platform=platform).values_list('board', flat=True).distinct()
     }
     return HttpResponse(template.render(context, request))
