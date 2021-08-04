@@ -19,7 +19,7 @@ class Command(BaseCommand):
             for post in posts:
                 for link, url in post.links.items():
                     try:
-                        if len(url.findall('/')) == 3:
+                        if url.count('/') == 3:
                             # Board index link, ignore
                             continue
 
