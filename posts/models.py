@@ -17,10 +17,10 @@ class Board(models.Model):
 
 
 class Post(models.Model):
-    platform = models.CharField(max_length=12)
-    platform_rel = models.ForeignKey('Platform', on_delete=models.CASCADE, blank=True, null=True, related_name='posts')
-    board = models.CharField(max_length=60)
-    board_rel = models.ForeignKey('Board', on_delete=models.CASCADE, blank=True, null=True, related_name='posts')
+    # platform = models.CharField(max_length=12)
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='posts')
+    # board = models.CharField(max_length=60)
+    board = models.ForeignKey('Board', on_delete=models.CASCADE, related_name='posts')
     thread_id = models.IntegerField()
     post_id = models.IntegerField()
     author = models.CharField(max_length=180)
@@ -81,5 +81,5 @@ class Post(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['platform', 'board', 'post_id'], name='unique_post')
+            models.UniqueConstraint(fields=['platform', 'board', 'post_id'], name='unique_post'),
         ]
