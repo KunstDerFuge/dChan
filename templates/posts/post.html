@@ -1,6 +1,6 @@
 {% load filters %}
 <article id="{{ post.post_id }}"
-         style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
+         style="margin: 0 5px 8px 16px; display: block;font-family: arial, helvetica, sans-serif">
     <div class="card shadow-sm" style="display: table-cell;
                             padding: 4px 4px 10px 10px;
                             background: rgb(214, 218, 240);
@@ -68,6 +68,6 @@
                 </small>
         </span>
         </header>
-        <div style="padding: 12px;">{{ post.body | escape | markdown:post.links }}</div>
+        <div style="padding: 6px;">{{ post.body | escape | markdown:post.links }}</div>
     </div>
 </article>
