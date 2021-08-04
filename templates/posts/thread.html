@@ -9,9 +9,9 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item"><a href="/{{ posts.0.platform.name }}">{{ posts.0.platform.name }}</a></li>
+                <li class="breadcrumb-item"><a href="/{{ platform_name }}">{{ platform_name }}</a></li>
                 <li class="breadcrumb-item"><a
-                        href="/{{ posts.0.platform.name }}/{{ posts.0.board.name }}">{{ posts.0.board.name }}</a></li>
+                        href="/{{ platform_name }}/{{ board_name }}">{{ board_name }}</a></li>
                 <li class="breadcrumb-item active" aria-current="page">{{ posts.0.post_id }}</li>
             </ol>
         </nav>

@@ -40,7 +40,7 @@ def index(request, platform=None, board=None):
         'page_range': page_range,
     }
     if platform:
-        context['boards_links'] = platform_obj.boards.values_list('name', flat=True).distinct()
+        context['boards_links'] = list(platform_obj.boards.values_list('name', flat=True).distinct())
 
     return HttpResponse(template.render(context, request))
 
@@ -51,15 +51,16 @@ def thread(request, platform, board, thread_id):
         platform_obj = Platform.objects.get(name=platform)
         board_obj = Board.objects.get(platform=platform_obj, name=board)
         thread_posts = board_obj.posts.filter(thread_id=thread_id).order_by(
-            'post_id').prefetch_related(Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
-        drop_links = [(post.drop.number, post.get_post_url()) for post in thread_posts.order_by('drop__number')
-                      if hasattr(post, 'drop')]
+            'post_id').select_related('drop', 'platform').prefetch_related(
+            Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
+        thread_drops = Drop.objects.filter(post__thread_id=thread_id).order_by('number')
+        # drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
         context = {
             'posts': thread_posts,
             'platform_name': platform,
             'board_name': board,
             'thread': thread_id,
-            'drop_links': drop_links,
+            # 'drop_links': drop_links,
             'boards_links': platform_obj.boards.values_list('name', flat=True).distinct()
         }
 
