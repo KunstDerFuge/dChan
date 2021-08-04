@@ -52,7 +52,8 @@ def thread(request, platform, board, thread_id):
         board_obj = Board.objects.get(platform=platform_obj, name=board)
         thread_posts = board_obj.posts.filter(thread_id=thread_id).order_by(
             'post_id').prefetch_related(Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
-        drop_links = [(post.drop.number, post.get_post_url()) for post in thread_posts.order_by('drop__number') if hasattr(post, 'drop')]
+        drop_links = [(post.drop.number, post.get_post_url()) for post in thread_posts.order_by('drop__number')
+                      if hasattr(post, 'drop')]
         context = {
             'posts': thread_posts,
             'platform_name': platform,

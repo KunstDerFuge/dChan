@@ -55,7 +55,7 @@ class Post(models.Model):
         return self.get_thread_url() + '#' + str(self.post_id)
 
     def get_archive_url(self):
-        if self.platform == '4chan':
+        if self.platform.name == '4chan':
             return f'https://archive.4plebs.org/{self.board.name}/thread/{self.thread_id}/#{self.post_id}'
         site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
         return f'https://archive.is/{site[self.platform.name]}/{self.board.name}/res/{self.thread_id}.html'
