@@ -18,35 +18,23 @@
 <body style="background-color:#EEEEEE; font-size: 0.9em; max-width: 100%; overflow-x: hidden">
 <nav class="navbar shadow navbar-expand-sm navbar-light bg-light" style="z-index: 1">
     <div class="container-lg">
-        <a class="navbar-brand" href="https://qorigins.org"><img src="{% static 'qorigins.png' %}"></a>
+        <a class="navbar-brand me-auto" href="https://qorigins.org"><img src="{% static 'qorigins.png' %}"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="/" id="navbarDropdownMenuLink" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        Archives
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="/4chan">4chan</a></li>
-                        <li><a class="dropdown-item" href="/8chan">8chan</a></li>
-                        <li><a class="dropdown-item" href="/8kun">8kun</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <form class="d-flex" action="{% url 'search_results' %}" method="get">
+            <form class="d-flex form-inline ms-auto" action="{% url 'search_results' %}" method="get">
                 <input name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>
     </div>
 </nav>
-<div class="container-fluid" style="width: 100%">
+<div class="container-fluid px-2" style="width: 100%">
     <div class="row">
-        <div class="shadow flex-shrink-0 p-3 bg-white" style="max-width: 240px; z-index: 1">
+{#        <div class="col"></div>#}
+        <div class="shadow me-5 col d-none d-sm-none d-md-none d-lg-block p-3 bg-white" style="max-width: 240px; z-index: 1">
             <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
                 <span class="fs-5 fw-semibold">dChan</span>
             </a>
@@ -120,6 +108,7 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
+{#        <div class="col"></div>#}
     </div>
 </div>
 
