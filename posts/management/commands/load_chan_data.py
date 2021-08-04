@@ -189,7 +189,7 @@ class Command(BaseCommand):
 
         for platform in ['4chan', '8chan', '8kun']:
             print(f'Loading {platform} data...')
-            platform_obj = Platform.objects.get(name=platform)
+            platform_obj, created = Platform.objects.get_or_create(name=platform)
             print('Cataloging existing posts in DB...')
             already_archived = set(f'{post[0]}/{post[1]}' for post in
                                    platform_obj.posts.values_list('board__name', 'post_id'))
