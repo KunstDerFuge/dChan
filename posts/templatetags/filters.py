@@ -63,7 +63,6 @@ def pastelize(poster_hash):
         hash_bytes = poster_hash.encode()
         hash_obj = hashlib.sha1(hash_bytes)
         poster_hash = hash_obj.hexdigest()[-6:]  # Take last 6 chars
-        print(poster_hash)
     if poster_hash == '000000':
         return '#000000'
     r, g, b = hex_to_rgb(poster_hash)
