@@ -292,6 +292,7 @@ span.pln {
 
 .article {
     margin: 0 5px 8px 16px;
+    /*font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;*/
 }
 
 .header {
@@ -319,4 +320,8 @@ span.pln {
 .post-card {
     padding: 4px 4px 10px 10px;
     background: rgb(214, 218, 240);
+}
+
+.post-body {
+    padding: 6px;
 }

@@ -57,6 +57,6 @@
                 {% endfor %}
             </small>
         </header>
-        <div style="padding: 6px;">{{ post.body | escape | markdown:post.links }}</div>
+        <div class="post-body">{{ post.body | escape | markdown:post.links }}</div>
     </div>
 </article>
