@@ -22,7 +22,7 @@ def index(request, platform=None, board=None):
         thread_list = Post.objects.filter(is_op=True).order_by('-timestamp')
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(thread_list, 40)
+    paginator = Paginator(thread_list.select_related('platform', 'board'), 40)
     page_range = paginator.get_elided_page_range(number=page)
 
     try:
