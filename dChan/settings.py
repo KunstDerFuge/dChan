@@ -94,7 +94,7 @@ DATABASES = {
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+        'BACKEND': config('CACHE_BACKEND'),
         'LOCATION': '127.0.0.1:11211',
     }
 }
