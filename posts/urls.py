@@ -11,5 +11,5 @@ urlpatterns = [
     path('drop/<int:drop_no>', views.drop, name='drop'),
     path('<str:platform>/', cache_page(60 * 15)(views.index), name='index'),
     path('<str:platform>/<str:board>/', cache_page(60 * 15)(views.index), name='index'),
-    path('<str:platform>/<str:board>/res/<int:thread_id>.html', cache_page(60 * 60 * 12)(views.thread), name='thread'),
+    path('<str:platform>/<str:board>/res/<int:thread_id>.html', views.thread, name='thread'),
 ]
