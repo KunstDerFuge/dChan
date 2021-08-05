@@ -53,14 +53,15 @@ def thread(request, platform, board, thread_id):
         thread_posts = board_obj.posts.filter(thread_id=thread_id).order_by(
             'post_id').select_related('drop', 'platform').prefetch_related(
             Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
-        thread_drops = Drop.objects.filter(post__thread_id=thread_id).order_by('number')
-        # drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
+        thread_drops = Drop.objects.filter(post__thread_id=thread_id).select_related('post__platform',
+                                                                                     'post__board').order_by('number')
+        drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
         context = {
             'posts': thread_posts,
             'platform_name': platform,
             'board_name': board,
             'thread': thread_id,
-            # 'drop_links': drop_links,
+            'drop_links': drop_links,
             'boards_links': platform_obj.boards.values_list('name', flat=True).distinct()
         }
 
@@ -81,6 +82,7 @@ def drop(request, drop_no):
     try:
         q_drop = Drop.objects.get(number=drop_no)
     except ObjectDoesNotExist:
+        print('Drop is not archived: ', drop_no)
         template = loader.get_template('posts/index.html')
         context = {
             'posts': [],
