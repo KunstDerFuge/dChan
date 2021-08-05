@@ -46,7 +46,7 @@
             {% endif %}
                 {% for reply in post.replies.all %}
                     <span>
-                        {% if reply.drop_no != 0 %}
+                        {% if reply.drop %}
                             <a class="link-danger"
                                href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a><a
                                 style="text-decoration: none" href="{{ reply.get_post_url }}"><b
