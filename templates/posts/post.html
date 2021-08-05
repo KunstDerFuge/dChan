@@ -44,19 +44,19 @@
             {% if post.replies %}
                 &nbsp;
             {% endif %}
-                {% for reply in post.replies.all %}
+                {% for reply in post.replies %}
                     <span>
                         {% if reply.drop %}
                             <a class="link-danger"
-                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a><a
-                                style="text-decoration: none" href="{{ reply.get_post_url }}"><b
+                               href="{{ reply.1 }}">{{ reply.0 | reply_string }}</a><a
+                                style="text-decoration: none" href="{{ reply.1 }}"><b
                                 class="text-black-50">Q!</b></a>
                         {% else %}
                             <span class="d-inline-block" tabindex="0" data-toggle="popover"
                                   data-html="true" data-trigger="hover" title="test"
                                   data-content="<div>Testing</div>">
                             <a class="link-secondary"
-                               href="{{ reply.get_post_url }}">{{ reply.get_reply_string }}</a>
+                               href="{{ reply.1 }}">{{ reply.0 | reply_string }}</a>
                             </span>
                         {% endif %}
                     </span>
