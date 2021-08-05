@@ -1,19 +1,13 @@
 {% load filters %}
-<article id="{{ post.post_id }}"
-         style="margin: 0 5px 8px 16px; display: block;font-family: arial, helvetica, sans-serif">
-    <div class="card shadow-sm" style="display: table-cell;
-                            padding: 4px 4px 10px 10px;
-                            background: rgb(214, 218, 240);
-                            border-bottom: 1px solid #ccc;">
-        <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0; padding: 6px 0 0.4em;">
-        <span style="padding: 0 6px 0 0;">
-            <div style="float: right">
+<article id="{{ post.post_id }}" class="article">
+    <div class="card shadow-sm post-card">
+        <header class="header">
+            <div class="drop">
                 {% if post.drop %}
-                    <span style="float: right; font-size: 2rem; padding-bottom: 2px">&nbsp;{{ post.drop.number }}</span>
+                    &nbsp;{{ post.drop.number }}
                 {% endif %}
             </div>
-            <span style="color:rgb(52, 52, 92);width:15px;text-align:center;font-size:10pt;opacity:0.8;text-decoration:none;display:inline-block;margin: -6px 0px 0px -5px; ">▶</span>
-            <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
+            <span class="author">{{ post.author }}</span>
             {% if post.tripcode %}
                 <span class="trip" data-bs-toggle="tooltip"
                       title="{{ post.tripcode | get_cracked_pass }}">{{ post.tripcode }}</span>
@@ -41,9 +35,9 @@
                          style="text-decoration: none">🔗kun</a></span>
             {% endif %}
             <small>
-            {% if post.replies %}
-                &nbsp;
-            {% endif %}
+                {% if post.replies %}
+                    &nbsp;
+                {% endif %}
                 {% for reply in post.replies %}
                     <span>
                         {% if reply.drop %}
@@ -61,8 +55,7 @@
                         {% endif %}
                     </span>
                 {% endfor %}
-                </small>
-        </span>
+            </small>
         </header>
         <div style="padding: 6px;">{{ post.body | escape | markdown:post.links }}</div>
     </div>

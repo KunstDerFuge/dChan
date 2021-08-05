@@ -1,262 +1,322 @@
 /* === GENERAL TAG SETTINGS === */
 
 .intro a.email span.name {
-  color: #34345C;
+    color: #34345C;
 }
 
 .intro a.email:hover span.name {
-  color: #ff0000;
+    color: #ff0000;
 }
 
 div.post p.fileinfo {
-  padding-left: 5px;
+    padding-left: 5px;
 }
 
-img.banner,img.board_image {
-  display: block;
-  border: 1px solid #a9a9a9;
-  margin: 12px auto 0 auto;
+img.banner, img.board_image {
+    display: block;
+    border: 1px solid #a9a9a9;
+    margin: 12px auto 0 auto;
 }
 
 .post-image {
-  display: block;
-  float: left;
-  margin: 5px 20px 10px 20px;
-  border: none;
+    display: block;
+    float: left;
+    margin: 5px 20px 10px 20px;
+    border: none;
 }
 
 .full-image {
-  float: left;
-  padding: 5px;
-  margin: 0 20px 0 0;
-  max-width: 98%;
+    float: left;
+    padding: 5px;
+    margin: 0 20px 0 0;
+    max-width: 98%;
 }
 
 div.post .post-image {
-  padding: 5px;
-  margin: 0 20px 0 0;
+    padding: 5px;
+    margin: 0 20px 0 0;
 }
 
 div.post img.icon {
-  display: inline;
-  margin: 0 5px;
-  padding: 0;
+    display: inline;
+    margin: 0 5px;
+    padding: 0;
 }
 
 div.post i.fa, div.thread i.fa {
-  margin: 0 4px;
-  font-size: 16px;
+    margin: 0 4px;
+    font-size: 16px;
 }
 
 div.post.op {
-  margin-right: 20px;
-  margin-bottom: 5px;
+    margin-right: 20px;
+    margin-bottom: 5px;
 }
 
 div.post.op hr {
-  border-color: #D9BFB7;
+    border-color: #D9BFB7;
 }
 
 .intro {
-  margin: 0.5em 0;
-  padding: 0;
-  padding-bottom: 0.2em;
+    margin: 0.5em 0;
+    padding: 0;
+    padding-bottom: 0.2em;
 }
 
 input.delete {
-  float: left;
-  margin: 1px 6px 0 0;
+    float: left;
+    margin: 1px 6px 0 0;
 }
 
 .intro span.subject {
-  color: #0F0C5D;
-  font-weight: bold;
+    color: #0F0C5D;
+    font-weight: bold;
 }
 
 .intro span.name {
-  color: #117743;
-  font-weight: bold;
+    color: #117743;
+    font-weight: bold;
 }
 
-.intro span.capcode,p.intro a.capcode,p.intro a.nametag {
-  color: #F00000;
-  margin-left: 0;
+.intro span.capcode, p.intro a.capcode, p.intro a.nametag {
+    color: #F00000;
+    margin-left: 0;
 }
 
 .intro a {
-  margin-left: 5px;
+    margin-left: 5px;
 }
 
 .sage {
-  color: red;
-  font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 .required-star {
-  color: maroon;
+    color: maroon;
 }
 
 div.post p {
-	display: block;
-	margin: 0;
+    display: block;
+    margin: 0;
 
-	line-height: 1.16em;
-	font-size: 13px;
-	min-height: 1.16em;
+    line-height: 1.16em;
+    font-size: 13px;
+    min-height: 1.16em;
 }
 
 div.post div.body {
-  margin-top: 0.8em;
-  padding-right: 3em;
-  padding-bottom: 0.3em;
+    margin-top: 0.8em;
+    padding-right: 3em;
+    padding-bottom: 0.3em;
 }
 
 div.post.reply div.body {
-  margin-left: 1.8em;
+    margin-left: 1.8em;
 }
 
 div.post.reply.highlighted {
-  background: #D6BAD0;
+    background: #D6BAD0;
 }
 
 div.post.reply div.body a {
-  color: #D00;
+    color: #D00;
 }
 
 div.post div.body {
-  word-wrap: break-word;
-  white-space: pre-wrap;
+    word-wrap: break-word;
+    white-space: pre-wrap;
 }
 
 div.post.reply {
-  background: #D6DAF0;
-  margin: 0.2em 4px;
-  padding: 0.5em 0.3em 0.5em 0.6em;
-  border-width: 1px;
-  border-style: none solid solid none;
-  border-color: #B7C5D9;
-  display: inline-block;
-  max-width: 94%!important;
+    background: #D6DAF0;
+    margin: 0.2em 4px;
+    padding: 0.5em 0.3em 0.5em 0.6em;
+    border-width: 1px;
+    border-style: none solid solid none;
+    border-color: #B7C5D9;
+    display: inline-block;
+    max-width: 94% !important;
 }
 
 div.post.reply.has-file.body-not-empty {
-  min-width: 33%;
+    min-width: 33%;
 }
 
 div.post_modified {
-  margin-left: 1.8em;
+    margin-left: 1.8em;
 }
+
 div.post_modified div.content-status {
-  margin-top: 0.5em;
-  padding-bottom: 0em;
-  font-size: 72%;
-}
-div.post_modified div.content-status:first-child {
-  margin-top: 1.3em;
+    margin-top: 0.5em;
+    padding-bottom: 0em;
+    font-size: 72%;
 }
 
 div.post_modified div.content-status:first-child {
-  margin-top: 1.3em;
+    margin-top: 1.3em;
+}
+
+div.post_modified div.content-status:first-child {
+    margin-top: 1.3em;
 }
 
 span.trip, span.capcode {
-	padding: 1px 3px 1px 3px;
-	background-color: black;
-	border-radius: 8px;
-	border: 1px solid #bbbbee;
-	color: gold;
-	background: linear-gradient(300deg, #ff0000, #bbbbbb, #4444ff, #4444ff, #4444ff);
-	background-size: 800% 800%;
-	-webkit-animation: Patriot 5s ease infinite;
-	-moz-animation: Patriot 5s ease infinite;
-	-o-animation: Patriot 5s ease infinite;
-	animation: Patriot 5s ease infinite;
-	-webkit-text-fill-color: transparent;
-	background: -o-linear-gradient(transparent, transparent);
-	-webkit-background-clip: text;
+    padding: 1px 3px 1px 3px;
+    background-color: black;
+    border-radius: 8px;
+    border: 1px solid #bbbbee;
+    color: gold;
+    background: linear-gradient(300deg, #ff0000, #bbbbbb, #4444ff, #4444ff, #4444ff);
+    background-size: 800% 800%;
+    -webkit-animation: Patriot 5s ease infinite;
+    -moz-animation: Patriot 5s ease infinite;
+    -o-animation: Patriot 5s ease infinite;
+    animation: Patriot 5s ease infinite;
+    -webkit-text-fill-color: transparent;
+    background: -o-linear-gradient(transparent, transparent);
+    -webkit-background-clip: text;
 }
 
 @-webkit-keyframes Patriot {
-    0%{background-position:0% 19%}
-    50%{background-position:100% 82%}
-    100%{background-position:0% 19%}
+    0% {
+        background-position: 0% 19%
+    }
+    50% {
+        background-position: 100% 82%
+    }
+    100% {
+        background-position: 0% 19%
+    }
 }
+
 @-moz-keyframes Patriot {
-    0%{background-position:0% 19%}
-    50%{background-position:100% 82%}
-    100%{background-position:0% 19%}
+    0% {
+        background-position: 0% 19%
+    }
+    50% {
+        background-position: 100% 82%
+    }
+    100% {
+        background-position: 0% 19%
+    }
 }
+
 @-o-keyframes Patriot {
-    0%{background-position:0% 19%}
-    50%{background-position:100% 82%}
-    100%{background-position:0% 19%}
+    0% {
+        background-position: 0% 19%
+    }
+    50% {
+        background-position: 100% 82%
+    }
+    100% {
+        background-position: 0% 19%
+    }
 }
+
 @keyframes Patriot {
-    0%{background-position:0% 19%}
-    50%{background-position:100% 82%}
-    100%{background-position:0% 19%}
+    0% {
+        background-position: 0% 19%
+    }
+    50% {
+        background-position: 100% 82%
+    }
+    100% {
+        background-position: 0% 19%
+    }
 }
 
 .quote {
-  color: #789922;
+    color: #789922;
 }
 
 span.heading {
-  color: #AF0A0F;
-  font-size: 11pt;
-  font-weight: bold;
+    color: #AF0A0F;
+    font-size: 11pt;
+    font-weight: bold;
 }
 
 span.spoiler {
-  background: black;
-  color: black;
-  padding: 0 1px;
+    background: black;
+    color: black;
+    padding: 0 1px;
 }
 
 div.post.reply div.body span.spoiler a {
-  color: black;
+    color: black;
 }
 
-span.spoiler:hover,div.post.reply div.body span.spoiler:hover a {
-  color: white;
+span.spoiler:hover, div.post.reply div.body span.spoiler:hover a {
+    color: white;
 }
 
 div.styles {
-  float: right;
-  padding-bottom: 20px;
+    float: right;
+    padding-bottom: 20px;
 }
 
 div.styles a {
-  margin: 0 10px;
+    margin: 0 10px;
 }
 
 div.styles a.selected {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 table.test {
-  width: 100%;
+    width: 100%;
 }
 
-table.test td,table.test th {
-  text-align: left;
-  padding: 5px;
+table.test td, table.test th {
+    text-align: left;
+    padding: 5px;
 }
 
 pre {
-/* Better code tags */
-  max-width:inherit;
-  word-wrap:normal;
-  overflow:auto;
-  display: block!important;
-  font-size:9pt;
-  font-family:monospace;
+    /* Better code tags */
+    max-width: inherit;
+    word-wrap: normal;
+    overflow: auto;
+    display: block !important;
+    font-size: 9pt;
+    font-family: monospace;
 }
 
 span.pln {
-  color:grey;
+    color: grey;
 }
 
 .body-line {
-  margin: 0
+    margin: 0
+}
+
+.article {
+    margin: 0 5px 8px 16px;
+}
+
+.header {
+    text-align: left;
+    clear: none;
+    display: block;
+    line-height: 1.16em;
+    font-size: 13px;
+    min-height: 1.16em;
+    margin: 0;
+    padding: 6px 0 0.4em;
+}
+
+.author {
+    font-weight: 700;
+    color: #117743;
+}
+
+.drop {
+    float: right;
+    font-size: 2rem;
+    padding-bottom: 2px;
+}
+
+.post-card {
+    padding: 4px 4px 10px 10px;
+    background: rgb(214, 218, 240);
 }
