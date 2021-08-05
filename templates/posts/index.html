@@ -1,6 +1,4 @@
 {% extends 'posts/base.html' %}
-Cache threads
-{% load cache %}
 {% block content %}
     {% if board_name %}
         <nav aria-label="breadcrumb">
@@ -18,7 +16,6 @@ Cache threads
             </ol>
         </nav>
     {% endif %}
-    {% cache 600 threads request.path %}
     {% if thread_list %}
         <table class="table">
             {% for thread in thread_list %}
@@ -42,7 +39,8 @@ Cache threads
     {% if thread_list.has_other_pages %}
         <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
             {% if thread_list.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ thread_list.previous_page_number }}">&laquo;</a>
+                <li class="page-item"><a class="page-link"
+                                         href="?page={{ thread_list.previous_page_number }}">&laquo;</a>
                 </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
@@ -60,11 +58,11 @@ Cache threads
                 {% endif %}
             {% endfor %}
             {% if thread_list.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ thread_list.next_page_number }}">&raquo;</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ thread_list.next_page_number }}">&raquo;</a>
+                </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
             {% endif %}
         </ul>
     {% endif %}
-    {% endcache %}
 {% endblock %}
