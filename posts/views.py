@@ -50,12 +50,16 @@ def thread(request, platform, board, thread_id):
     try:
         platform_obj = Platform.objects.get(name=platform)
         board_obj = Board.objects.get(platform=platform_obj, name=board)
-        thread_posts = board_obj.posts.filter(thread_id=thread_id).order_by(
-            'post_id').select_related('drop', 'platform').prefetch_related(
-            Prefetch('replies', queryset=board_obj.posts.order_by('post_id')))
-        thread_drops = Drop.objects.filter(post__thread_id=thread_id).select_related('post__platform',
-                                                                                     'post__board').order_by('number')
+        thread_posts = board_obj.posts.filter(thread_id=thread_id) \
+                                      .order_by('post_id') \
+                                      .select_related('drop', 'platform')
+
+        thread_drops = Drop.objects.filter(post__thread_id=thread_id) \
+                                   .select_related('post__platform', 'post__board') \
+                                   .order_by('number')
+
         drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
+
         context = {
             'posts': thread_posts,
             'platform_name': platform,

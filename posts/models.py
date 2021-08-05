@@ -37,16 +37,7 @@ class Post(models.Model):
     search_vector = SearchVectorField(null=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    reply_to = models.ManyToManyField('Post', related_name='replies')
-
-    def get_replies(self):
-        return [(reply.get_reply_string(self), reply.get_post_url()) for reply in self.replies.order_by('post_id')]
-
-    def get_reply_string(self):
-        return f'>>{str(self.post_id)[-4:]}'
-
-    def get_cross_board_reply_string(self):
-        return f'>>>/{self.board}/{str(self.post_id)[-4:]}'
+    replies = models.JSONField(default=dict)
 
     def get_thread_url(self):
         return f'/{self.platform.name}/{self.board.name}/res/{self.thread_id}.html'

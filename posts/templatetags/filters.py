@@ -88,3 +88,9 @@ def get_cracked_pass(tripcode):
     if tripcode in cracked:
         return cracked[tripcode]
     return ''
+
+
+@register.filter(name='reply_string')
+@stringfilter
+def reply_string(post_no):
+    return f'>>{post_no[-4:]}'
