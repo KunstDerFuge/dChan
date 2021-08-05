@@ -1,4 +1,6 @@
 {% extends 'posts/base.html' %}
+Cache threads
+{% load cache %}
 {% block content %}
     {% if board_name %}
         <nav aria-label="breadcrumb">
@@ -16,6 +18,7 @@
             </ol>
         </nav>
     {% endif %}
+    {% cache 600 threads request.path %}
     {% if thread_list %}
         <table class="table">
             {% for thread in thread_list %}
@@ -63,4 +66,5 @@
             {% endif %}
         </ul>
     {% endif %}
+    {% endcache %}
 {% endblock %}
