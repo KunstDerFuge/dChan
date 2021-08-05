@@ -1,29 +1,33 @@
 {% extends 'posts/base.html' %}
 {% load filters %}
 {% load static %}
+{% load cache %}
 {% block head_extras %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
 {% endblock %}
-{% block content %}
-    {% if posts %}
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/">All</a></li>
-                <li class="breadcrumb-item"><a href="/{{ platform_name }}">{{ platform_name }}</a></li>
-                <li class="breadcrumb-item"><a
-                        href="/{{ platform_name }}/{{ board_name }}">{{ board_name }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ posts.0.post_id }}</li>
-            </ol>
-        </nav>
-        {% for post in posts %}
-            {% include 'posts/post.html' %}
-        {% endfor %}
-    {% else %}
-        <div class="text-center pt-2">
-            <h4>This page is not archived!</h4>
-            <h5>...Yet.</h5>
-            <p>Go to archive.is: <a href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a>
-            </p>
-        </div>
-    {% endif %}
-{% endblock %}
+{% cache 3600 thread_posts request.path %}
+    {% block content %}
+        {% if posts %}
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">All</a></li>
+                    <li class="breadcrumb-item"><a href="/{{ platform_name }}">{{ platform_name }}</a></li>
+                    <li class="breadcrumb-item"><a
+                            href="/{{ platform_name }}/{{ board_name }}">{{ board_name }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ posts.0.post_id }}</li>
+                </ol>
+            </nav>
+            {% for post in posts %}
+                {% include 'posts/post.html' %}
+            {% endfor %}
+        {% else %}
+            <div class="text-center pt-2">
+                <h4>This page is not archived!</h4>
+                <h5>...Yet.</h5>
+                <p>Go to archive.is: <a
+                        href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a>
+                </p>
+            </div>
+        {% endif %}
+    {% endblock %}
+{% endcache %}
