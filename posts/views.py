@@ -1,7 +1,6 @@
 from django.contrib.postgres.search import SearchQuery
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template import loader
@@ -51,12 +50,12 @@ def thread(request, platform, board, thread_id):
         platform_obj = Platform.objects.get(name=platform)
         board_obj = Board.objects.get(platform=platform_obj, name=board)
         thread_posts = board_obj.posts.filter(thread_id=thread_id) \
-                                      .order_by('post_id') \
-                                      .select_related('drop', 'platform')
+            .order_by('post_id') \
+            .select_related('drop', 'platform')
 
         thread_drops = Drop.objects.filter(post__thread_id=thread_id) \
-                                   .select_related('post__platform', 'post__board') \
-                                   .order_by('number')
+            .select_related('post__platform', 'post__board') \
+            .order_by('number')
 
         drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
 
