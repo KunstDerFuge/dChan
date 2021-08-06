@@ -99,6 +99,23 @@ CACHES = {
     }
 }
 
+CELERY_BROKER_URL = 'redis://localhost:6379'  
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'  
+CELERY_ACCEPT_CONTENT = ['application/json']  
+CELERY_TASK_SERIALIZER = 'json'  
+CELERY_RESULT_SERIALIZER = 'json'  
+CELERY_TIMEZONE = 'America/Los_Angeles'
+CELERY_BEAT_SCHEDULE = {
+    'scrape-posts': {
+        'task': 'posts.tasks.scrape_posts',
+        'schedule': 5 * 60,
+    },
+    'create-scrape-jobs': {
+        'task': 'posts.tasks.create_scrape_jobs',
+        'schedule': 30,
+    }
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

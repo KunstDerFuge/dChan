@@ -2,6 +2,26 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
+class ScrapeJob(models.Model):
+    platform = models.CharField(max_length=12, null=True, blank=True)
+    board = models.CharField(max_length=60, null=True, blank=True)
+    thread_id = models.IntegerField(null=True, blank=True)
+    url = models.CharField(max_length=120, unique=True)
+    bounty = models.PositiveIntegerField(default=0)
+    error_count = models.PositiveSmallIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-bounty']
+        constraints = [
+            models.UniqueConstraint(fields=['platform', 'board', 'thread_id'], name='unique_thread')
+        ]
+
+    def __str__(self):
+        return f'Bounty {self.bounty}: {self.url}'
+
+
 class Platform(models.Model):
     name = models.CharField(max_length=12, unique=True)
 
