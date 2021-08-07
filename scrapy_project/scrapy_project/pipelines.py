@@ -12,6 +12,11 @@ class ScrapyPostPipeline(object):
         self.start_urls = spider.start_urls
 
     def process_item(self, item, spider):
+
+        def replace_none_with_empty_str(some_dict):
+            return {k: ('' if v is None else v) for k, v in some_dict.items()}
+
+        item = replace_none_with_empty_str(item)
         platform_obj = Platform.objects.get(name='8kun')
         board_obj, created = Board.objects.get_or_create(platform=platform_obj, name=item['board'])
         item['links'] = process_links(item)
