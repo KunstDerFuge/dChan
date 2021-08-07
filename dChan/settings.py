@@ -108,11 +108,11 @@ CELERY_TIMEZONE = 'America/Los_Angeles'
 CELERY_BEAT_SCHEDULE = {
     'scrape-posts': {
         'task': 'posts.tasks.scrape_posts',
-        'schedule': 10 * 60,
+        'schedule': 2 * 60,
     },
     'create-scrape-jobs': {
         'task': 'posts.tasks.create_scrape_jobs',
-        'schedule': 15 * 60,
+        'schedule': 5 * 60,
     }
 }
 
