@@ -114,7 +114,7 @@ def scrape_posts():
         # Grab top 30 8kun scrape jobs by bounty
         eightkun_start_urls = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10) \
                                                .order_by('-bounty') \
-                                               .values_list('url', flat=True)[:30]
+                                               .values_list('url', flat=True)[:10]
 
         print('8kun scrape URLs:')
         print(list(eightkun_start_urls))
