@@ -15,7 +15,7 @@ class ScrapyPostPipeline(object):
         )
 
     def process_item(self, item, spider):
-        platform_obj = Platform.objects.get(name=item['platform'])
+        platform_obj = Platform.objects.get(name='8kun')
         board_obj, created = Board.objects.get_or_create(platform=platform_obj, name=item['board'])
         item['links'] = process_links(item)
         item['body_text'] = parse_formatting(item['body_text'])
