@@ -224,7 +224,7 @@ def create_scrape_jobs():
             thread_id = match[2]
             if platform == '4chan':
                 return  # Not yet implementing 4plebs auto-scraping
-            sites = {'8chan': 'https://archive.today/https://8ch.net', '8kun': 'https://8kun.top'}
+            sites = {'8chan': 'https://archive.today/newest/https://8ch.net', '8kun': 'https://8kun.top'}
             final_url = f'{sites[platform]}/{board}/res/{thread_id}.html'
             return platform, board, thread_id, final_url, row_['bounty']
 
