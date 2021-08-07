@@ -3,16 +3,13 @@ from posts.models import Post, Platform, Board, ScrapeJob
 
 
 class ScrapyPostPipeline(object):
-    def __init__(self, start_urls, *args, **kwargs):
-        self.start_urls = start_urls
+    def __init__(self, *args, **kwargs):
+        self.start_urls = []
         self.posts = []
         self.scraped_urls = set()
 
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            start_urls=crawler.settings.get('start_urls')
-        )
+    def open_spider(self, spider):
+        self.start_urls = spider.start_urls
 
     def process_item(self, item, spider):
         platform_obj = Platform.objects.get(name='8kun')
