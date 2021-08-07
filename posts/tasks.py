@@ -116,12 +116,18 @@ def scrape_posts():
                                                .order_by('-bounty') \
                                                .values_list('url', flat=True)[:30]
 
+        print('8kun scrape URLs:')
+        print(eightkun_start_urls)
+
         # Create scrapyd task to scrape the 8kun posts
         task = scrapyd.schedule('scrapy_project', '8kun_spider', start_urls=eightkun_start_urls)
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
                                            .order_by('-bounty')[:3]
+
+        print('8chan scrape URLs:')
+        print(archive_is_jobs)
 
         # Scrape archive.is
         scrape_data = scrape_archive(archive_is_jobs)
