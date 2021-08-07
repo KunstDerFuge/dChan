@@ -18,68 +18,71 @@ def scrape_archive(jobs):
     threads_data = dict()
 
     def do_scrape():
-        options = webdriver.FirefoxOptions()
-        options.set_headless()
-        driver = webdriver.Firefox(firefox_options=options)
-        for job in jobs:
-            if job.url in threads_data:
-                # Already scraped this thread in a previous iteration
-                continue
+        try:
+            options = webdriver.FirefoxOptions()
+            options.set_headless()
+            driver = webdriver.Firefox(firefox_options=options)
+            for job in jobs:
+                if job.url in threads_data:
+                    # Already scraped this thread in a previous iteration
+                    continue
 
-            try:
-                thread_scrape = pd.DataFrame(columns=['platform', 'board', 'thread_no', 'header', 'body'])
-                url = job.url
-                driver.get(url)
-                op = driver.find_element_by_css_selector('form > div:nth-of-type(1) > div:nth-of-type(2)')
-                comments = driver.find_elements_by_css_selector('form > div > div:nth-of-type(n+3)')
+                try:
+                    thread_scrape = pd.DataFrame(columns=['platform', 'board', 'thread_no', 'header', 'body'])
+                    url = job.url
+                    driver.get(url)
+                    op = driver.find_element_by_css_selector('form > div:nth-of-type(1) > div:nth-of-type(2)')
+                    comments = driver.find_elements_by_css_selector('form > div > div:nth-of-type(n+3)')
 
-                # OP
-                thread_scrape = thread_scrape.append({
-                    'platform': '8chan',
-                    'board': job.board,
-                    'thread_no': job.thread_id,
-                    'header': op.find_element_by_css_selector('div:nth-of-type(1)').get_attribute('innerHTML'),
-                    'body': op.find_element_by_css_selector('div:nth-of-type(2)').get_attribute('innerHTML')
-                }, ignore_index=True)
-
-                # Comments
-                for comment in comments:
+                    # OP
                     thread_scrape = thread_scrape.append({
                         'platform': '8chan',
                         'board': job.board,
                         'thread_no': job.thread_id,
-                        'header': comment.find_element_by_css_selector('div:nth-of-type(1)').get_attribute(
-                            'innerHTML'),
-                        'body': comment.find_element_by_css_selector('div:nth-of-type(3)').get_attribute(
-                            'innerHTML')
+                        'header': op.find_element_by_css_selector('div:nth-of-type(1)').get_attribute('innerHTML'),
+                        'body': op.find_element_by_css_selector('div:nth-of-type(2)').get_attribute('innerHTML')
                     }, ignore_index=True)
 
-                print('Scraped {} posts from {}/{}...'.format(len(thread_scrape), job.board, job.thread_id))
-                threads_data[job.url] = thread_scrape
+                    # Comments
+                    for comment in comments:
+                        thread_scrape = thread_scrape.append({
+                            'platform': '8chan',
+                            'board': job.board,
+                            'thread_no': job.thread_id,
+                            'header': comment.find_element_by_css_selector('div:nth-of-type(1)').get_attribute(
+                                'innerHTML'),
+                            'body': comment.find_element_by_css_selector('div:nth-of-type(3)').get_attribute(
+                                'innerHTML')
+                        }, ignore_index=True)
 
-                # Delete the job
-                ScrapeJob.objects.get(url=job.url).delete()
+                    print('Scraped {} posts from {}/{}...'.format(len(thread_scrape), job.board, job.thread_id))
+                    threads_data[job.url] = thread_scrape
 
-                time.sleep(randrange(1, 4))
+                    # Delete the job
+                    ScrapeJob.objects.get(url=job.url).delete()
 
-            except Exception as e:
-                print('Exception scraping {}/{}...'.format(job.board, job.thread_id))
-                print(e)
-                try:
-                    # Did we get a Captcha redirect?
-                    captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
-                    if 'Please complete the security check' in captcha.text:
-                        driver.quit()
-                        print('Got Captcha redirect; restarting...')
-                        time.sleep(15)
-                        return False
+                    time.sleep(randrange(1, 4))
 
                 except Exception as e:
-                    # Not Captcha
-                    job.error_count += 1
-                    job.save()
-                    pass
-        return True
+                    print('Exception scraping {}/{}...'.format(job.board, job.thread_id))
+                    print(e)
+                    try:
+                        # Did we get a Captcha redirect?
+                        captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
+                        if 'Please complete the security check' in captcha.text:
+                            driver.quit()
+                            print('Got Captcha redirect; restarting...')
+                            time.sleep(15)
+                            return False
+
+                    except Exception as e:
+                        # Not Captcha
+                        job.error_count += 1
+                        job.save()
+                        pass
+        finally:
+            driver.quit()
+            return True
 
     done = False
 
