@@ -12,3 +12,6 @@ django-debug-toolbar~=3.2.1
 bs4~=0.0.1
 beautifulsoup4~=4.9.3
 celery~=5.1.2
+Scrapy~=2.5.0
+scrapyd~=1.2.1
+python-scrapyd-api~=2.1.2

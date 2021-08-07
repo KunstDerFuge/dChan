@@ -1,14 +1,134 @@
 import re
+import time
+from random import randrange
 
-from celery import shared_task
 import pandas as pd
+from celery import shared_task
+from scrapyd_api import ScrapydAPI
 
-from posts.models import Post, ScrapeJob
+from posts.management.commands.load_chan_data import parse_archive_is, process_links, parse_8chan_formatting
+from posts.models import Post, ScrapeJob, Board, Platform
+
+scrapyd = ScrapydAPI('http://localhost:6800')
+
+
+def scrape_archive(jobs):
+    from selenium import webdriver
+
+    threads_data = dict()
+
+    def do_scrape():
+        options = webdriver.FirefoxOptions()
+        options.set_headless()
+        driver = webdriver.Firefox(firefox_options=options)
+        for job in jobs:
+            if job.url in threads_data:
+                # Already scraped this thread in a previous iteration
+                continue
+
+            try:
+                thread_scrape = pd.DataFrame(columns=['platform', 'board', 'thread_no', 'header', 'body'])
+                url = job.url
+                driver.get(url)
+                op = driver.find_element_by_css_selector('form > div:nth-of-type(1) > div:nth-of-type(2)')
+                comments = driver.find_elements_by_css_selector('form > div > div:nth-of-type(n+3)')
+
+                # OP
+                thread_scrape = thread_scrape.append({
+                    'platform': '8chan',
+                    'board': job.board,
+                    'thread_no': job.thread_id,
+                    'header': op.find_element_by_css_selector('div:nth-of-type(1)').get_attribute('innerHTML'),
+                    'body': op.find_element_by_css_selector('div:nth-of-type(2)').get_attribute('innerHTML')
+                }, ignore_index=True)
+
+                # Comments
+                for comment in comments:
+                    thread_scrape = thread_scrape.append({
+                        'platform': '8chan',
+                        'board': job.board,
+                        'thread_no': job.thread_id,
+                        'header': comment.find_element_by_css_selector('div:nth-of-type(1)').get_attribute(
+                            'innerHTML'),
+                        'body': comment.find_element_by_css_selector('div:nth-of-type(3)').get_attribute(
+                            'innerHTML')
+                    }, ignore_index=True)
+
+                print('Scraped {} posts from {}/{}...'.format(len(thread_scrape), job.board, job.thread_id))
+                threads_data[job.url] = thread_scrape
+
+                # Delete the job
+                ScrapeJob.objects.get(url=job.url).delete()
+
+                time.sleep(randrange(1, 4))
+
+            except Exception as e:
+                print('Exception scraping {}/{}...'.format(job.board, job.thread_id))
+                print(e)
+                try:
+                    # Did we get a Captcha redirect?
+                    captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
+                    if 'Please complete the security check' in captcha.text:
+                        driver.quit()
+                        print('Got Captcha redirect; restarting...')
+                        time.sleep(15)
+                        return False
+
+                except Exception as e:
+                    # Not Captcha
+                    job.error_count += 1
+                    job.save()
+                    pass
+        return True
+
+    done = False
+
+    while not done:
+        done = do_scrape()
+
+    print('Done!')
+    return threads_data
 
 
 @shared_task
 def scrape_posts():
-    pass
+    # Grab top 30 8kun scrape jobs by bounty
+    eightkun_start_urls = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10) \
+                                           .order_by('-bounty') \
+                                           .values_list('url', flat=True)[:30]
+
+    # Create scrapyd task to scrape the 8kun posts
+    task = scrapyd.schedule('scrapy_project', '8kun_spider', start_urls=eightkun_start_urls)
+
+    # Grab top 30 archive.is jobs by bounty
+    archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
+                                       .order_by('-bounty')[:1]
+
+    # Scrape archive.is
+    scrape_data = scrape_archive(archive_is_jobs)
+
+    # Process archive.is scrape
+    df = pd.concat(list(scrape_data.values()))
+    df = pd.DataFrame(list(df.apply(parse_archive_is, axis=1)))
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['timestamp'] = df['timestamp'].dt.tz_localize(tz='UTC')  # 8chan timestamps are UTC
+    df['links'] = df.apply(process_links, axis=1)
+    df['body_text'] = df.body_text.apply(parse_8chan_formatting)
+    df = df.fillna('')
+    new_posts = []
+
+    for index, row in df.iterrows():
+        platform_obj = Platform.objects.get(name=row['platform'])
+        board_obj, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
+
+        post = Post(platform=platform_obj, board=board_obj, thread_id=row['thread_no'],
+                    post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
+                    subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
+                    tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
+                    links=row['links'])
+        new_posts.append(post)
+
+    Post.objects.bulk_create(new_posts, batch_size=10000, ignore_conflicts=True)
 
 
 @shared_task

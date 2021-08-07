@@ -52,32 +52,36 @@ def parse_formatting(html):
 
 
 def process_links(row):
-    links = dict()
-    if row['platform'] == '8chan' and row['board'] != 'qresearch':
-        board_index_links = re.findall(
-            r'\/([a-zA-Z0-9]+)\/index\.html\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
-            row['body_text'])
-        matches = re.findall(
-            r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%23([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
-            row['body_text'])
-    else:
-        board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
-                                       row['body_text'])
-        matches = re.findall(
-            r'\"\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html#q?([0-9]+)\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
-            row['body_text'])
-    matches.extend(board_index_links)
-    if len(matches) == 0:
-        return dict()
-    else:
-        for match in matches:
-            if len(match) == 2:
-                # Board index link
-                links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/"
-            else:
-                links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html#{match[2]}"
-    return links
-
+    print(row)
+    try:
+        links = dict()
+        if row['platform'] == '8chan':
+            board_index_links = re.findall(
+                r'\/([a-zA-Z0-9]+)\/index\.html\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
+                row['body_text'])
+            matches = re.findall(
+                r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%23([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
+                row['body_text'])
+        else:
+            board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
+                                           row['body_text'])
+            matches = re.findall(
+                r'\"\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html#q?([0-9]+)\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
+                row['body_text'])
+        matches.extend(board_index_links)
+        if len(matches) == 0:
+            return dict()
+        else:
+            for match in matches:
+                if len(match) == 2:
+                    # Board index link
+                    links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/"
+                else:
+                    links[html_.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html#{match[2]}"
+        return links
+    except Exception as e:
+        print(e)
+        return {}
 
 def split_list(lst, n):
     from itertools import islice
