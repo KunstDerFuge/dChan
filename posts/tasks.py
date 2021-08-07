@@ -35,16 +35,22 @@ def scrape_archive(jobs):
                     url = job.url
                     driver.get(url)
 
-                    # Did we get a Captcha redirect?
-                    captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
-                    if 'Please complete the security check' in captcha.text:
-                        # Let's try something a lil shady...
-                        element = WebDriverWait(driver, 20).until(
-                            EC.element_to_be_clickable((By.CSS_SELECTOR, "div.recaptcha-checkbox-checkmark")))
+                    try:
+                        # Did we get a Captcha redirect?
+                        captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
+                        if 'Please complete the security check' in captcha.text:
+                            # Let's try something a lil shady...
+                            print('Attempting to bypass Captcha...')
+                            element = WebDriverWait(driver, 20).until(
+                                EC.element_to_be_clickable((By.CSS_SELECTOR, "div.recaptcha-checkbox-checkmark")))
 
-                        time.sleep(1)
-                        element.click()
-                        time.sleep(5)
+                            time.sleep(1)
+                            element.click()
+                            time.sleep(5)
+
+                    except Exception:
+                        # Not captcha
+                        pass
 
                     op = driver.find_element_by_css_selector('form > div:nth-of-type(1) > div:nth-of-type(2)')
                     comments = driver.find_elements_by_css_selector('form > div > div:nth-of-type(n+3)')
@@ -81,7 +87,6 @@ def scrape_archive(jobs):
                 except Exception as e:
                     print('Exception scraping {}/{}...'.format(job.board, job.thread_id))
                     print(e)
-                    # Not Captcha
                     job.error_count += 1
                     job.save()
                     pass
