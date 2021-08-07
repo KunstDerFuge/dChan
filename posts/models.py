@@ -25,10 +25,17 @@ class ScrapeJob(models.Model):
 class Platform(models.Model):
     name = models.CharField(max_length=12, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Board(models.Model):
     name = models.CharField(max_length=60)
     platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='boards')
+    migrated_to_8kun = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         constraints = [
@@ -39,6 +46,9 @@ class Board(models.Model):
 class Drop(models.Model):
     number = models.SmallIntegerField(unique=True)
     post = models.OneToOneField('Post', on_delete=models.CASCADE, primary_key=True)
+
+    def __str__(self):
+        return f'Drop {self.number}'
 
 
 class Post(models.Model):
@@ -58,6 +68,9 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     replies = models.JSONField(default=dict)
+
+    def __str__(self):
+        return f'{self.platform.name}/{self.board.name}/{self.post_id}'
 
     def get_thread_url(self):
         return f'/{self.platform.name}/{self.board.name}/res/{self.thread_id}.html'
