@@ -27,13 +27,18 @@ class ScrapyPostPipeline(object):
         return item
 
     def close_spider(self, spider):
-        # Delete finished jobs
-        ScrapeJob.objects.filter(url__in=self.scraped_urls).delete()
-        failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
-        failed_jobs = ScrapeJob.objects.filter(url__in=failed_urls)
-        for job in failed_jobs:
-            job.error_count += 1
-            job.save()
+        try:
+            # Create Posts from scraped data
+            Post.objects.bulk_create(self.posts, batch_size=10000, ignore_conflicts=True)
+        except Exception as e:
+            print('Exception in pipeline...')
+            print(e)
 
-        # Create Posts from scraped data
-        Post.objects.bulk_create(self.posts, batch_size=10000, ignore_conflicts=True)
+        finally:
+            ScrapeJob.objects.filter(url__in=self.scraped_urls).delete()
+            failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
+            failed_jobs = ScrapeJob.objects.filter(url__in=failed_urls)
+            for job in failed_jobs:
+                job.error_count += 1
+                job.save()
+
