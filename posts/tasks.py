@@ -120,7 +120,7 @@ def scrape_posts():
         print(list(eightkun_start_urls))
 
         # Create scrapyd task to scrape the 8kun posts
-        task = scrapyd.schedule('scrapy_project', '8kun_spider', start_urls=' '.join(list(eightkun_start_urls)))
+        task = scrapyd.schedule('scrapy_project', '8kun_spider', *eightkun_start_urls)
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
