@@ -80,6 +80,10 @@ def scrape_archive(jobs):
                         job.error_count += 1
                         job.save()
                         pass
+
+        except Exception as e:
+            print(e)
+
         finally:
             driver.quit()
             return True
