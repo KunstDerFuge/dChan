@@ -11,7 +11,9 @@ class EightKunSpider(scrapy.Spider):
     }
 
     def __init__(self, *args, **kwargs):
-        self.start_urls = args
+        urls = kwargs.pop('start_urls', [])
+        if urls:
+            self.start_urls = urls.split(',')
         super(EightKunSpider, self).__init__(*args, **kwargs)
 
     def parse(self, response, **kwargs):
