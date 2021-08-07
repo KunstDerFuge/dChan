@@ -103,7 +103,6 @@ def scrape_archive(jobs):
     while not done:
         done = do_scrape()
 
-
     print('Done!')
     return threads_data
 
