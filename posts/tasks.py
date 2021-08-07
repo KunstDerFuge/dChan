@@ -5,6 +5,9 @@ from random import randrange
 import pandas as pd
 from celery import shared_task
 from scrapyd_api import ScrapydAPI
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from posts.management.commands.load_chan_data import parse_archive_is, process_links, parse_8chan_formatting
 from posts.models import Post, ScrapeJob, Board, Platform
@@ -31,6 +34,18 @@ def scrape_archive(jobs):
                     thread_scrape = pd.DataFrame(columns=['platform', 'board', 'thread_no', 'header', 'body'])
                     url = job.url
                     driver.get(url)
+
+                    # Did we get a Captcha redirect?
+                    captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
+                    if 'Please complete the security check' in captcha.text:
+                        # Let's try something a lil shady...
+                        element = WebDriverWait(driver, 20).until(
+                            EC.element_to_be_clickable((By.CSS_SELECTOR, "div.recaptcha-checkbox-checkmark")))
+
+                        time.sleep(1)
+                        element.click()
+                        time.sleep(5)
+
                     op = driver.find_element_by_css_selector('form > div:nth-of-type(1) > div:nth-of-type(2)')
                     comments = driver.find_elements_by_css_selector('form > div > div:nth-of-type(n+3)')
 
@@ -66,20 +81,10 @@ def scrape_archive(jobs):
                 except Exception as e:
                     print('Exception scraping {}/{}...'.format(job.board, job.thread_id))
                     print(e)
-                    try:
-                        # Did we get a Captcha redirect?
-                        captcha = driver.find_element_by_css_selector('h2 span:nth-of-type(1)')
-                        if 'Please complete the security check' in captcha.text:
-                            driver.quit()
-                            print('Got Captcha redirect; restarting...')
-                            time.sleep(15)
-                            return False
-
-                    except Exception as e:
-                        # Not Captcha
-                        job.error_count += 1
-                        job.save()
-                        pass
+                    # Not Captcha
+                    job.error_count += 1
+                    job.save()
+                    pass
 
         except Exception as e:
             print(e)
