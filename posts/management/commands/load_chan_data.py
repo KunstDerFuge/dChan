@@ -83,6 +83,7 @@ def process_links(row):
         print(e)
         return {}
 
+
 def split_list(lst, n):
     from itertools import islice
     lst = iter(lst)
