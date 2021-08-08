@@ -6,11 +6,12 @@ import pandas as pd
 from celery import shared_task
 from scrapyd_api import ScrapydAPI
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
+from posts import utilities
 from posts.management.commands.load_chan_data import parse_archive_is, process_links, parse_8chan_formatting
-from posts.models import Post, ScrapeJob, Board, Platform
+from posts.models import Post, ScrapeJob, Platform
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -112,8 +113,8 @@ def scrape_posts():
     try:
         # Grab top 30 8kun scrape jobs by bounty
         eightkun_start_urls = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10) \
-                                               .order_by('-bounty') \
-                                               .values_list('url', flat=True)[:10]
+                                  .order_by('-bounty') \
+                                  .values_list('url', flat=True)[:10]
 
         print('8kun scrape URLs:')
         print(list(eightkun_start_urls))
@@ -123,7 +124,7 @@ def scrape_posts():
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
-                                           .order_by('-bounty')[:3]
+                              .order_by('-bounty')[:3]
 
         print('8chan scrape URLs:')
         print(archive_is_jobs)
@@ -138,25 +139,8 @@ def scrape_posts():
         df['timestamp'] = df['timestamp'].dt.tz_localize(tz='UTC')  # 8chan timestamps are UTC
         df['links'] = df.apply(process_links, axis=1)
         df['body_text'] = df.body_text.apply(parse_8chan_formatting)
-        df = df.fillna('')
-        new_posts = []
-
-        for index, row in df.iterrows():
-            try:
-                platform_obj = Platform.objects.get(name=row['platform'])
-                board_obj, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
-
-                post = Post(platform=platform_obj, board=board_obj, thread_id=row['thread_no'],
-                            post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
-                            subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
-                            tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                            links=row['links'])
-                new_posts.append(post)
-
-            except Exception as e:
-                print(e)
-
-        Post.objects.bulk_create(new_posts, batch_size=10000, ignore_conflicts=True)
+        new_threads = utilities.commit_posts_from_df(df, Platform.objects.get(name='8chan'))
+        utilities.process_replies(new_threads)
 
     except Exception as e:
         print(e)

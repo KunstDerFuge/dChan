@@ -2,11 +2,12 @@ import html as html_
 import re
 
 import pandas as pd
+from bs4 import BeautifulSoup
 from django.core.management import BaseCommand
 from tqdm import tqdm
-from bs4 import BeautifulSoup
 
-from posts.models import Post, Platform, Board
+from posts import utilities
+from posts.models import Platform
 
 
 def parse_formatting(html):
@@ -52,7 +53,6 @@ def parse_formatting(html):
 
 
 def process_links(row):
-    print(row)
     try:
         links = dict()
         if row['platform'] == '8chan':
@@ -63,8 +63,9 @@ def process_links(row):
                 r'\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html%23([0-9]+)\".{80,95}>(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
                 row['body_text'])
         else:
-            board_index_links = re.findall(r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
-                                           row['body_text'])
+            board_index_links = re.findall(
+                r'\"\/([a-zA-Z0-9]+)\/index\.html\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;/[a-zA-Z]+/)',
+                row['body_text'])
             matches = re.findall(
                 r'\"\/([a-zA-Z0-9]+)\/res\/([0-9]+)\.html#q?([0-9]+)\">(&gt;&gt;[0-9]+|&gt;&gt;&gt;\/[a-zA-Z]+\/[0-9]+)',
                 row['body_text'])
@@ -251,28 +252,10 @@ class Command(BaseCommand):
                     df = df.fillna('')
 
                     print('Committing objects to database...')
-                    new_posts = []
-                    for index, row in tqdm(df.iterrows(), total=len(df)):
-                        if platform == '4chan':
-                            row['links'] = dict()
-
-                        board, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
-
-                        post = Post(platform=platform_obj, board=board, thread_id=row['thread_no'],
-                                    post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
-                                    subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
-                                    tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                                    links=row['links'])
-                        new_posts.append(post)
-                        if len(new_posts) >= 10000:
-                            Post.objects.bulk_create(new_posts)
-                            new_posts = []
-
-                    Post.objects.bulk_create(new_posts)
+                    utilities.commit_posts_from_df(df, platform_obj)
 
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
-                print(row)
                 raise e
 
         print('Done!')
