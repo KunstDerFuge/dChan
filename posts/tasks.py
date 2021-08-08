@@ -11,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from posts import utilities
 from posts.management.commands.load_chan_data import parse_archive_is, process_links, parse_8chan_formatting
-from posts.models import Post, ScrapeJob, Platform
+from posts.models import Post, ScrapeJob, Platform, Board
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -189,6 +189,7 @@ def create_scrape_jobs():
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
     urls = all_threads.value_counts().rename_axis('url').reset_index(name='bounty')
+    urls = urls.dropna()
 
     #                                      url  bounty
     # 0              /8chan/comms/res/283.html   42081
@@ -201,9 +202,14 @@ def create_scrape_jobs():
 
     def parse_url_to_archive_url(row_):
         try:
+            migrated_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan'),
+                                                   migrated_to_8kun=True).values_list('name', flat=True)
             match = re.match(pattern, row_['url']).groups()
             platform = match[0]
             board = match[1]
+            if platform == '8chan' and board in migrated_boards:
+                # We can scrape this from 8kun much faster than archive.is
+                platform = '8kun'
             thread_id = match[2]
             if platform == '4chan':
                 return  # Not yet implementing 4plebs auto-scraping
