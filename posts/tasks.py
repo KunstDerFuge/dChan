@@ -225,6 +225,8 @@ def create_scrape_jobs():
     archive_info = pd.DataFrame.from_records(urls.apply(parse_url_to_archive_url, axis=1),
                                              columns=['platform', 'board', 'thread_id', 'url', 'bounty'])
 
+    archive_info = archive_info.dropna()
+
     # Create scrape jobs for these unarchived URLs if not existing; else update bounty
     new_jobs = 0
     for index, row in archive_info.iterrows():
