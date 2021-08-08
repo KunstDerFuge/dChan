@@ -124,7 +124,7 @@ def scrape_posts():
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
-                              .order_by('-bounty')[:3]
+                                           .order_by('-bounty')[:3]
 
         print('8chan scrape URLs:')
         print(archive_is_jobs)
