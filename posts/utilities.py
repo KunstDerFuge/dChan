@@ -38,6 +38,7 @@ def process_replies(threads=None):
 
 
 def commit_posts_from_df(df, platform_obj):
+    df = df.fillna('')
     new_posts = []
     threads = set()
     for index, row in tqdm(df.iterrows(), total=len(df)):
