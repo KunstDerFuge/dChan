@@ -54,8 +54,8 @@ def commit_posts_from_df(df, platform_obj):
                     links=row['links'])
         new_posts.append(post)
         if len(new_posts) >= 10000:
-            Post.objects.bulk_create(new_posts)
+            Post.objects.bulk_create(new_posts, ignore_conflicts=True)
             new_posts = []
 
-    Post.objects.bulk_create(new_posts)
+    Post.objects.bulk_create(new_posts, ignore_conflicts=True)
     return threads
