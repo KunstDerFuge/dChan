@@ -198,7 +198,7 @@ def create_scrape_jobs():
 
     # Find every thread link that isn't already in the database
     all_threads = pd.Series(
-        [thread.split('#')[0] for thread in all_threads if process_if_8kun(thread) not in existing_threads['url']])
+        [thread.split('#')[0] for thread in all_threads if process_if_8kun(thread) not in existing_threads_set])
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
     urls = all_threads.value_counts().rename_axis('url').reset_index(name='bounty')
