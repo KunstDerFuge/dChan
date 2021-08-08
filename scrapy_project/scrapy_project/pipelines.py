@@ -1,3 +1,6 @@
+import pandas as pd
+
+from posts import utilities
 from posts.management.commands.load_chan_data import process_links, parse_formatting
 from posts.models import Post, Platform, Board, ScrapeJob
 
@@ -7,43 +10,27 @@ class ScrapyPostPipeline(object):
         self.start_urls = []
         self.posts = []
         self.scraped_urls = set()
+        self.df = pd.DataFrame()
+        self.platform = Platform.objects.get(name='8kun')
 
     def open_spider(self, spider):
         self.start_urls = spider.start_urls
 
     def process_item(self, item, spider):
-
-        def replace_none_with_empty_str(some_dict):
-            return {k: ('' if v is None else v) for k, v in some_dict.items()}
-
-        item = replace_none_with_empty_str(item)
-        platform_obj = Platform.objects.get(name='8kun')
-        board_obj, created = Board.objects.get_or_create(platform=platform_obj, name=item['board'])
-        item['links'] = process_links(item)
-        item['body_text'] = parse_formatting(item['body_text'])
         self.scraped_urls.add(item['url'])
 
-        post = Post(platform=platform_obj, board=board_obj, thread_id=item['thread_no'],
-                    post_id=item['post_no'], author=item['name'], poster_hash=item['poster_id'],
-                    subject=item['subject'], body=item['body_text'], timestamp=item['timestamp'],
-                    tripcode=item['tripcode'], is_op=(item['post_no'] == item['thread_no']),
-                    links=item['links'])
-        self.posts.append(post)
+        self.df = self.df.append(item, ignore_index=True)
         return item
 
     def close_spider(self, spider):
-        try:
-            # Create Posts from scraped data
-            Post.objects.bulk_create(self.posts, batch_size=10000, ignore_conflicts=True)
-        except Exception as e:
-            print('Exception in pipeline...')
-            print(e)
+        self.df['links'] = self.df.apply(process_links, axis=1)
+        self.df['body_text'] = self.df.body_text.apply(parse_formatting)
+        new_threads = utilities.commit_posts_from_df(self.df, self.platform)
+        utilities.process_replies(new_threads)
 
-        finally:
-            ScrapeJob.objects.filter(url__in=self.scraped_urls).delete()
-            failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
-            failed_jobs = ScrapeJob.objects.filter(url__in=failed_urls)
-            for job in failed_jobs:
-                job.error_count += 1
-                job.save()
-
+        ScrapeJob.objects.filter(url__in=self.scraped_urls).delete()
+        failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
+        failed_jobs = ScrapeJob.objects.filter(url__in=failed_urls)
+        for job in failed_jobs:
+            job.error_count += 1
+            job.save()
