@@ -230,13 +230,17 @@ def create_scrape_jobs():
     # Create scrape jobs for these unarchived URLs if not existing; else update bounty
     new_jobs = 0
     for index, row in archive_info.iterrows():
-        obj, created = ScrapeJob.objects.update_or_create(url=row['url'], defaults={
-            'bounty': row['bounty'],
-            'platform': row['platform'],
-            'board': row['board'],
-            'thread_id': row['thread_id']
-        })
-        if created:
-            new_jobs += 1
+        try:
+            obj, created = ScrapeJob.objects.update_or_create(url=row['url'], defaults={
+                'bounty': row['bounty'],
+                'platform': row['platform'],
+                'board': row['board'],
+                'thread_id': row['thread_id']
+            })
+            if created:
+                new_jobs += 1
+
+        except Exception as e:
+            print(e)
 
     print(f'Created {new_jobs} new jobs.')
