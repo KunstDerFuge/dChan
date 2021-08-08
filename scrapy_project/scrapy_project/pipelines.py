@@ -2,7 +2,7 @@ import pandas as pd
 
 from posts import utilities
 from posts.management.commands.load_chan_data import process_links, parse_formatting
-from posts.models import Post, Platform, Board, ScrapeJob
+from posts.models import Platform, ScrapeJob
 
 
 class ScrapyPostPipeline(object):
@@ -23,6 +23,7 @@ class ScrapyPostPipeline(object):
         return item
 
     def close_spider(self, spider):
+        self.df['platform'] = '8kun'
         self.df['links'] = self.df.apply(process_links, axis=1)
         self.df['body_text'] = self.df.body_text.apply(parse_formatting)
         new_threads = utilities.commit_posts_from_df(self.df, self.platform)
