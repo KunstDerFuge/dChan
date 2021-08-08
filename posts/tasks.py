@@ -47,7 +47,7 @@ def scrape_archive(jobs):
 
                             time.sleep(1)
                             element.click()
-                            time.sleep(5)
+                            time.sleep(15)
 
                     except Exception:
                         # Not captcha
