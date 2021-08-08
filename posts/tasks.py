@@ -167,10 +167,14 @@ def create_scrape_jobs():
             .distinct(), columns=['platform', 'board', 'thread_id'])
 
     def to_local_url(row_):
+        if row_.platform == '8chan' or row_.platform == '8kun':
+            # Ignore platform; treat 8chan/8kun as single platform
+            return f'/{row_.board}/res/{row_.thread_id}.html'
         return f'/{row_.platform}/{row_.board}/res/{row_.thread_id}.html'
 
     # Query all posts in the database and construct their thread URLs
     existing_threads['url'] = existing_threads.apply(to_local_url, axis=1)
+    existing_threads_set = set(existing_threads.url.unique())
 
     # existing_threads now looks like this:
     #   platform    board   thread_id   url
@@ -184,8 +188,17 @@ def create_scrape_jobs():
     for links in all_links:
         all_threads.extend(links)
 
+    # We're going to check if we need to scrape this thread, so if it comes from 8chan/8kun,
+    # we'll check if we've already scraped it from the other site.
+    def process_if_8kun(thread):
+        if thread.startswith('/8chan') or thread.startswith('/8kun'):
+            without_first_slash = thread[1:]
+            slash_index = without_first_slash.find('/')
+            return without_first_slash[slash_index:]
+
     # Find every thread link that isn't already in the database
-    all_threads = pd.Series([thread.split('#')[0] for thread in all_threads if thread not in existing_threads['url']])
+    all_threads = pd.Series(
+        [thread.split('#')[0] for thread in all_threads if process_if_8kun(thread) not in existing_threads['url']])
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
     urls = all_threads.value_counts().rename_axis('url').reset_index(name='bounty')
