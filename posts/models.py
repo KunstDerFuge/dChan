@@ -35,7 +35,7 @@ class Board(models.Model):
     migrated_to_8kun = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f'{self.platform.name}/{self.name}'
 
     class Meta:
         constraints = [
