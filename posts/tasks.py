@@ -200,7 +200,6 @@ def create_scrape_jobs():
             return without_first_slash[slash_index:]
         return thread
 
-
     # Find every thread link that isn't already in the database
     all_threads = pd.Series(all_threads).to_frame('url')
     all_threads = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
