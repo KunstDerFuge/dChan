@@ -60,6 +60,7 @@ class Post(models.Model):
     poster_hash = models.CharField(max_length=12)
     subject = models.CharField(max_length=150)
     body = models.TextField()
+    body_html = models.TextField(default='')
     timestamp = models.DateTimeField()
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
