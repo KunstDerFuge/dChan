@@ -194,14 +194,16 @@ def create_scrape_jobs():
         if thread.startswith('/8chan') or thread.startswith('/8kun'):
             without_first_slash = thread[1:]
             slash_index = without_first_slash.find('/')
-            return without_first_slash[slash_index:]
+            return without_first_slash[slash_index:].split('#')[0]
+        return thread.split('#')[0]
 
     # Find every thread link that isn't already in the database
-    all_threads = pd.Series(
-        [thread.split('#')[0] for thread in all_threads if process_if_8kun(thread) not in existing_threads_set])
+    all_threads = pd.Series(all_threads)
+    processed = all_threads.apply(process_if_8kun)
+    unarchived = processed[~processed.isin(existing_threads_set)]
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
-    urls = all_threads.value_counts().rename_axis('url').reset_index(name='bounty')
+    urls = unarchived.value_counts().rename_axis('url').reset_index(name='bounty')
     urls = urls.dropna()
 
     #                                      url  bounty
