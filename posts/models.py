@@ -9,6 +9,7 @@ class ScrapeJob(models.Model):
     url = models.CharField(max_length=120)
     bounty = models.PositiveIntegerField(default=0)
     error_count = models.PositiveSmallIntegerField(default=0)
+    in_progress = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
