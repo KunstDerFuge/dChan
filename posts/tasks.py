@@ -188,22 +188,28 @@ def create_scrape_jobs():
     for links in all_links:
         all_threads.extend(links)
 
+    def get_thread_url(url):
+        return url.split('#')[0]
+
     # We're going to check if we need to scrape this thread, so if it comes from 8chan/8kun,
     # we'll check if we've already scraped it from the other site.
     def process_if_8kun(thread):
         if thread.startswith('/8chan') or thread.startswith('/8kun'):
             without_first_slash = thread[1:]
             slash_index = without_first_slash.find('/')
-            return without_first_slash[slash_index:].split('#')[0]
-        return thread.split('#')[0]
+            return without_first_slash[slash_index:]
+        return thread
+
 
     # Find every thread link that isn't already in the database
-    all_threads = pd.Series(all_threads)
-    processed = all_threads.apply(process_if_8kun)
-    unarchived = processed[~processed.isin(existing_threads_set)]
+    all_threads = pd.Series(all_threads).to_frame('url')
+    all_threads = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
+    all_threads['processed'] = all_threads.url.apply(process_if_8kun)
+    unarchived = all_threads[~all_threads.processed.isin(existing_threads_set)]
+    unarchived_threads = unarchived.url
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
-    urls = unarchived.value_counts().rename_axis('url').reset_index(name='bounty')
+    urls = unarchived_threads.value_counts().rename_axis('url').reset_index(name='bounty')
     urls = urls.dropna()
 
     #                                      url  bounty
