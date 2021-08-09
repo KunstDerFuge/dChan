@@ -202,7 +202,7 @@ def create_scrape_jobs():
 
     # Find every thread link that isn't already in the database
     all_threads = pd.Series(all_threads).to_frame('url')
-    all_threads = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
+    all_threads['url'] = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
     all_threads['processed'] = all_threads.url.apply(process_if_8kun)
     unarchived = all_threads[~all_threads.processed.isin(existing_threads_set)]
     unarchived_threads = unarchived.url
