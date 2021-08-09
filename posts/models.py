@@ -6,7 +6,7 @@ class ScrapeJob(models.Model):
     platform = models.CharField(max_length=12, null=True, blank=True)
     board = models.CharField(max_length=60, null=True, blank=True)
     thread_id = models.IntegerField(null=True, blank=True)
-    url = models.CharField(max_length=120, unique=True)
+    url = models.CharField(max_length=120)
     bounty = models.PositiveIntegerField(default=0)
     error_count = models.PositiveSmallIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
