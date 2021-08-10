@@ -1,8 +1,15 @@
 import pandas as pd
 
 from posts import utilities
-from posts.management.commands.load_chan_data import process_links, parse_formatting
-from posts.models import Platform, ScrapeJob
+from posts.models import Platform
+
+
+class ArchiveIsPipeline(object):
+    def process_item(self, item, spider):
+        if 'archive.' not in spider.jobs.first().url:
+            return item
+        else:
+            return utilities.parse_archive_is(item)
 
 
 class ScrapyPostPipeline(object):
@@ -11,32 +18,29 @@ class ScrapyPostPipeline(object):
         self.posts = []
         self.scraped_urls = set()
         self.df = pd.DataFrame()
-        self.platform = Platform.objects.get(name='8kun')
 
     def open_spider(self, spider):
         self.start_urls = spider.start_urls
 
     def process_item(self, item, spider):
-        self.scraped_urls.add(item['url'])
-
+        if 'url' in item:
+            self.scraped_urls.add(item['url'])
         self.df = self.df.append(item, ignore_index=True)
         return item
 
     def close_spider(self, spider):
-        self.df['platform'] = '8kun'
-        print('Processing links...')
-        self.df['links'] = self.df.apply(process_links, axis=1)
-        print('Parsing formatting...')
-        self.df['body_text'] = self.df.body_text.apply(parse_formatting)
-        print('Committing to DB...')
-        new_threads = utilities.commit_posts_from_df(self.df, self.platform)
-        print('Processing replies...')
-        utilities.process_replies(new_threads)
-
+        if len(self.df) == 0:
+            return
+        self.df['platform'] = spider.platform
+        platform_obj = Platform.objects.get(name=spider.platform)
+        if spider.platform == '8chan':
+            self.df['timestamp'] = pd.to_datetime(self.df['timestamp'])
+            self.df['timestamp'] = self.df['timestamp'].dt.tz_localize(tz='UTC')  # 8chan timestamps are UTC
+        utilities.process_and_commit_from_df(self.df, platform_obj)
         print('Deleting finished jobs...')
-        ScrapeJob.objects.filter(url__in=self.scraped_urls).delete()
+        spider.jobs.filter(url__in=self.scraped_urls).delete()
         failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
-        failed_jobs = ScrapeJob.objects.filter(url__in=failed_urls)
+        failed_jobs = spider.jobs.filter(url__in=failed_urls)
         for job in failed_jobs:
             job.error_count += 1
             job.save()

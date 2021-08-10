@@ -11,6 +11,13 @@ import django
 import os
 import sys
 
+from shutil import which
+
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS = ['-headless']
+# SELENIUM_DRIVER_ARGUMENTS = []
+
 # DJANGO INTEGRATION
 
 sys.path.append(os.path.dirname(os.path.abspath('..')))
@@ -63,9 +70,9 @@ ROBOTSTXT_OBEY = True
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-# DOWNLOADER_MIDDLEWARES = {
-#    'scrapy_project.middlewares.ScrapyProjectDownloaderMiddleware': 543,
-# }
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_selenium.SeleniumMiddleware': 800
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -76,7 +83,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'scrapy_project.pipelines.ScrapyPostPipeline': 300,
+    'scrapy_project.pipelines.ArchiveIsPipeline': 100,
+    'scrapy_project.pipelines.ScrapyPostPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

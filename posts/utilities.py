@@ -1,5 +1,6 @@
 import html
 import re
+import time
 
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -43,6 +44,7 @@ def process_replies(threads=None):
 def process_and_commit_from_df(df, platform_obj):
     print('Parsing formatting...')
     df['body_html'] = df.body_text
+    df['links'] = df.apply(process_links, axis=1)
     if platform_obj.name == '8chan':
         df['body_text'] = df.body_text.apply(parse_8chan_formatting)
     else:
@@ -51,6 +53,8 @@ def process_and_commit_from_df(df, platform_obj):
     print('Committing to DB...')
     new_threads = commit_posts_from_df(df, platform_obj)
     print('Processing replies...')
+    # Give a few seconds for posts to be committed to DB
+    time.sleep(3)
     process_replies(new_threads)
 
 
@@ -81,7 +85,7 @@ def commit_posts_from_df(df, platform_obj):
 
 def parse_archive_is(row):
     try:
-        soup = BeautifulSoup(row.header, "html.parser")
+        soup = BeautifulSoup(row['header'], "html.parser")
         name = soup.find('span', attrs={'style': 'text-align:left;color:rgb(17, 119, 67);font-weight:bold;'})
         if name is None:
             name = soup.find('span', attrs={'style': 'text-align:left;font-weight:bold;color:rgb(52, 52, 92);'})
@@ -120,7 +124,7 @@ def parse_archive_is(row):
 
     except Exception as e:
         print('Failed on header:')
-        print(row.header)
+        print(row['header'])
         print(e)
         raise e
 
