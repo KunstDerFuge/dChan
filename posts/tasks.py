@@ -14,7 +14,7 @@ def scrape_posts():
     try:
         # Grab top 30 8kun scrape jobs by bounty
         eightkun_jobs = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10) \
-                                         .order_by('-bounty')[:15]
+                                         .order_by('-bounty')[:10]
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10) \
