@@ -1,6 +1,7 @@
-from django.db.models import QuerySet
+from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+from posts.management.commands.load_chan_data import parse_formatting
 from posts.models import Post, Board
 
 
@@ -52,7 +53,7 @@ def commit_posts_from_df(df, platform_obj):
                     post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
                     subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
                     tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                    links=row['links'])
+                    links=row['links'], body_html=row['body_html'])
         new_posts.append(post)
         if len(new_posts) >= 10000:
             Post.objects.bulk_create(new_posts, ignore_conflicts=True)
@@ -60,3 +61,49 @@ def commit_posts_from_df(df, platform_obj):
 
     Post.objects.bulk_create(new_posts, ignore_conflicts=True)
     return threads
+
+
+def parse_archive_is(row):
+    try:
+        soup = BeautifulSoup(row.header, "html.parser")
+        name = soup.find('span', attrs={'style': 'text-align:left;color:rgb(17, 119, 67);font-weight:bold;'})
+        if name is None:
+            name = soup.find('span', attrs={'style': 'text-align:left;font-weight:bold;color:rgb(52, 52, 92);'})
+        name = name.text.rstrip()
+        subject = soup.find('span', attrs={'style': 'text-align:left;color:rgb(15, 12, 93);font-weight:bold;'})
+        if subject is None:
+            subject = ''
+        else:
+            subject = subject.text.rstrip()
+        timestamp = soup.find('time').text.rstrip()
+        poster_id = \
+            soup.find('span', attrs={'style': 'text-align:left;cursor:pointer;white-space:nowrap;'})
+        if poster_id is None:  # /patriotsfight/ apparently had poster IDs turned off
+            poster_id = ''
+        else:
+            poster_id = poster_id.text.split()[-1]
+        tripcode = soup.find('span', attrs={'style': 'text-align:left;color:rgb(34, 136, 84);'})
+        if tripcode is None:
+            tripcode = ''
+        else:
+            tripcode = tripcode.text.rstrip()
+        post_id = soup.find_all('a', attrs={
+            'style': 'text-align:left;text-decoration:none;color:inherit;margin: 0px; padding: 0px; '})[1].text.rstrip()
+        return {
+            'name': name,
+            'subject': subject,
+            'timestamp': timestamp.split('(')[0] + timestamp.split(') ')[-1],
+            'poster_id': poster_id,
+            'tripcode': tripcode,
+            'post_no': post_id,
+            'board': row['board'],
+            'platform': row['platform'],
+            'thread_no': row['thread_no'],
+            'body_text': row['body']
+        }
+
+    except Exception as e:
+        print('Failed on header:')
+        print(row.header)
+        print(e)
+        raise e

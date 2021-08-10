@@ -137,52 +137,6 @@ def parse_8chan_formatting(html):
     return final_text
 
 
-def parse_archive_is(row):
-    try:
-        soup = BeautifulSoup(row.header, "html.parser")
-        name = soup.find('span', attrs={'style': 'text-align:left;color:rgb(17, 119, 67);font-weight:bold;'})
-        if name is None:
-            name = soup.find('span', attrs={'style': 'text-align:left;font-weight:bold;color:rgb(52, 52, 92);'})
-        name = name.text.rstrip()
-        subject = soup.find('span', attrs={'style': 'text-align:left;color:rgb(15, 12, 93);font-weight:bold;'})
-        if subject is None:
-            subject = ''
-        else:
-            subject = subject.text.rstrip()
-        timestamp = soup.find('time').text.rstrip()
-        poster_id = \
-            soup.find('span', attrs={'style': 'text-align:left;cursor:pointer;white-space:nowrap;'})
-        if poster_id is None:  # /patriotsfight/ apparently had poster IDs turned off
-            poster_id = ''
-        else:
-            poster_id = poster_id.text.split()[-1]
-        tripcode = soup.find('span', attrs={'style': 'text-align:left;color:rgb(34, 136, 84);'})
-        if tripcode is None:
-            tripcode = ''
-        else:
-            tripcode = tripcode.text.rstrip()
-        post_id = soup.find_all('a', attrs={
-            'style': 'text-align:left;text-decoration:none;color:inherit;margin: 0px; padding: 0px; '})[1].text.rstrip()
-        return {
-            'name': name,
-            'subject': subject,
-            'timestamp': timestamp.split('(')[0] + timestamp.split(') ')[-1],
-            'poster_id': poster_id,
-            'tripcode': tripcode,
-            'post_no': post_id,
-            'board': row['board'],
-            'platform': row['platform'],
-            'thread_no': row['thread_no'],
-            'body_text': row['body']
-        }
-
-    except Exception as e:
-        print('Failed on header:')
-        print(row.header)
-        print(e)
-        raise e
-
-
 class Command(BaseCommand):
     help = "Load data from CSV files scraped from Chan data. Expects three files, 4chan.csv, 8chan.csv, 8kun.csv"
 
