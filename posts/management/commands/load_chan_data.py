@@ -8,6 +8,7 @@ from tqdm import tqdm
 
 from posts import utilities
 from posts.models import Platform
+from posts.utilities import parse_archive_is
 
 
 def parse_formatting(html):
