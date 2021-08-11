@@ -1,14 +1,10 @@
-import html as html_
-import re
-
 import pandas as pd
-from bs4 import BeautifulSoup
 from django.core.management import BaseCommand
 from tqdm import tqdm
 
 from posts import utilities
 from posts.models import Platform
-from posts.utilities import parse_archive_is
+from posts.utilities import parse_archive_is, process_links, parse_8chan_formatting, parse_formatting
 
 
 class Command(BaseCommand):

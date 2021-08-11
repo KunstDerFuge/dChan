@@ -1,7 +1,7 @@
 import html
 import re
-import time
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
@@ -41,6 +41,48 @@ def process_replies(threads=None):
         Post.objects.bulk_update(posts, ['replies'])
 
 
+def process_replies_from_df(df):
+    all_replies = {}
+    df_with_replies = pd.DataFrame()
+
+    def aggregate_replies(row):
+        def get_post_url(row_):
+            return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_id']}.html" + '#' + str(row_['post_id'])
+
+        for link, url in row['links'].items():
+            try:
+                _, platform, board, _, end = url.split('/')
+                if '#' in end:
+                    post_no = int(end.split('.')[-1].split('#')[-1])
+                else:
+                    post_no = int(end.split('.')[0])
+
+                if post_no in all_replies:
+                    all_replies[post_no].append([str(row['post_id']), get_post_url(row)])
+                else:
+                    all_replies[post_no] = [[str(row['post_id']), get_post_url(row)]]
+            except Exception as e:
+                print(e)
+            continue
+
+    def link_replies(row):
+        if row['post_id'] in all_replies:
+            row['replies'] = sorted(all_replies[row['post_id']], key=lambda x: x[0])
+        else:
+            row['replies'] = dict()
+        return row
+
+    threads = df.thread_id.unique()
+    for thread in threads:
+        all_replies = {}
+        thread_df = df[df.thread_id == thread].copy().reset_index()
+        if len(thread_df) == 0:
+            continue
+        thread_df.apply(aggregate_replies, axis=1)
+        df_with_replies = pd.concat([df_with_replies, thread_df.apply(link_replies, axis=1)])
+    return df_with_replies.reset_index()
+
+
 def process_and_commit_from_df(df, platform_obj):
     print('Parsing formatting...')
     df['body_html'] = df.body_text
@@ -50,12 +92,10 @@ def process_and_commit_from_df(df, platform_obj):
     else:
         df['body_text'] = df.body_text.apply(parse_formatting)
 
+    print('Processing replies...')
+    df = process_replies_from_df(df)
     print('Committing to DB...')
     new_threads = commit_posts_from_df(df, platform_obj)
-    print('Processing replies...')
-    # Give a few seconds for posts to be committed to DB
-    time.sleep(3)
-    process_replies(new_threads)
 
 
 def commit_posts_from_df(df, platform_obj):
