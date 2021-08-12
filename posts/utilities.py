@@ -72,10 +72,10 @@ def process_replies_from_df(df):
             row['replies'] = dict()
         return row
 
-    threads = df.thread_id.unique()
+    threads = df.thread_no.unique()
     for thread in threads:
         all_replies = {}
-        thread_df = df[df.thread_id == thread].copy().reset_index()
+        thread_df = df[df.thread_no == thread].copy().reset_index()
         if len(thread_df) == 0:
             continue
         thread_df.apply(aggregate_replies, axis=1)
