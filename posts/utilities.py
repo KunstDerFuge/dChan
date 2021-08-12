@@ -66,8 +66,8 @@ def process_replies_from_df(df):
             continue
 
     def link_replies(row):
-        if row['post_no'] in all_replies:
-            row['replies'] = sorted(all_replies[row['post_no']], key=lambda x: x[0])
+        if str(row['post_no']) in all_replies:
+            row['replies'] = sorted(all_replies[str(row['post_no'])], key=lambda x: x[0])
         else:
             row['replies'] = dict()
         return row
