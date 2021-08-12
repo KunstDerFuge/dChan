@@ -71,7 +71,7 @@ def process_replies_from_df(df):
             print(e)
 
     def link_replies(row):
-        if row['post_no'] in all_replies:
+        if int(row['post_no']) in all_replies:
             row['replies'] = sorted(all_replies[row['post_no']], key=lambda x: x[0])
         else:
             row['replies'] = dict()
@@ -100,6 +100,8 @@ def process_and_commit_from_df(df, platform_obj):
     # Prevent processing as decimal
     df['thread_no'] = pd.to_numeric(df['thread_no'], errors='coerce', downcast='integer')
     df['thread_no'] = df['thread_no'].astype(str)
+    df['post_no'] = pd.to_numeric(df['post_no'], errors='coerce', downcast='integer')
+    df['post_no'] = df['post_no'].astype(str)
 
     print('Processing replies...')
     df = process_replies_from_df(df)
