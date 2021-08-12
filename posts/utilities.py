@@ -113,7 +113,7 @@ def commit_posts_from_df(df, platform_obj):
                     post_id=row['post_no'], author=row['name'], poster_hash=row['poster_id'],
                     subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
                     tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                    links=row['links'], body_html=row['body_html'])
+                    links=row['links'], body_html=row['body_html'], replies=row['replies'])
         new_posts.append(post)
         if len(new_posts) >= 10000:
             Post.objects.bulk_create(new_posts, ignore_conflicts=True)
