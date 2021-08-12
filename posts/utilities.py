@@ -92,13 +92,16 @@ def process_and_commit_from_df(df, platform_obj):
     else:
         df['body_text'] = df.body_text.apply(parse_formatting)
 
+    # Prevent processing as decimal
+    df['post_no'] = df['post_no'].astype(int)
+    df['thread_no'] = df['thread_no'].astype(int)
     df['post_no'] = df['post_no'].astype(str)
     df['thread_no'] = df['thread_no'].astype(str)
 
     print('Processing replies...')
     df = process_replies_from_df(df)
     print('Committing to DB...')
-    new_threads = commit_posts_from_df(df, platform_obj)
+    commit_posts_from_df(df, platform_obj)
 
 
 def commit_posts_from_df(df, platform_obj):
