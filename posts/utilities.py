@@ -44,6 +44,7 @@ def process_replies(threads=None):
 def process_replies_from_df(df):
     all_replies = {}
     df_with_replies = pd.DataFrame()
+    df.to_csv('test_this.csv')
 
     def aggregate_replies(row):
         def get_post_url(row_):
