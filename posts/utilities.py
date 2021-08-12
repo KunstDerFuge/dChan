@@ -47,7 +47,7 @@ def process_replies_from_df(df):
 
     def aggregate_replies(row):
         def get_post_url(row_):
-            return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_id']}.html" + '#' + str(row_['post_id'])
+            return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_no']}.html" + '#' + str(row_['post_no'])
 
         for link, url in row['links'].items():
             try:
@@ -58,16 +58,16 @@ def process_replies_from_df(df):
                     post_no = int(end.split('.')[0])
 
                 if post_no in all_replies:
-                    all_replies[post_no].append([str(row['post_id']), get_post_url(row)])
+                    all_replies[post_no].append([str(row['post_no']), get_post_url(row)])
                 else:
-                    all_replies[post_no] = [[str(row['post_id']), get_post_url(row)]]
+                    all_replies[post_no] = [[str(row['post_no']), get_post_url(row)]]
             except Exception as e:
                 print(e)
             continue
 
     def link_replies(row):
-        if row['post_id'] in all_replies:
-            row['replies'] = sorted(all_replies[row['post_id']], key=lambda x: x[0])
+        if row['post_no'] in all_replies:
+            row['replies'] = sorted(all_replies[row['post_no']], key=lambda x: x[0])
         else:
             row['replies'] = dict()
         return row
