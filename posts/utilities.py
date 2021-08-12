@@ -93,6 +93,7 @@ def process_and_commit_from_df(df, platform_obj):
         df['body_text'] = df.body_text.apply(parse_formatting)
 
     # Prevent processing as decimal
+    df['thread_no'] = pd.to_numeric(df['thread_no'], errors='coerce', downcast='integer')
     df['thread_no'] = df['thread_no'].astype(str)
 
     print('Processing replies...')
