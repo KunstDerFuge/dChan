@@ -92,6 +92,9 @@ def process_and_commit_from_df(df, platform_obj):
     else:
         df['body_text'] = df.body_text.apply(parse_formatting)
 
+    df['post_no'] = df['post_no'].astype(str)
+    df['thread_no'] = df['thread_no'].astype(str)
+
     print('Processing replies...')
     df = process_replies_from_df(df)
     print('Committing to DB...')
