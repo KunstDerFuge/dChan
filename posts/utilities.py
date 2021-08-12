@@ -50,6 +50,10 @@ def process_replies_from_df(df):
         def get_post_url(row_):
             return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_no']}.html" + '#' + str(row_['post_no'])
 
+        # At this stage, empty links are encoded like this for some reason
+        if row['links'] == '{}':
+            return
+
         for link, url in row['links'].items():
             try:
                 _, platform, board, _, end = url.split('/')
