@@ -54,21 +54,26 @@ def process_replies_from_df(df):
         if row['links'] == '{}':
             return
 
-        for link, url in row['links'].items():
-            try:
-                _, platform, board, _, end = url.split('/')
-                if '#' in end:
-                    post_no = int(end.split('.')[-1].split('#')[-1])
-                else:
-                    post_no = int(end.split('.')[0])
+        try:
+            for link, url in dict(row['links']).items():
+                try:
+                    _, platform, board, _, end = url.split('/')
+                    if '#' in end:
+                        post_no = int(end.split('.')[-1].split('#')[-1])
+                    else:
+                        post_no = int(end.split('.')[0])
 
-                if post_no in all_replies:
-                    all_replies[post_no].append([str(row['post_no']), get_post_url(row)])
-                else:
-                    all_replies[post_no] = [[str(row['post_no']), get_post_url(row)]]
-            except Exception as e:
-                print(e)
-            continue
+                    if post_no in all_replies:
+                        all_replies[post_no].append([str(row['post_no']), get_post_url(row)])
+                    else:
+                        all_replies[post_no] = [[str(row['post_no']), get_post_url(row)]]
+                except Exception as e:
+                    print(e)
+                continue
+        except Exception as e:
+            print(type(row['links']))
+            print(row['links'])
+            print(e)
 
     def link_replies(row):
         if str(row['post_no']) in all_replies:
