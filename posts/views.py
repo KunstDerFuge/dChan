@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.template import loader
 from django.views.generic import ListView
 
+from posts.documents import PostDocument
 from posts.models import Post, Board, Platform, Drop
 
 
@@ -103,8 +104,8 @@ class SearchResultsView(ListView):
         q = self.request.GET.get('q')
         if q == '':
             return []
-        query = SearchQuery(q)
-        results = Post.objects.filter(search_vector=query)[:100]
+        s = PostDocument.search()
+        results = s.query('match', body=q).to_queryset()[:100]
         return results
 
 
