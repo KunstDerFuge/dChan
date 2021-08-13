@@ -90,9 +90,18 @@ DATABASES = {
     }
 }
 
+from urllib.parse import quote_plus as urlquote
+
+elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
+elastic_search_url = elk_base_url.format(user_name=config('ES_USERNAME'),
+                                         password=urlquote(config('ES_PASSWORD')),
+                                         # password may contain special characters
+                                         host_ip=config('ES_HOST'),
+                                         host_port=config('ES_PORT'))
+
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': config('ELASTICSEARCH_HOST')
+        'hosts': elastic_search_url
     },
 }
 
