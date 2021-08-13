@@ -95,7 +95,6 @@ DATABASES = {
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': config('ES_HOST') + ':' + config('ES_PORT'),
-        'http_auth': (config('ES_USERNAME') + ':' + config('ES_PASSWORD'))
     },
 }
 
