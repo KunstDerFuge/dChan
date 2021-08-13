@@ -14,6 +14,8 @@ from pathlib import Path
 from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from elasticsearch_dsl.connections import connections
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -90,20 +92,14 @@ DATABASES = {
     }
 }
 
-from urllib.parse import quote_plus as urlquote
-
-elk_base_url = 'elasticsearch://{user_name}:{password}@{host_ip}:{host_port}'
-elastic_search_url = elk_base_url.format(user_name=config('ES_USERNAME'),
-                                         password=urlquote(config('ES_PASSWORD')),
-                                         # password may contain special characters
-                                         host_ip=config('ES_HOST'),
-                                         host_port=config('ES_PORT'))
-
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': elastic_search_url
+        'hosts': config('ES_HOST') + ':' + config('ES_PORT'),
+        'http_auth': (config('ES_USERNAME') + ':' + config('ES_PASSWORD'))
     },
 }
+
+connections.configure(**ELASTICSEARCH_DSL)
 
 CACHES = {
     'default': {
