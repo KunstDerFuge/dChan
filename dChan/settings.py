@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'django_elasticsearch_dsl',
     'debug_toolbar'
 ]
 
@@ -87,6 +88,12 @@ DATABASES = {
         'HOST': config('DB_HOST'),
         'PORT': config('DB_PORT', default='', cast=int)
     }
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
 }
 
 CACHES = {
