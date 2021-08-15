@@ -1,11 +1,18 @@
+import json
+import logging
+import os
+
 from django.contrib.postgres.search import SearchQuery
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.template import loader
+from django.views import View
 from django.views.generic import ListView
+from django_elasticsearch_dsl.search import Search
 
+from dChan import settings
 from posts.documents import PostDocument
 from posts.models import Post, Board, Platform, Drop
 
@@ -124,3 +131,55 @@ class AdvancedSearch(ListView):
         boards = Post.objects.values_list('platform', 'board').distinct()
         context['boards'] = boards
         return context
+
+
+def timeseries_from_keywords(request):
+    keywords = request.GET.get('keywords')
+    agg = request.GET.get('agg')
+
+    s = Search(index='posts').from_dict({
+        'query': {
+            'bool': {
+                'must': [
+                    {
+                        'match_phrase': {
+                            'body': keywords
+                        }
+                    }
+                ]
+            }
+        },
+        'aggs': {
+            "posts_over_time": {
+                "date_histogram": {
+                    "field": "timestamp",
+                    "calendar_interval": agg
+                }
+            }
+        }
+    })
+    results = s.execute().aggregations.to_dict()
+    return JsonResponse({'data': results})
+
+
+class FrontendAppView(View):
+    """
+    Serves the compiled frontend entry point (only works if you have run `yarn
+    run build`).
+    """
+
+    def get(self, request):
+        print(os.path.join(settings.REACT_APP_DIR, 'build', 'index.html'))
+        try:
+            with open(os.path.join(settings.REACT_APP_DIR, 'build', 'index.html')) as f:
+                return HttpResponse(f.read())
+        except FileNotFoundError:
+            logging.exception('Production build of app not found')
+            return HttpResponse(
+                """
+                This URL is only used when you have built the production
+                version of the app. Visit http://localhost:3000/ instead, or
+                run `yarn run build` to test the production version.
+                """,
+                status=501,
+            )
