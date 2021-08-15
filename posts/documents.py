@@ -19,6 +19,13 @@ class PostDocument(Document):
     def get_queryset(self):
         return super(PostDocument, self).get_queryset().select_related('platform', 'board', 'drop')
 
+    def get_instances_from_related(self, related_instance):
+        if isinstance(related_instance, Platform) or isinstance(related_instance, Board):
+            return related_instance.posts.all()
+
+        if isinstance(related_instance, Drop):
+            return related_instance.post
+
     class Index:
         # Name of the Elasticsearch index
         name = 'posts'
