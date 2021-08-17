@@ -26,7 +26,7 @@ const Timeseries = (props) => {
 
   React.useEffect(() => {
     fetchData()
-  }, [agg, perMille])
+  }, [agg])
 
   React.useEffect(() => {
     const xScale = scaleTime()
@@ -88,7 +88,7 @@ const Timeseries = (props) => {
       .style('text-anchor', 'middle')
       .text('')
 
-  }, [data])
+  }, [data, perMille])
 
   return (
     <>
