@@ -90,6 +90,7 @@ def process_replies_from_df(df):
 
 def process_and_commit_from_df(df, platform_obj):
     print('Parsing formatting...')
+    df['body_text'] = df.body_text.fillna('')
     df['body_html'] = df.body_text
     df['links'] = df.apply(process_links, axis=1)
     if platform_obj.name == '8chan':
