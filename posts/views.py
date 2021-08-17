@@ -138,25 +138,41 @@ def timeseries_from_keywords(request):
     agg = request.GET.get('agg')
 
     s = Search(index='posts').from_dict({
-        'query': {
-            'bool': {
-                'must': [
-                    {
-                        'match_phrase': {
-                            'body': keywords
-                        }
-                    }
-                ]
-            }
-        },
         'aggs': {
             "posts_over_time": {
                 "date_histogram": {
                     "field": "timestamp",
                     "calendar_interval": agg
-                }
-            }
-        }
+                },
+                'aggs': {
+                    'total': {
+                        'value_count': {'field': '_id'}
+                    },
+                    'keywords_filter': {
+                        'filter': {
+                            'bool': {
+                                'must': [
+                                    {
+                                        'match_phrase': {
+                                            'body': keywords
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                    },
+                    'per_mille': {
+                        'bucket_script': {
+                            'buckets_path': {
+                                'matches': 'keywords_filter._count',
+                                'total': 'total',
+                            },
+                            'script': 'params.matches / params.total * 1000'
+                        }
+                    }
+                },
+            },
+        },
     })
     results = s.execute().aggregations.to_dict()
     return JsonResponse({'data': results})

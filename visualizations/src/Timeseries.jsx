@@ -14,10 +14,11 @@ const Timeseries = (props) => {
 
   const [data, setData] = React.useState([])
   const [agg, setAgg] = React.useState('week')
+  const [perMille, setPerMille] = React.useState(true)
   const [keywords, setKeywords] = React.useState('LARP')
 
   const fetchData = () => {
-    axios.get('https://dchan.qorigins.org/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
+    axios.get('http://localhost:8000/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
       console.log(data)
     }).catch((e) => console.log(e))
@@ -25,7 +26,7 @@ const Timeseries = (props) => {
 
   React.useEffect(() => {
     fetchData()
-  }, [agg])
+  }, [agg, perMille])
 
   React.useEffect(() => {
     const xScale = scaleTime()
@@ -33,12 +34,21 @@ const Timeseries = (props) => {
       .range([50, width])
 
     const yScale = scaleLinear()
-      .domain(extent(data, datum => datum.doc_count))
+      .domain(extent(data, datum => {
+        if (datum.doc_count === 0) {
+          return 0
+        }
+        else if (perMille) {
+          return datum.per_mille.value
+        } else {
+           return datum.keywords_filter.doc_count
+        }
+      }))
       .range([height, 40])
 
     const path = line()
       .x(datum => xScale(datum.key))
-      .y(datum => yScale(datum.doc_count))
+      .y(datum => yScale(datum.doc_count === 0 ? 0 : perMille ? datum.per_mille.value : datum.keywords_filter.doc_count))
       .curve(curveMonotoneX)
 
     var svg = d3.select('#chart')
@@ -67,7 +77,7 @@ const Timeseries = (props) => {
       .attr('x', width / 2)
       .attr('y', 20)
       .style('text-anchor', 'middle')
-      .text(`Posts by ${agg} matching phrase "${keywords}"`)
+      .text(`Posts by ${agg} matching phrase "${keywords}" ${perMille ? 'per 1000 posts' : ''}`)
 
     // y axis label
     svg.select('.y-label')
@@ -107,6 +117,13 @@ const Timeseries = (props) => {
             <option value="day">Day</option>
             <option value="week">Week</option>
             <option value="month">Month</option>
+          </select>
+          <select name="interval" id="interval" value={perMille ? 'perMille' : 'total'} onChange={(event) => {
+            console.log(event.target.value)
+            setPerMille(event.target.value === 'perMille')
+          }}>
+            <option value="perMille">Per 1000 posts</option>
+            <option value="total">Total volume</option>
           </select>
         </label>
       </form>
