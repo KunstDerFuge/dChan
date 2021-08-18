@@ -38,6 +38,7 @@ class ScrapyPostPipeline(object):
             self.df['timestamp'] = self.df['timestamp'].dt.tz_localize(tz='UTC')  # 8chan timestamps are UTC
         utilities.process_and_commit_from_df(self.df, platform_obj)
         print('Deleting finished jobs...')
+        spider.jobs.update(in_progress=False)
         spider.jobs.filter(url__in=self.scraped_urls).delete()
         failed_urls = [url for url in self.start_urls if url not in self.scraped_urls]
         failed_jobs = spider.jobs.filter(url__in=failed_urls)
