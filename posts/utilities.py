@@ -71,7 +71,7 @@ def process_replies_from_df(df):
             print(e)
 
     def link_replies(row):
-        if int(row['post_no']) in all_replies:
+        if int(float(row['post_no'])) in all_replies:  # Looks hacky but we have to do this to handle e.g. '8222326.0'
             row['replies'] = sorted(all_replies[int(row['post_no'])], key=lambda x: x[0])
         else:
             row['replies'] = dict()
