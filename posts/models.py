@@ -20,7 +20,12 @@ class ScrapeJob(models.Model):
         ]
 
     def __str__(self):
-        return f'Bounty {self.bounty}: {self.url}'
+        out = f'Bounty {self.bounty}: {self.url}'
+        if self.error_count > 0:
+            out += f' Errors: {self.error_count}'
+        if self.in_progress:
+            out += ' IN PROGRESS'
+        return out
 
 
 class Platform(models.Model):
