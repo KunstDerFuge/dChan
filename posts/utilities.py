@@ -127,21 +127,27 @@ def commit_posts_from_df(df, platform_obj):
     new_posts = []
     threads = set()
     for index, row in tqdm(df.iterrows(), total=len(df)):
-        if platform_obj.name == '4chan':
-            row['links'] = dict()
+        try:
+            if platform_obj.name == '4chan':
+                row['links'] = dict()
 
-        board, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
+            board, created = Board.objects.get_or_create(platform=platform_obj, name=row['board'])
 
-        threads.add(row['thread_no'])
-        post = Post(platform=platform_obj, board=board, thread_id=row['thread_no'],
-                    post_id=int(float(row['post_no'])), author=row['name'], poster_hash=row['poster_id'],
-                    subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
-                    tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
-                    links=row['links'], body_html=row['body_html'], replies=row['replies'])
-        new_posts.append(post)
-        if len(new_posts) >= 10000:
-            Post.objects.bulk_create(new_posts, ignore_conflicts=True)
-            new_posts = []
+            threads.add(row['thread_no'])
+            post = Post(platform=platform_obj, board=board, thread_id=row['thread_no'],
+                        post_id=int(float(row['post_no'])), author=row['name'], poster_hash=row['poster_id'],
+                        subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
+                        tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
+                        links=row['links'], body_html=row['body_html'], replies=row['replies'])
+            new_posts.append(post)
+            if len(new_posts) >= 10000:
+                Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+                new_posts = []
+        except Exception as e:
+            print('Failed to create Post object with row:')
+            print(row)
+            print(e)
+            continue
 
     Post.objects.bulk_create(new_posts, ignore_conflicts=True)
     return threads
