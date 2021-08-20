@@ -90,6 +90,11 @@ def process_replies_from_df(df):
 
 def process_and_commit_from_df(df, platform_obj):
     print('Parsing formatting...')
+    len_before = len(df)
+    df = df.dropna(subset=['post_no'])
+    len_after = len(df)
+    if len_before != len_after:
+        print(f'Dropped {len_after - len_before} rows with NaN in post_no...')
     df['body_text'] = df.body_text.fillna('')
     df['body_html'] = df.body_text
     df['links'] = df.apply(process_links, axis=1)
