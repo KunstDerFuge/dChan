@@ -71,11 +71,17 @@ def process_replies_from_df(df):
             print(e)
 
     def link_replies(row):
-        if int(float(row['post_no'])) in all_replies:  # Looks hacky but we have to do this to handle e.g. '8222326.0'
-            row['replies'] = sorted(all_replies[int(row['post_no'])], key=lambda x: x[0])
-        else:
-            row['replies'] = dict()
-        return row
+        try:
+            if int(float(row['post_no'])) in all_replies:  # Looks hacky but we have to do this to handle e.g. '8222326.0'
+                row['replies'] = sorted(all_replies[int(row['post_no'])], key=lambda x: x[0])
+            else:
+                row['replies'] = dict()
+            return row
+        except Exception as e:
+            print('Exception linking replies on row:')
+            print(row)
+            print(e)
+            return row
 
     threads = df.thread_no.unique()
     for thread in threads:
