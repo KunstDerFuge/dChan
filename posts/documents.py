@@ -40,6 +40,7 @@ class PostDocument(Document):
         fields = [
             'thread_id',
             'post_id',
+            'is_op',
             'author',
             'poster_hash',
             'subject',
