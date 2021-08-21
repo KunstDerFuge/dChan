@@ -13,23 +13,35 @@ from django.views.generic import ListView
 from django_elasticsearch_dsl.search import Search
 
 from dChan import settings
+from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument
 from posts.models import Post, Board, Platform, Drop
 
 
 def index(request, platform=None, board=None):
+    s = PostDocument.search()
     if board:
         platform_obj = Platform.objects.get(name=platform)
-        board_obj = Board.objects.get(platform=platform_obj, name=board)
-        thread_list = board_obj.posts.filter(is_op=True).order_by('-timestamp')
+        threads = s.query('match', is_op=True) \
+                   .query('match', platform__name=platform) \
+                   .query('match', board__name=board) \
+                   .sort('-timestamp')
     elif platform:
         platform_obj = Platform.objects.get(name=platform)
-        thread_list = platform_obj.posts.filter(is_op=True).order_by('-timestamp')
+        threads = s.query('match', is_op=True) \
+                   .query('match', platform__name=platform) \
+                   .sort('-timestamp')
     else:
-        thread_list = Post.objects.filter(is_op=True).order_by('-timestamp')
+        threads = s.query('match', is_op=True) \
+                   .sort('-timestamp')
 
-    page = request.GET.get('page', 1)
-    paginator = Paginator(thread_list.select_related('platform', 'board'), 40)
+    page = int(request.GET.get('page', 1))
+    results_per_page = 40
+    start = (page - 1) * results_per_page
+    end = start + results_per_page
+    threads = threads[start:end]
+    response = threads.execute()
+    paginator = DSEPaginator(response, results_per_page)
     page_range = paginator.get_elided_page_range(number=page)
 
     try:
