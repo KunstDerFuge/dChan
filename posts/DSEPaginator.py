@@ -14,12 +14,16 @@ class DSEPaginator(Paginator):
     def __init__(self, *args, **kwargs):
         super(DSEPaginator, self).__init__(*args, **kwargs)
         self._count = self.object_list.hits.total
+        self.queryset = None
+
+    def set_queryset(self, queryset):
+        self.queryset = queryset
 
     def page(self, number):
         # this is overridden to prevent any slicing of the object_list - Elasticsearch has
         # returned the sliced data already.
         number = self.validate_number(number)
-        return Page(self.object_list, number, self)
+        return Page(self.queryset, number, self)
 
     @cached_property
     def count(self):

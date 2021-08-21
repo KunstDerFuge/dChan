@@ -40,8 +40,10 @@ def index(request, platform=None, board=None):
     start = (page - 1) * results_per_page
     end = start + results_per_page
     threads = threads[start:end]
+    queryset = threads.to_queryset()
     response = threads.execute()
     paginator = DSEPaginator(response, results_per_page)
+    paginator.set_queryset(queryset)
     page_range = paginator.get_elided_page_range(number=page)
 
     try:
