@@ -134,8 +134,9 @@ def create_scrape_jobs():
             print(row_)
             print(e)
 
-    archive_info = pd.DataFrame.from_records(urls.apply(parse_url_to_archive_url, axis=1),
-                                             columns=['platform', 'board', 'thread_id', 'url', 'bounty'])
+    urls = urls.apply(parse_url_to_archive_url, axis=1)
+    urls = urls.dropna()
+    archive_info = pd.DataFrame.from_records(urls, columns=['platform', 'board', 'thread_id', 'url', 'bounty'])
 
     archive_info = archive_info.dropna()
 
