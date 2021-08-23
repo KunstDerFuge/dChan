@@ -14,11 +14,11 @@ def scrape_posts():
     try:
         # Grab top 30 8kun scrape jobs by bounty
         eightkun_jobs = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10, in_progress=False) \
-                                         .order_by('-bounty')[:25]
+                            .order_by('-bounty')[:25]
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10, in_progress=False) \
-                                           .order_by('-bounty')[:5]
+                              .order_by('-bounty')[:5]
 
         # Create scrapyd task to scrape the 8kun posts
         task = scrapyd.schedule('scrapy_project', '8kun_spider', jobs=','
@@ -67,34 +67,40 @@ def create_scrape_jobs():
     #   4chan       pol     146981635   /4chan/pol/res/146981635.html
     #   ...         ...     ...         ...
 
-    # Aggregate links from all threads
-    all_links = Post.objects.values_list('links', flat=True)
-    all_links = [list(links.values()) for links in all_links]
-    all_threads = []
-    for links in all_links:
-        all_threads.extend(links)
+    total_posts = Post.objects.count()
+    num_batches = 8
+    batch_size = total_posts // num_batches
+    unarchived_threads = []
 
-    def get_thread_url(url):
-        return url.split('#')[0]
+    for i in range(num_batches):
+        # Aggregate links from all threads
+        all_links = Post.objects.values_list('links', flat=True)[i * batch_size: i * batch_size + batch_size]
+        all_links = [list(links.values()) for links in all_links]
+        all_threads = []
+        for links in all_links:
+            all_threads.extend(links)
 
-    # We're going to check if we need to scrape this thread, so if it comes from 8chan/8kun,
-    # we'll check if we've already scraped it from the other site.
-    def process_if_8kun(thread):
-        if thread.startswith('/8chan') or thread.startswith('/8kun'):
-            without_first_slash = thread[1:]
-            slash_index = without_first_slash.find('/')
-            return without_first_slash[slash_index:]
-        return thread
+        def get_thread_url(url):
+            return url.split('#')[0]
 
-    # Find every thread link that isn't already in the database
-    all_threads = pd.Series(all_threads).to_frame('url')
-    all_threads['url'] = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
-    all_threads['processed'] = all_threads.url.apply(process_if_8kun)
-    unarchived = all_threads[~all_threads.processed.isin(existing_threads_set)]
-    unarchived_threads = unarchived.url
+        # We're going to check if we need to scrape this thread, so if it comes from 8chan/8kun,
+        # we'll check if we've already scraped it from the other site.
+        def process_if_8kun(thread):
+            if thread.startswith('/8chan') or thread.startswith('/8kun'):
+                without_first_slash = thread[1:]
+                slash_index = without_first_slash.find('/')
+                return without_first_slash[slash_index:]
+            return thread
+
+        # Find every thread link that isn't already in the database
+        all_threads = pd.Series(all_threads).to_frame('url')
+        all_threads['url'] = all_threads.url.apply(get_thread_url)  # Strip off the hash part of the URLs
+        all_threads['processed'] = all_threads.url.apply(process_if_8kun)
+        unarchived = all_threads[~all_threads.processed.isin(existing_threads_set)]
+        unarchived_threads.extend(unarchived.url)
 
     # Find the link count of each unarchived thread; this becomes its "bounty"
-    urls = unarchived_threads.value_counts().rename_axis('url').reset_index(name='bounty')
+    urls = pd.Series(unarchived_threads).value_counts().rename_axis('url').reset_index(name='bounty')
     urls = urls.dropna()
 
     #                                      url  bounty
