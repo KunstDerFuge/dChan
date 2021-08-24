@@ -127,7 +127,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'create-scrape-jobs': {
         'task': 'posts.tasks.create_scrape_jobs',
-        'schedule': 15 * 60,
+        'schedule': 10 * 60,
     }
 }
 
