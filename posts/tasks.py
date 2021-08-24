@@ -136,7 +136,7 @@ def create_scrape_jobs():
 
     try:
         urls = urls.apply(parse_url_to_archive_url, axis=1)
-        urls = urls.dropna()
+        urls = urls.dropna().reset_index()
         archive_info = pd.DataFrame.from_records(urls, columns=['platform', 'board', 'thread_id', 'url', 'bounty'])
 
         archive_info = archive_info.dropna()
@@ -145,6 +145,7 @@ def create_scrape_jobs():
         print('Exception creating dataframe. Data:')
         print(urls)
         print(e)
+        raise e
 
     # Create scrape jobs for these unarchived URLs if not existing; else update bounty
     new_jobs = 0
