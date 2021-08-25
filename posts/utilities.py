@@ -5,7 +5,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from posts.models import Post, Board
+from posts.models import Post, Board, Platform
 
 
 def process_replies(threads=None):
@@ -119,10 +119,13 @@ def process_and_commit_from_df(df, platform_obj):
     print('Processing replies...')
     df = process_replies_from_df(df)
     print('Committing to DB...')
+    if
     commit_posts_from_df(df, platform_obj)
 
 
 def commit_posts_from_df(df, platform_obj):
+    if platform_obj.name == '8chan':
+        platform_obj = Platform.objects.get(name='8kun')
     df = df.fillna('')
     new_posts = []
     threads = set()
