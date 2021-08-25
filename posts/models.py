@@ -80,7 +80,10 @@ class Post(models.Model):
         return f'{self.platform.name}/{self.board.name}/{self.post_id}'
 
     def get_thread_url(self):
-        return f'/{self.platform.name}/{self.board.name}/res/{self.thread_id}.html'
+        if self.platform == '4chan':
+            return f'/{self.platform.name}/{self.board.name}/res/{self.thread_id}.html'
+        else:
+            return f'/{self.board.name}/res/{self.thread_id}.html'
 
     def get_post_url(self):
         return self.get_thread_url() + '#' + str(self.post_id)
