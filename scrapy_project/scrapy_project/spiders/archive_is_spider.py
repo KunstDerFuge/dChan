@@ -64,7 +64,7 @@ class ArchiveIsSpider(scrapy.Spider):
 
             # OP
             yield {
-                'platform': '8chan',
+                'platform': self.platform,
                 'board': job.board,
                 'thread_no': job.thread_id,
                 'header': op.find_element_by_css_selector('div:nth-of-type(1)').get_attribute('innerHTML'),
@@ -75,7 +75,7 @@ class ArchiveIsSpider(scrapy.Spider):
             # Comments
             for comment in comments:
                 yield {
-                    'platform': '8chan',
+                    'platform': self.platform,
                     'board': job.board,
                     'thread_no': job.thread_id,
                     'header': comment.find_element_by_css_selector('div:nth-of-type(1)').get_attribute('innerHTML'),
