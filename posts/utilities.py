@@ -119,7 +119,6 @@ def process_and_commit_from_df(df, platform_obj):
     print('Processing replies...')
     df = process_replies_from_df(df)
     print('Committing to DB...')
-    if
     commit_posts_from_df(df, platform_obj)
 
 
