@@ -70,12 +70,14 @@ def thread(request, platform, board, thread_id):
     context = {}
     try:
         platform_obj = Platform.objects.get(name=platform)
-        board_obj = Board.objects.get(platform=platform_obj, name=board)
-        thread_posts = board_obj.posts.filter(thread_id=thread_id) \
-            .order_by('post_id') \
-            .select_related('drop', 'platform')
+        s = PostDocument.search()
+        thread_posts = s.query('match', platform__name=platform) \
+                        .query('match', board__name=board) \
+                        .query('match', thread_id=thread_id) \
+                        .sort('post_id')
+        thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
 
-        thread_drops = Drop.objects.filter(post__thread_id=thread_id) \
+        thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
             .select_related('post__platform', 'post__board') \
             .order_by('number')
 
