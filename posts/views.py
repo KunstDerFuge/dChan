@@ -65,7 +65,7 @@ def index(request, platform=None, board=None):
     return HttpResponse(template.render(context, request))
 
 
-def thread(request, platform, board, thread_id):
+def thread(request, platform='8kun', board=None, thread_id=None):
     context = {}
     try:
         platform_obj = Platform.objects.get(name=platform)
