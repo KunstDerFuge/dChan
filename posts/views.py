@@ -73,7 +73,8 @@ def thread(request, platform, board, thread_id):
         thread_posts = s.query('match', platform__name=platform) \
                         .query('match', board__name=board) \
                         .query('match', thread_id=thread_id) \
-                        .sort('post_id')
+                        .sort('post_id') \
+                        .extra(size=752)
         thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
 
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
