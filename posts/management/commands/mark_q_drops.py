@@ -14,9 +14,8 @@ def mark_posts(row):
         else:
             platform = '8kun'
 
-        drop_platform = Platform.objects.get(name=platform)
-        drop_board = Board.objects.get(platform=drop_platform, name=post[1])
-        drop_post = Post.objects.get(platform=drop_platform, board=drop_board, post_id=post[5])
+        drop_board = Board.objects.get(platform__name=platform, name=post[1])
+        drop_post = Post.objects.get(platform__name=platform, board__name=drop_board.name, post_id=post[5])
         drop, created = Drop.objects.get_or_create(post=drop_post, number=row['drop'])
 
     except Exception:
