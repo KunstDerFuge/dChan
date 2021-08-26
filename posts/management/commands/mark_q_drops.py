@@ -19,9 +19,9 @@ def mark_posts(row):
         drop_post = Post.objects.get(platform=drop_platform, board=drop_board, post_id=post[5])
         drop, created = Drop.objects.get_or_create(post=drop_post, number=row['drop'])
 
-    except Exception as e:
+    except Exception:
         # Drop is not yet archived
-        print(e)
+        print(f"Missing drop #{row['drop']}...")
         pass
 
 
