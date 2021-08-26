@@ -9,9 +9,7 @@ from posts.models import Post, Platform, Board, Drop
 def mark_posts(row):
     post = row['post_info']
     try:
-        if post[0] == '8ch.net':
-            platform = '8chan'
-        elif post[0] == '4plebs.org':
+        if post[0] == '4plebs.org':
             platform = '4chan'
         else:
             platform = '8kun'
