@@ -5,6 +5,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+from posts.documents import PostDocument
 from posts.models import Post, Board, Platform
 
 
@@ -151,7 +152,13 @@ def commit_posts_from_df(df, platform_obj):
             print(e)
             continue
 
-    Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+    # Source on ES bulk update pattern:
+    # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
+    posts_created = Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+    posts_ids = [post.id for post in posts_created]
+    new_posts_qs = Post.objects.filter(id__in=posts_ids)
+    PostDocument().update(new_posts_qs)
+
     return threads
 
 
