@@ -276,7 +276,7 @@ def process_links(row):
                     # Board index link
                     links[html.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/"
                 else:
-                    links[html.unescape(match[-1])] = f"/{row['platform']}/{match[0]}/res/{match[1]}.html#{match[2]}"
+                    links[html.unescape(match[-1])] = f"/{match[0]}/res/{match[1]}.html#{match[2]}"
         return links
     except Exception as e:
         print(e)
