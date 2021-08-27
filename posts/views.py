@@ -17,22 +17,38 @@ from posts.documents import PostDocument
 from posts.models import Post, Board, Platform, Drop
 
 
+def board_links(platform):
+    if not platform:
+        return None, None
+    print(platform)
+    platform_obj = Platform.objects.get(name=platform)
+    if platform == '8kun':
+        q_boards = list(Drop.objects.filter(post__platform=platform_obj)
+                                    .values_list('post__board__name', flat=True)
+                                    .distinct())
+        other_boards = list(platform_obj.boards.values_list('name', flat=True).distinct())
+        other_boards = [board for board in other_boards if board not in q_boards]
+        print(q_boards, other_boards)
+        return q_boards, other_boards
+
+    else:
+        return list(platform_obj.boards.values_list('name', flat=True).distinct()), None
+
+
 def index(request, platform=None, board=None):
     s = PostDocument.search()
     if board:
-        platform_obj = Platform.objects.get(name=platform)
         threads = s.query('match', is_op=True) \
-                   .query('match', platform__name=platform) \
-                   .query('match', board__name=board) \
-                   .sort('-timestamp')
+            .query('match', platform__name=platform) \
+            .query('match', board__name=board) \
+            .sort('-timestamp')
     elif platform:
-        platform_obj = Platform.objects.get(name=platform)
         threads = s.query('match', is_op=True) \
-                   .query('match', platform__name=platform) \
-                   .sort('-timestamp')
+            .query('match', platform__name=platform) \
+            .sort('-timestamp')
     else:
         threads = s.query('match', is_op=True) \
-                   .sort('-timestamp')
+            .sort('-timestamp')
 
     page = int(request.GET.get('page', 1))
     results_per_page = 40
@@ -52,16 +68,18 @@ def index(request, platform=None, board=None):
     except EmptyPage:
         page_threads = paginator.page(paginator.num_pages)
 
-    template = loader.get_template('posts/index.html')
+    boards, other_boards = board_links(platform)
+
     context = {
         'thread_list': page_threads,
         'platform_name': platform,
         'board_name': board,
         'page_range': page_range,
+        'boards_links': boards,
+        'other_boards': other_boards
     }
-    if platform:
-        context['boards_links'] = list(platform_obj.boards.values_list('name', flat=True).distinct())
 
+    template = loader.get_template('posts/index.html')
     return HttpResponse(template.render(context, request))
 
 
@@ -71,10 +89,10 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         platform_obj = Platform.objects.get(name=platform)
         s = PostDocument.search()
         thread_posts = s.query('match', platform__name=platform) \
-                        .query('match', board__name=board) \
-                        .query('match', thread_id=thread_id) \
-                        .sort('post_id') \
-                        .extra(size=752)
+            .query('match', board__name=board) \
+            .query('match', thread_id=thread_id) \
+            .sort('post_id') \
+            .extra(size=752)
         thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
 
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
@@ -83,13 +101,16 @@ def thread(request, platform='8kun', board=None, thread_id=None):
 
         drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
 
+        boards, other_boards = board_links(platform)
+
         context = {
             'posts': thread_posts,
             'platform_name': platform,
             'board_name': board,
             'thread': thread_id,
             'drop_links': drop_links,
-            'boards_links': platform_obj.boards.values_list('name', flat=True).distinct()
+            'boards_links': boards,
+            'other_boards': other_boards
         }
 
     except ObjectDoesNotExist:

@@ -68,6 +68,22 @@
                         </div>
                     </li>
                 {% endif %}
+                {% if other_boards %}
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#other_boards" aria-expanded="false">
+                            Other Boards
+                        </button>
+                        <div class="collapse" id="other_boards">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                {% for board in other_boards %}
+                                    <li><a href="/{{ platform_name }}/{{ board }}"
+                                           class="link-dark rounded">/{{ board }}/</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
                 <li class="mb-1">
                     <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse"
                             data-bs-target="#drops" aria-expanded="false">
