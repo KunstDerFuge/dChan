@@ -20,7 +20,6 @@ from posts.models import Post, Board, Platform, Drop
 def board_links(platform):
     if not platform:
         return None, None
-    print(platform)
     platform_obj = Platform.objects.get(name=platform)
     if platform == '8kun':
         q_boards = list(Drop.objects.filter(post__platform=platform_obj)
@@ -28,7 +27,6 @@ def board_links(platform):
                                     .distinct())
         other_boards = list(platform_obj.boards.values_list('name', flat=True).distinct())
         other_boards = [board for board in other_boards if board not in q_boards]
-        print(q_boards, other_boards)
         return q_boards, other_boards
 
     else:
