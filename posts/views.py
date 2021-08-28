@@ -113,15 +113,16 @@ def thread(request, platform='8kun', board=None, thread_id=None):
 
     except ObjectDoesNotExist:
         # One of the .gets failed, i.e. this thread is not archived
-        pass
+        template = loader.get_template('posts/thread.html')
+        return HttpResponse(template.render(context, request), status=404)
 
     except Exception as e:
         print(e)
-        raise e
-
-    finally:
         template = loader.get_template('posts/thread.html')
-        return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request), status=500)
+
+    template = loader.get_template('posts/thread.html')
+    return HttpResponse(template.render(context, request))
 
 
 def drop(request, drop_no):
