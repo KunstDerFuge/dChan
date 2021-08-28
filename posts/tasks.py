@@ -102,6 +102,8 @@ def create_scrape_jobs():
     # Find the link count of each unarchived thread; this becomes its "bounty"
     urls = pd.Series(unarchived_threads).value_counts().rename_axis('url').reset_index(name='bounty')
     urls = urls.dropna()
+    print('URLs to scrape:')
+    print(urls)
 
     #                                      url  bounty
     # 0              /8chan/comms/res/283.html   42081
@@ -110,21 +112,21 @@ def create_scrape_jobs():
     # 3       /8chan/patriotsfight/res/62.html    1323
 
     # Now change the local URL to an actual scrapeable archive URL and parse out platform, board, and thread number
-    pattern = re.compile(r'/([0-9a-z]+)/([a-z]+)/res/([0-9]+)')
+    migrated_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan'),
+                                           migrated_to_8kun=True).values_list('name', flat=True)
+    echan_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan')).values_list('name', flat=True)
+    pattern = re.compile(r'/([a-z]+)/res/([0-9]+)')
 
     def parse_url_to_archive_url(row_):
         try:
-            migrated_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan'),
-                                                   migrated_to_8kun=True).values_list('name', flat=True)
             match = re.match(pattern, row_['url']).groups()
-            platform = match[0]
-            board = match[1]
-            if platform == '8chan' and board in migrated_boards:
+            board = match[0]
+            if board not in migrated_boards and board in echan_boards:
+                platform = '8chan'
+            else:
                 # We can scrape this from 8kun much faster than archive.is
                 platform = '8kun'
-            thread_id = match[2]
-            if platform == '4chan':
-                return  # Not yet implementing 4plebs auto-scraping
+            thread_id = match[1]
             sites = {'8chan': 'https://archive.today/newest/https://8ch.net', '8kun': 'https://8kun.top'}
             final_url = f'{sites[platform]}/{board}/res/{thread_id}.html'
             return platform, board, thread_id, final_url, row_['bounty']
@@ -164,3 +166,7 @@ def create_scrape_jobs():
             print(e)
 
     print(f'Created {new_jobs} new jobs.')
+
+
+def fetch_new_posts():
+
