@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 
 import markdown as md
 from .markdown_extensions import ChanExtensions
+from ..models import Board, Platform
 
 register = template.Library()
 
@@ -26,8 +27,7 @@ def markdown(text, links):
 def get_archive_link(path):
     parts = path.split('/')[1:]
     new_path = '/'.join(parts[1:])
-    site = {'8chan': 'https://8ch.net', '8kun': 'https://8kun.top'}
-    return f'https://archive.is/{site[parts[0]]}/{new_path}'
+    return f'https://archive.is/https://8kun.top/{new_path}'
 
 
 def hex_to_rgb(hex_):
