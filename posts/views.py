@@ -84,7 +84,6 @@ def index(request, platform=None, board=None):
 def thread(request, platform='8kun', board=None, thread_id=None):
     context = {}
     try:
-        platform_obj = Platform.objects.get(name=platform)
         s = PostDocument.search()
         thread_posts = s.query('match', platform__name=platform) \
             .query('match', board__name=board) \
@@ -92,6 +91,9 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             .sort('post_id') \
             .extra(size=752)
         thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
+
+        if len(thread_posts) == 0:
+            raise ObjectDoesNotExist
 
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
             .select_related('post__platform', 'post__board') \
