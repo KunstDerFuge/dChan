@@ -92,9 +92,6 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             .extra(size=752)
         thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
 
-        if len(thread_posts) == 0:
-            raise ObjectDoesNotExist
-
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
             .select_related('post__platform', 'post__board') \
             .order_by('number')
@@ -112,6 +109,9 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             'boards_links': boards,
             'other_boards': other_boards
         }
+
+        if len(thread_posts) == 0:
+            raise ObjectDoesNotExist
 
     except ObjectDoesNotExist:
         # One of the .gets failed, i.e. this thread is not archived
