@@ -166,7 +166,3 @@ def create_scrape_jobs():
             print(e)
 
     print(f'Created {new_jobs} new jobs.')
-
-
-def fetch_new_posts():
-
