@@ -121,11 +121,7 @@ def create_scrape_jobs():
         try:
             match = re.match(pattern, row_['url']).groups()
             board = match[0]
-            if board not in migrated_boards and board in echan_boards:
-                platform = '8chan'
-            else:
-                # We can scrape this from 8kun much faster than archive.is
-                platform = '8kun'
+            platform = '8kun'
             thread_id = match[1]
             sites = {'8chan': 'https://archive.today/newest/https://8ch.net', '8kun': 'https://8kun.top'}
             final_url = f'{sites[platform]}/{board}/res/{thread_id}.html'
