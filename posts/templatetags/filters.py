@@ -30,6 +30,14 @@ def get_archive_link(path):
     return f'https://archive.is/https://8kun.top/{new_path}'
 
 
+@register.filter(name='get_8kun_link')
+@stringfilter
+def get_8kun_link(path):
+    parts = path.split('/')[1:]
+    new_path = '/'.join(parts)
+    return f'https://8kun.top/{new_path}'
+
+
 def hex_to_rgb(hex_):
     try:
         r = int(hex_[:2], 16) / 255

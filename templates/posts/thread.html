@@ -22,8 +22,11 @@
         <div class="text-center pt-2">
             <h4>This page is not archived!</h4>
             <h5>...Yet.</h5>
-            <p>Go to archive.is: <a
+            <p>Try archive.is: <a
                     href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a>
+            </p>
+            <p>Or 8kun: <a
+                    href="{{ request.path|get_8kun_link }}">{{ request.path|get_8kun_link }}</a>
             </p>
         </div>
     {% endif %}
