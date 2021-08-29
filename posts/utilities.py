@@ -17,7 +17,7 @@ def process_replies(threads):
                                 columns=['platform', 'board', 'thread_no', 'post_no', 'links'])
         replies_df = process_replies_from_df(posts_df)
         for post in posts:
-            post.replies = replies_df[replies_df.post_no == post.post_id]
+            post.replies = replies_df[replies_df.post_no == post.post_id].replies
 
         Post.objects.bulk_update(posts, ['replies'])
 
