@@ -161,9 +161,7 @@ def commit_posts_from_df(df, platform_obj):
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
     posts_created = Post.objects.bulk_create(new_posts, ignore_conflicts=True)
-    posts_ids = [post.id for post in posts_created]
-    new_posts_qs = Post.objects.filter(id__in=posts_ids)
-    PostDocument().update(new_posts_qs)
+    PostDocument().update(posts_created)
 
     return threads
 
