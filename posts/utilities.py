@@ -9,35 +9,14 @@ from posts.documents import PostDocument
 from posts.models import Post, Board, Platform
 
 
-def process_replies(threads=None):
-    if not threads:
-        threads = Post.objects.values_list('thread_id', flat=True).distinct()
-
+def process_replies(threads):
     for thread in tqdm(threads):
-        first_post = Post.objects.filter(thread_id=thread).first()
-        thread_board = first_post.board
-        posts = thread_board.posts.filter(thread_id=thread)
-        all_replies = {}
+        posts = Post.objects.filter(thread_id=thread)
+        posts_df = pd.DataFrame(posts.values_list('platform', 'board', 'thread_id', 'post_id'),
+                                columns=['platform', 'board', 'thread_no', 'post_no'])
+        replies_df = process_replies_from_df(posts_df)
         for post in posts:
-            for link, url in post.links.items():
-                try:
-                    _, platform, board, _, end = url.split('/')
-                    if '#' in end:
-                        post_no = int(end.split('.')[-1].split('#')[-1])
-                    else:
-                        post_no = int(end.split('.')[0])
-
-                    if post_no in all_replies:
-                        all_replies[post_no].append([str(post.post_id), post.get_post_url()])
-                    else:
-                        all_replies[post_no] = [[str(post.post_id), post.get_post_url()]]
-
-                except Exception as e:
-                    continue
-
-        for post in posts:
-            if post.post_id in all_replies:
-                post.replies = sorted(all_replies[post.post_id], key=lambda x: x[0])
+            post.replies = replies_df[replies_df.post_no == post.post_id]
 
         Post.objects.bulk_update(posts, ['replies'])
 
@@ -45,7 +24,6 @@ def process_replies(threads=None):
 def process_replies_from_df(df):
     all_replies = {}
     df_with_replies = pd.DataFrame()
-    df.to_csv('test_this.csv')
 
     def aggregate_replies(row):
         def get_post_url(row_):
