@@ -51,6 +51,7 @@ def create_scrape_jobs():
 
     existing_threads = pd.DataFrame(
         Post.objects.all()
+            .filter(is_op=True)
             .values_list('platform__name', 'board__name', 'thread_id')
             .distinct(), columns=['platform', 'board', 'thread_id'])
 
