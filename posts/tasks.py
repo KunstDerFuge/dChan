@@ -1,9 +1,11 @@
 import re
+from datetime import datetime, timedelta
 
 import pandas as pd
 from celery import shared_task
 from scrapyd_api import ScrapydAPI
 
+from posts.documents import PostDocument
 from posts.models import Post, ScrapeJob, Platform, Board
 
 scrapyd = ScrapydAPI('http://localhost:6800')
@@ -152,6 +154,50 @@ def create_scrape_jobs():
             obj, created = ScrapeJob.objects.update_or_create(url=row['url'], defaults={
                 'bounty': row['bounty'],
                 'platform': row['platform'],
+                'board': row['board'],
+                'thread_id': row['thread_id']
+            })
+            if created:
+                new_jobs += 1
+
+        except Exception as e:
+            print(e)
+
+    print(f'Created {new_jobs} new jobs.')
+
+
+@shared_task
+def revisit_recent_threads(days=14):
+    now = datetime.now()
+    two_weeks_ago = now - timedelta(days=days)
+    s = PostDocument().search()
+    needs_revisited = pd.DataFrame(s.query('range', timestamp={'gte': two_weeks_ago})
+                                   .query('match', is_op=True)
+                                   .extra(size=10000)
+                                   .to_queryset()
+                                   .values_list('board__name', 'thread_id'), columns=['board', 'thread_id'])
+
+    def get_scrape_url(_row):
+        return f'https://8kun.top/{_row.board}/res/{_row.thread_id}.html'
+
+    def check_if_full(_row):
+        archived_posts_count = s.query('match', board__name=_row.board) \
+                                .query('match', thread_id=_row.thread_id).count()
+        if archived_posts_count >= 752:
+            return True
+        return False
+
+    needs_revisited['full'] = needs_revisited.apply(check_if_full, axis=1)
+    needs_revisited['url'] = needs_revisited.apply(get_scrape_url, axis=1)
+
+    new_jobs = 0
+    for index, row in needs_revisited.iterrows():
+        if row['full']:
+            continue
+        try:
+            obj, created = ScrapeJob.objects.update_or_create(url=row['url'], defaults={
+                'bounty': 10,
+                'platform': '8kun',
                 'board': row['board'],
                 'thread_id': row['thread_id']
             })

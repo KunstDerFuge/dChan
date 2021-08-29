@@ -128,6 +128,10 @@ CELERY_BEAT_SCHEDULE = {
     'create-scrape-jobs': {
         'task': 'posts.tasks.create_scrape_jobs',
         'schedule': 10 * 60,
+    },
+    'revisit-recent-threads': {
+        'task': 'posts.tasks.revisit_recent_threads',
+        'schedule': 120 * 60,
     }
 }
 
