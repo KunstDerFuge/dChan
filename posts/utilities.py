@@ -49,7 +49,12 @@ def process_replies_from_df(df):
 
     def aggregate_replies(row):
         def get_post_url(row_):
-            return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_no']}.html" + '#' + str(int(row_['post_no']))
+            if row_['platform'] == '4chan':
+                return f"/{row_['platform']}/{row_['board']}/res/{row_['thread_no']}.html" + '#' + str(
+                    int(row_['post_no']))
+            else:
+                return f"/{row_['board']}/res/{row_['thread_no']}.html" + '#' + str(int(row_['post_no']))
+
         try:
             for link, url in dict(row['links']).items():
                 try:
@@ -73,7 +78,8 @@ def process_replies_from_df(df):
 
     def link_replies(row):
         try:
-            if int(float(row['post_no'])) in all_replies:  # Looks hacky but we have to do this to handle e.g. '8222326.0'
+            if int(float(
+                    row['post_no'])) in all_replies:  # Looks hacky but we have to do this to handle e.g. '8222326.0'
                 row['replies'] = sorted(all_replies[int(row['post_no'])], key=lambda x: x[0])
             else:
                 row['replies'] = dict()
