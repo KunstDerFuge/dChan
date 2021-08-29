@@ -208,3 +208,11 @@ def revisit_recent_threads(days=14):
             print(e)
 
     print(f'Created {new_jobs} new jobs.')
+
+
+@shared_task
+def sync_elasticsearch():
+    now = datetime.now()
+    half_hour_ago = now - timedelta(minutes=30)
+    recently_scraped = Post.objects.filter(created_at__gte=half_hour_ago)
+    PostDocument().update(recently_scraped)
