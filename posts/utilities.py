@@ -11,7 +11,8 @@ from posts.models import Post, Board, Platform
 
 def process_replies(threads):
     for thread in tqdm(threads):
-        posts = Post.objects.filter(thread_id=thread)
+        s = PostDocument.search()
+        posts = s.query('match', thread_id=thread).extra(size=752).to_queryset()
         posts_df = pd.DataFrame(posts.values_list('platform', 'board', 'thread_id', 'post_id', 'links'),
                                 columns=['platform', 'board', 'thread_no', 'post_no', 'links'])
         replies_df = process_replies_from_df(posts_df)
