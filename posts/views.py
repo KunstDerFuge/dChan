@@ -25,8 +25,8 @@ def board_links(platform):
         q_boards = list(Drop.objects.filter(post__platform=platform_obj)
                                     .values_list('post__board__name', flat=True)
                                     .distinct())
-        other_boards = list(platform_obj.boards.values_list('name', flat=True).distinct())
-        other_boards = sorted([board for board in other_boards if board not in q_boards], key=lambda x: x.name)
+        other_boards = sorted(list(platform_obj.boards.values_list('name', flat=True).distinct()))
+        other_boards = sorted([board for board in other_boards if board not in q_boards])
         return q_boards, other_boards
 
     else:
