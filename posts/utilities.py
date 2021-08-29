@@ -132,7 +132,10 @@ def commit_posts_from_df(df, platform_obj):
                         links=row['links'], body_html=row['body_html'], replies=row['replies'])
             new_posts.append(post)
             if len(new_posts) >= 10000:
-                Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+                posts_created = Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+                posts_ids = [post.id for post in posts_created]
+                new_posts_qs = Post.objects.filter(id__in=posts_ids)
+                PostDocument().update(new_posts_qs)
                 new_posts = []
         except Exception as e:
             print('Failed to create Post object with row:')
