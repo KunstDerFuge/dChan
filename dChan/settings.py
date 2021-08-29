@@ -131,7 +131,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'revisit-recent-threads': {
         'task': 'posts.tasks.revisit_recent_threads',
-        'schedule': 120 * 60,
+        'schedule':  30 * 60,
     }
 }
 
