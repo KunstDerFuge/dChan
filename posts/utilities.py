@@ -37,7 +37,10 @@ def process_replies_from_df(df):
         try:
             for link, url in dict(row['links']).items():
                 try:
-                    _, platform, board, _, end = url.split('/')
+                    if row['platform'] == '4chan':
+                        _, platform, board, _, end = url.split('/')
+                    else:
+                        _, board, _, end = url.split('/')
                     if '#' in end:
                         post_no = int(end.split('.')[-1].split('#')[-1])
                     else:
