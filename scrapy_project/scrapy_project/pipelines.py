@@ -49,4 +49,6 @@ class ScrapyPostPipeline(object):
             print('Done!')
 
         finally:
-            spider.jobs.update(in_progress=False)
+            for job in spider.jobs:
+                job.in_progress = False
+                job.save()
