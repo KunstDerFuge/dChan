@@ -2,6 +2,11 @@ from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
 
+class JobType(models.TextChoices):
+    NEW = 'NEW'
+    REVISIT = 'REV'
+
+
 class ScrapeJob(models.Model):
     platform = models.CharField(max_length=12, null=True, blank=True)
     board = models.CharField(max_length=60, null=True, blank=True)
@@ -13,6 +18,12 @@ class ScrapeJob(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    job_type = models.CharField(
+        max_length=3,
+        choices=JobType.choices,
+        default=JobType.NEW,
+    )
+
     class Meta:
         ordering = ['-bounty']
         constraints = [
@@ -21,6 +32,9 @@ class ScrapeJob(models.Model):
 
     def __str__(self):
         out = f'Bounty {self.bounty}: {self.url}'
+        if self.job_type != JobType.NEW:
+            out += f' ({self.job_type})'
+
         if self.error_count > 0:
             out += f' Errors: {self.error_count}'
         if self.in_progress:
