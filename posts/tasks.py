@@ -15,11 +15,11 @@ scrapyd = ScrapydAPI('http://localhost:6800')
 def scrape_posts():
     try:
         # Grab top 30 8kun scrape jobs by bounty
-        eightkun_jobs = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10, in_progress=False) \
+        eightkun_jobs = ScrapeJob.objects.filter(platform='8kun', error_count__lt=2, in_progress=False) \
                             .order_by('-bounty')[:25]
 
         # Grab top 30 archive.is jobs by bounty
-        archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10, in_progress=False) \
+        archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=2, in_progress=False) \
                               .order_by('-bounty')[:5]
 
         # Create scrapyd task to scrape the 8kun posts
