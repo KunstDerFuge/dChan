@@ -12,8 +12,10 @@ from posts.models import Post, Board, Platform
 def process_replies(threads):
     for platform, board, thread in tqdm(threads):
         s = PostDocument.search()
-        posts = s.query('match', platform__name=platform, board__name=board, thread_id=thread) \
-                 .extra(size=752) \
+        posts = s.query('match', platform__name=platform) \
+                 .query('match', board__name=board) \
+                 .query('match', thread_id=thread) \
+            .extra(size=752) \
                  .to_queryset()
         posts_df = pd.DataFrame(posts.values_list('platform', 'board', 'thread_id', 'post_id', 'links'),
                                 columns=['platform', 'board', 'thread_no', 'post_no', 'links'])
