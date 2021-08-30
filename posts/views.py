@@ -150,7 +150,7 @@ class SearchResultsView(ListView):
         if q == '':
             return []
         s = PostDocument.search()
-        results = s.query('match', body=q).size(100).to_queryset()
+        results = s.query('match', body=q).extra(size=100).to_queryset()
         return results
 
 
