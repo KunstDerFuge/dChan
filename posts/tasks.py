@@ -6,7 +6,7 @@ from celery import shared_task
 from scrapyd_api import ScrapydAPI
 
 from posts.documents import PostDocument
-from posts.models import Post, ScrapeJob, Platform, Board
+from posts.models import Post, ScrapeJob, Platform, Board, JobType
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -203,7 +203,8 @@ def revisit_recent_threads(days=14):
                 'bounty': 10,
                 'platform': '8kun',
                 'board': row['board'],
-                'thread_id': row['thread_id']
+                'thread_id': row['thread_id'],
+                'job_type': JobType.REVISIT
             })
             if created:
                 new_jobs += 1
