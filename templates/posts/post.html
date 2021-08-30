@@ -1,4 +1,5 @@
 {% load filters %}
+{% load tz %}
 <article id="{{ post.post_id }}" class="article">
     <div class="card shadow-sm post-card">
         <header class="header">
@@ -18,7 +19,7 @@
                         href="{{ post.get_thread_url }}/{{ post.poster_hash }}">ID:&nbsp;{{ post.poster_hash }}</a></span>
             {% endif %}
             <span>{{ post.subject }}</span>
-            <span>{{ post.timestamp }}</span>
+            <span>{{ post.timestamp|timezone:"America/Los_Angeles" }}</span>
             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
             &nbsp;
             {% if platform_name == '4chan' %}
