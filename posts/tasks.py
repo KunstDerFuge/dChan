@@ -5,8 +5,9 @@ import pandas as pd
 from celery import shared_task
 from scrapyd_api import ScrapydAPI
 
+from posts.choices import JobType
 from posts.documents import PostDocument
-from posts.models import Post, ScrapeJob, Platform, Board, JobType
+from posts.models import Post, ScrapeJob
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 

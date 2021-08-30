@@ -1,10 +1,7 @@
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
-
-class JobType(models.TextChoices):
-    NEW = 'NEW'
-    REVISIT = 'REV'
+from posts.choices import JobType
 
 
 class ScrapeJob(models.Model):
