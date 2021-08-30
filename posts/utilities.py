@@ -132,7 +132,7 @@ def commit_posts_from_df(df, platform_obj):
             post = Post(platform=platform_obj, board=board, thread_id=row['thread_no'],
                         post_id=int(float(row['post_no'])), author=row['name'], poster_hash=row['poster_id'],
                         subject=row['subject'], body=row['body_text'], timestamp=row['timestamp'],
-                        tripcode=row['tripcode'], is_op=(row['post_no'] == row['thread_no']),
+                        tripcode=row['tripcode'], is_op=(int(row['post_no']) == int(row['thread_no'])),
                         links=row['links'], body_html=row['body_html'], replies=row['replies'])
             new_posts.append(post)
             if len(new_posts) >= 10000:
