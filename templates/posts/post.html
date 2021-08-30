@@ -14,7 +14,7 @@
             {% endif %}
             {% if post.poster_hash != '' %}
                 <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">&nbsp;<a
-                        target="_blank" style="text-decoration: none;"
+                        target="_blank" style="text-decoration: none; color: unset"
                         href="{{ post.get_thread_url }}/{{ post.poster_hash }}">ID:&nbsp;{{ post.poster_hash }}</a></span>
             {% endif %}
             <span>{{ post.subject }}</span>
