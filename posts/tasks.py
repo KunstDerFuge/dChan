@@ -49,9 +49,15 @@ def create_scrape_jobs():
         # Either no Posts or no ScrapeJobs, which is fine, let's move on
         pass
 
+    interesting_boards = [
+        'cbts', 'greatawakening', 'patriotsfight', 'pol', 'projectdcomms', 'qresearch', 'thestorm',
+        'comms', 'doughlist', 'midnightriders', 'qrb', 'warroom'
+    ]
+
     existing_threads = pd.DataFrame(
         Post.objects.all()
             .filter(is_op=True)
+            .filter(board__name__in=interesting_boards)
             .values_list('platform__name', 'board__name', 'thread_id')
             .distinct(), columns=['platform', 'board', 'thread_id'])
 
@@ -115,9 +121,6 @@ def create_scrape_jobs():
     # 3       /8chan/patriotsfight/res/62.html    1323
 
     # Now change the local URL to an actual scrapeable archive URL and parse out platform, board, and thread number
-    migrated_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan'),
-                                           migrated_to_8kun=True).values_list('name', flat=True)
-    echan_boards = Board.objects.filter(platform=Platform.objects.get(name='8chan')).values_list('name', flat=True)
     pattern = re.compile(r'/([a-z]+)/res/([0-9]+)')
 
     def parse_url_to_archive_url(row_):
