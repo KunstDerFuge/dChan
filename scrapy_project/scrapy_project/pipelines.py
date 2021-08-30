@@ -1,7 +1,8 @@
 import pandas as pd
 
 from posts import utilities
-from posts.models import Platform
+from posts.models import Platform, JobType
+from posts.utilities import process_replies
 
 
 class ArchiveIsPipeline(object):
@@ -48,5 +49,11 @@ class ScrapyPostPipeline(object):
                 job.save()
 
             print('Deleting finished jobs...')
-            spider.jobs.filter(url__in=self.scraped_urls).delete()
+            finished_jobs = spider.jobs.filter(url__in=self.scraped_urls)
+            threads_to_reprocess = []
+            for job in finished_jobs:
+                if job.job_type == JobType.REVISIT:
+                    threads_to_reprocess += (job.platform, job.board, job.thread_id)
+            process_replies(threads_to_reprocess)
+            finished_jobs.delete()
             print('Done!')
