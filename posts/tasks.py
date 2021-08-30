@@ -49,15 +49,9 @@ def create_scrape_jobs():
         # Either no Posts or no ScrapeJobs, which is fine, let's move on
         pass
 
-    interesting_boards = [
-        'cbts', 'greatawakening', 'patriotsfight', 'pol', 'projectdcomms', 'qresearch', 'thestorm',
-        'comms', 'doughlist', 'midnightriders', 'qrb', 'warroom'
-    ]
-
     existing_threads = pd.DataFrame(
         Post.objects.all()
             .filter(is_op=True)
-            .filter(board__name__in=interesting_boards)
             .values_list('platform__name', 'board__name', 'thread_id')
             .distinct(), columns=['platform', 'board', 'thread_id'])
 
@@ -81,9 +75,15 @@ def create_scrape_jobs():
     batch_size = total_posts // num_batches
     unarchived_threads = []
 
+    interesting_boards = [
+        'cbts', 'greatawakening', 'patriotsfight', 'pol', 'projectdcomms', 'qresearch', 'thestorm',
+        'comms', 'doughlist', 'midnightriders', 'qrb', 'warroom'
+    ]
+
     for i in range(num_batches):
         # Aggregate links from all threads
-        all_links = Post.objects.values_list('links', flat=True)[i * batch_size: i * batch_size + batch_size]
+        all_links = Post.objects.filter(board__name__in=interesting_boards) \
+                                .values_list('links', flat=True)[i * batch_size: i * batch_size + batch_size]
         all_links = [list(links.values()) for links in all_links]
         all_threads = []
         for links in all_links:
