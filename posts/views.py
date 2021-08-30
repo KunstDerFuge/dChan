@@ -81,7 +81,7 @@ def index(request, platform=None, board=None):
     return HttpResponse(template.render(context, request))
 
 
-def thread(request, platform='8kun', board=None, thread_id=None):
+def thread(request, platform='8kun', board=None, thread_id=None, poster_hash=None):
     context = {}
     try:
         s = PostDocument.search()
@@ -90,6 +90,10 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             .query('match', thread_id=thread_id) \
             .sort('post_id') \
             .extra(size=752)
+
+        if poster_hash:
+            thread_posts = thread_posts.query('match', poster_hash=poster_hash)
+
         thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
 
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
