@@ -1,5 +1,9 @@
 {% extends 'posts/base.html' %}
 {% load filters %}
+{% load static %}
+{% block head_extras %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
 {% block content %}
     <h4>Search Results:</h4>
     <br/>
