@@ -16,11 +16,11 @@ def scrape_posts():
     try:
         # Grab top 30 8kun scrape jobs by bounty
         eightkun_jobs = ScrapeJob.objects.filter(platform='8kun', error_count__lt=10, in_progress=False) \
-                                         .order_by('-bounty')[:25]
+                            .order_by('-bounty')[:25]
 
         # Grab top 30 archive.is jobs by bounty
         archive_is_jobs = ScrapeJob.objects.filter(url__contains='archive.', error_count__lt=10, in_progress=False) \
-                                           .order_by('-bounty')[:5]
+                              .order_by('-bounty')[:5]
 
         # Create scrapyd task to scrape the 8kun posts
         task = scrapyd.schedule('scrapy_project', '8kun_spider', jobs=','
@@ -152,12 +152,12 @@ def create_scrape_jobs():
     new_jobs = 0
     for index, row in archive_info.iterrows():
         try:
-            obj, created = ScrapeJob.objects.update_or_create(url=row['url'], defaults={
-                'bounty': row['bounty'],
-                'platform': row['platform'],
-                'board': row['board'],
-                'thread_id': row['thread_id']
-            })
+            obj, created = ScrapeJob.objects.update_or_create(platform=row['platform'], board=row['board'],
+                                                              thread_id=row['thread_id'],
+                                                              defaults={
+                                                                  'bounty': row['bounty'],
+                                                                  'url': row['url'],
+                                                              })
             if created:
                 new_jobs += 1
 
@@ -183,7 +183,7 @@ def revisit_recent_threads(days=14):
 
     def check_if_full(_row):
         archived_posts_count = s.query('match', board__name=_row.board) \
-                                .query('match', thread_id=_row.thread_id).count()
+            .query('match', thread_id=_row.thread_id).count()
         if archived_posts_count >= 752:
             return True
         return False
