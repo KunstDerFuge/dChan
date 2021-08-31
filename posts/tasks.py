@@ -8,6 +8,7 @@ from scrapyd_api import ScrapydAPI
 from posts.choices import JobType
 from posts.documents import PostDocument
 from posts.models import Post, ScrapeJob
+from posts.utilities import process_replies
 
 scrapyd = ScrapydAPI('http://localhost:6800')
 
@@ -84,7 +85,7 @@ def create_scrape_jobs():
     for i in range(num_batches):
         # Aggregate links from all threads
         all_links = Post.objects.filter(board__name__in=interesting_boards) \
-                                .values_list('links', flat=True)[i * batch_size: i * batch_size + batch_size]
+                        .values_list('links', flat=True)[i * batch_size: i * batch_size + batch_size]
         all_links = [list(links.values()) for links in all_links]
         all_threads = []
         for links in all_links:
@@ -221,4 +222,7 @@ def sync_elasticsearch():
     now = datetime.now()
     half_hour_ago = now - timedelta(minutes=30)
     recently_scraped = Post.objects.filter(created_at__gte=half_hour_ago)
+    recently_scraped_threads = list(
+        recently_scraped.values_list('platform__name', 'board__name', 'thread_id').distinct())
     PostDocument().update(recently_scraped)
+    process_replies(recently_scraped_threads)
