@@ -53,7 +53,7 @@ class ScrapyPostPipeline(object):
             threads_to_reprocess = []
             for job in finished_jobs:
                 if job.job_type == JobType.REVISIT:
-                    threads_to_reprocess += (job.platform, job.board, job.thread_id)
+                    threads_to_reprocess.append((job.platform, job.board, job.thread_id))
             process_replies(threads_to_reprocess)
             finished_jobs.delete()
             print('Done!')
