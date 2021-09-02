@@ -175,7 +175,7 @@ class AdvancedSearch(ListView):
         return context
 
 
-def first_to_say(phrase):
+def first_to_say(request, phrase):
     s = Search(index='posts').from_dict({
         'keywords_filter': {
             'filter': {
