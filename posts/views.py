@@ -176,13 +176,8 @@ class AdvancedSearch(ListView):
 
 
 def first_to_say(request, phrase):
-    s = Search(index='posts').from_dict({
-        'query': {
-            'match_phrase': {
-                'body': phrase
-            }
-        }
-    })
+    s = PostDocument.search()
+    s = s.query('match_phrase', body=phrase)
     results = s.sort('timestamp').extra(size=100).to_queryset()
     template = loader.get_template('posts/thread.html')
     return HttpResponse(template.render({'posts': results}, request))
