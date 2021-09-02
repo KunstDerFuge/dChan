@@ -23,8 +23,8 @@ def board_links(platform):
     platform_obj = Platform.objects.get(name=platform)
     if platform == '8kun':
         q_boards = list(Drop.objects.filter(post__platform=platform_obj)
-                                    .values_list('post__board__name', flat=True)
-                                    .distinct())
+                        .values_list('post__board__name', flat=True)
+                        .distinct())
         other_boards = sorted(list(platform_obj.boards.values_list('name', flat=True).distinct()))
         other_boards = sorted([board for board in other_boards if board not in q_boards])
         return q_boards, other_boards
@@ -177,17 +177,15 @@ class AdvancedSearch(ListView):
 
 def first_to_say(request, phrase):
     s = Search(index='posts').from_dict({
-        'keywords_filter': {
-            'filter': {
-                'bool': {
-                    'must': [
-                        {
-                            'match_phrase': {
-                                'body': phrase
-                            }
+        'filter': {
+            'bool': {
+                'must': [
+                    {
+                        'match_phrase': {
+                            'body': phrase
                         }
-                    ]
-                }
+                    }
+                ]
             }
         }
     })
