@@ -177,15 +177,9 @@ class AdvancedSearch(ListView):
 
 def first_to_say(request, phrase):
     s = Search(index='posts').from_dict({
-        'filter': {
-            'bool': {
-                'must': [
-                    {
-                        'match_phrase': {
-                            'body': phrase
-                        }
-                    }
-                ]
+        'query': {
+            'match_phrase': {
+                'body': phrase
             }
         }
     })
