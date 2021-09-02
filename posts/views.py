@@ -175,6 +175,27 @@ class AdvancedSearch(ListView):
         return context
 
 
+def first_to_say(phrase):
+    s = Search(index='posts').from_dict({
+        'keywords_filter': {
+            'filter': {
+                'bool': {
+                    'must': [
+                        {
+                            'match_phrase': {
+                                'body': phrase
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    })
+    results = s.sort('timestamp').extra(size=100).to_queryset()
+    template = loader.get_template('posts/thread.html')
+    return HttpResponse(template.render({'posts': results}, request))
+
+
 def timeseries_from_keywords(request):
     keywords = request.GET.get('keywords')
     agg = request.GET.get('agg')
