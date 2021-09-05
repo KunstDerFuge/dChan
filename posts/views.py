@@ -176,7 +176,7 @@ class SearchResultsView(ListView):
             s = s.query('range', timestamp={'gte': date_start})
         if date_end:
             s = s.query('range', timestamp={'lte': date_end})
-        if q and q is not '':
+        if q and q != '':
             s = s.query('match', body=q)
         results = s.extra(size=100).to_queryset()
         return results
