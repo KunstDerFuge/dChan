@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 
@@ -151,9 +152,30 @@ class SearchResultsView(ListView):
 
     def get_queryset(self):
         q = self.request.GET.get('q')
+        thread_no = self.request.GET.get('thread_no')
+        subject = self.request.GET.get('subject')
+        name = self.request.GET.get('name')
+        tripcode = self.request.GET.get('tripcode')
+        user_id = self.request.GET.get('user_id')
+        date_start = self.request.GET.get('date_start')
+        date_end = self.request.GET.get('date_end')
         if q == '':
             return []
         s = PostDocument.search()
+        if thread_no:
+            s = s.query('match', thread_id=thread_no)
+        if subject:
+            s = s.query('match', subject=subject)
+        if name:
+            s = s.query('match', author=name)
+        if tripcode:
+            s = s.query('match', tripcode=tripcode)
+        if user_id:
+            s = s.query('match', poster_hash=user_id)
+        if date_start:
+            s = s.query('range', timestamp={'gte': date_start})
+        if date_end:
+            s = s.query('range', timestamp={'lte': date_end})
         results = s.query('match', body=q).extra(size=100).to_queryset()
         return results
 
