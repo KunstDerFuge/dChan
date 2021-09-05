@@ -159,7 +159,7 @@ class SearchResultsView(ListView):
         user_id = self.request.GET.get('user_id')
         date_start = self.request.GET.get('date_start')
         date_end = self.request.GET.get('date_end')
-        if q == '':
+        if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
             return []
         s = PostDocument.search()
         if thread_no:
@@ -176,7 +176,9 @@ class SearchResultsView(ListView):
             s = s.query('range', timestamp={'gte': date_start})
         if date_end:
             s = s.query('range', timestamp={'lte': date_end})
-        results = s.query('match', body=q).extra(size=100).to_queryset()
+        if q and q is not '':
+            s = s.query('match', body=q)
+        results = s.extra(size=100).to_queryset()
         return results
 
 
