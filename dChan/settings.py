@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django_elasticsearch_dsl',
     'corsheaders',
-    'debug_toolbar'
+    'debug_toolbar',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [

@@ -200,7 +200,8 @@ def search_results(request):
 
     context = {
         'results': page_results,
-        'page_range': page_range
+        'page_range': page_range,
+        'hits': s.count()
     }
 
     template = loader.get_template('posts/search_results.html')

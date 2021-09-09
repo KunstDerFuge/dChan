@@ -1,4 +1,5 @@
 {% extends 'posts/base.html' %}
+{% load humanize %}
 {% load filters %}
 {% load static %}
 {% block head_extras %}
@@ -6,6 +7,9 @@
 {% endblock %}
 {% block content %}
     <h4>Search Results:</h4>
+    {% if results %}
+    <p>{{ hits | intword | intcomma }} matches.</p>
+    {% endif %}
     <br/>
     {% if results %}
         {% for post in results %}
