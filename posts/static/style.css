@@ -303,7 +303,7 @@ span.pln {
     font-size: 13px;
     min-height: 1.16em;
     margin: 0;
-    padding: 6px 0 0.4em;
+    padding: 6px 0.4em 0.4em;
 }
 
 .author {
