@@ -51,12 +51,8 @@
                                 style="text-decoration: none" href="{{ reply.1 }}"><b
                                 class="text-black-50">Q!</b></a>
                         {% else %}
-                            <span class="d-inline-block" tabindex="0" data-toggle="popover"
-                                  data-html="true" data-trigger="hover" title="test"
-                                  data-content="<div>Testing</div>">
                             <a class="link-secondary"
                                href="{{ reply.1 }}">{{ reply.0 | reply_string }}</a>
-                            </span>
                         {% endif %}
                     </span>
                 {% endfor %}

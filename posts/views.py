@@ -157,19 +157,25 @@ def search_results(request):
     sort = request.GET.get('sort')
     if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
         return []
-    s = Search(index='posts', model=Post).from_dict({
-        'query': {
-            'match': {
-                'body': {
-                    'query': q,
-                    'operator': 'and'
+
+    if q:
+        s = Search(index='posts', model=Post).from_dict({
+            'query': {
+                'match': {
+                    'body': {
+                        'query': q,
+                        'operator': 'and'
+                    }
                 }
             }
-        }
-    })
-    # Setting _model has to be done to use .to_queryset() since we are creating the search from a dict, not PostDocument
-    # There is almost definitely a better, less ugly way but this works
-    s._model = Post
+        })
+        # Setting _model has to be done to use .to_queryset() since we are creating the search from a dict,
+        # not PostDocument
+        # There is almost definitely a better, less ugly way but this works
+        s._model = Post
+    else:
+        s = PostDocument.search()
+
     if thread_no:
         s = s.query('match', thread_id=thread_no)
     if subject:
