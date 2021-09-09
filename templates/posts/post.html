@@ -61,5 +61,8 @@
             </small>
         </header>
         <div class="post-body">{{ post.body | escape | markdown:post.links }}</div>
+    {% if '/search/' in request.path %}
+        <a class="stretched-link" href="{{ post.get_post_url }}"></a>
+    {% endif %}
     </div>
 </article>

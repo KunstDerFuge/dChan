@@ -1,5 +1,4 @@
 {% extends 'posts/base.html' %}
-{% load tags %}
 {% load filters %}
 {% load static %}
 {% block head_extras %}
@@ -9,38 +8,13 @@
     <h4>Search Results:</h4>
     <br/>
     {% if results %}
-        <article
-                style="display: block; font-family: helvetica neue, Helvetica, Arial, sans-serif; font-size: 13px; line-height: 18px">
-            {% for post in results %}
-                <article id="{{ post.post_id }}"
-                         style="margin: 0 5px 3px 16px; display: block;font-family: arial, helvetica, sans-serif">
-                    <div class="card" style="display: table-cell;
-                            padding: 4px 4px 10px 10px;
-                            background: rgb(214, 218, 240);
-                            border-bottom: 1px solid #ccc;">
-                        <header style="text-align:left;clear:none;display:block;line-height:1.16em;font-size:13px;min-height:1.16em;margin: 0px; padding: 6px 0px 0.4em;">
-                            <div style="padding: 0 6px 0 0;">
-                                <span style="font-weight: 700; color: #117743;">{{ post.author }}</span>
-                                {% if post.tripcode %}
-                                    <span class="trip">{{ post.tripcode }}</span>
-                                {% endif %}
-                                <span>{{ post.subject }}</span>
-                                <span>{{ post.timestamp }}</span>
-                                <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
-                                &nbsp;
-                                <span><a href="{{ post.get_post_url }}">[Go to Post]</a></span>
-                            </div>
-                        </header>
-                        <div style="padding: 12px; margin-bottom: -20px">{{ post.body|markdown:post.links|truncatechars_html:500 }}</div>
-                    </div>
-                </article>
-                </a>
-            {% endfor %}
-        </article>
+        {% for post in results %}
+            {% include 'posts/post.html' %}
+        {% endfor %}
     {% else %}
         <p>No results.</p>
     {% endif %}
-        {% if results.has_other_pages %}
+    {% if results.has_other_pages %}
         <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
             {% if results.has_previous %}
                 <li class="page-item"><a class="page-link"
@@ -57,12 +31,14 @@
                     {% if i == thread_list.paginator.ELLIPSIS %}
                         <li class="page-item"><span class="page-link">{{ i }}</span></li>
                     {% else %}
-                        <li class="page-item"><a class="page-link" href="{% url_replace request 'page' i %}">{{ i }}</a></li>
+                        <li class="page-item"><a class="page-link" href="{% url_replace request 'page' i %}">{{ i }}</a>
+                        </li>
                     {% endif %}
                 {% endif %}
             {% endfor %}
             {% if results.has_next %}
-                <li class="page-item"><a class="page-link" href="{% url_replace request 'page' results.next_page_number %}">&raquo;</a>
+                <li class="page-item"><a class="page-link"
+                                         href="{% url_replace request 'page' results.next_page_number %}">&raquo;</a>
                 </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
