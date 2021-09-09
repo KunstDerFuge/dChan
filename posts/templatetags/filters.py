@@ -1,5 +1,6 @@
 import hashlib
 import re
+import urllib.parse
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -102,3 +103,13 @@ def get_cracked_pass(tripcode):
 @stringfilter
 def reply_string(post_no):
     return f'>>{post_no[-4:]}'
+
+
+@register.simple_tag
+def url_replace(request, field, value):
+
+    dict_ = request.GET.copy()
+
+    dict_[field] = value
+
+    return '?' + urllib.parse.urlencode(dict_)

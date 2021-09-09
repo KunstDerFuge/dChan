@@ -145,41 +145,60 @@ def drop(request, drop_no):
     return redirect(q_drop.post.get_post_url())
 
 
-class SearchResultsView(ListView):
-    model = Post
-    template_name = 'posts/search_results.html'
-    context_object_name = 'results'
+def search_results(request):
+    q = request.GET.get('q')
+    thread_no = request.GET.get('thread_no')
+    subject = request.GET.get('subject')
+    name = request.GET.get('name')
+    tripcode = request.GET.get('tripcode')
+    user_id = request.GET.get('user_id')
+    date_start = request.GET.get('date_start')
+    date_end = request.GET.get('date_end')
+    if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
+        return []
+    s = PostDocument.search()
+    if thread_no:
+        s = s.query('match', thread_id=thread_no)
+    if subject:
+        s = s.query('match', subject=subject)
+    if name:
+        s = s.query('match', author=name)
+    if tripcode:
+        s = s.query('match', tripcode=tripcode)
+    if user_id:
+        s = s.query('match', poster_hash=user_id)
+    if date_start:
+        s = s.query('range', timestamp={'gte': date_start})
+    if date_end:
+        s = s.query('range', timestamp={'lte': date_end})
+    if q and q != '':
+        s = s.query('match', body=q)
 
-    def get_queryset(self):
-        q = self.request.GET.get('q')
-        thread_no = self.request.GET.get('thread_no')
-        subject = self.request.GET.get('subject')
-        name = self.request.GET.get('name')
-        tripcode = self.request.GET.get('tripcode')
-        user_id = self.request.GET.get('user_id')
-        date_start = self.request.GET.get('date_start')
-        date_end = self.request.GET.get('date_end')
-        if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
-            return []
-        s = PostDocument.search()
-        if thread_no:
-            s = s.query('match', thread_id=thread_no)
-        if subject:
-            s = s.query('match', subject=subject)
-        if name:
-            s = s.query('match', author=name)
-        if tripcode:
-            s = s.query('match', tripcode=tripcode)
-        if user_id:
-            s = s.query('match', poster_hash=user_id)
-        if date_start:
-            s = s.query('range', timestamp={'gte': date_start})
-        if date_end:
-            s = s.query('range', timestamp={'lte': date_end})
-        if q and q != '':
-            s = s.query('match', body=q)
-        results = s.extra(size=100).to_queryset()
-        return results
+    page = int(request.GET.get('page', 1))
+    results_per_page = 50
+    start = (page - 1) * results_per_page
+    end = start + results_per_page
+    results = s[start:end]
+    queryset = results.to_queryset().select_related('platform', 'board')
+    response = results.execute()
+    paginator = DSEPaginator(response, results_per_page)
+    paginator.set_queryset(queryset)
+    page_range = paginator.get_elided_page_range(number=page)
+
+    try:
+        page_results = paginator.page(page)
+    except PageNotAnInteger:
+        page_results = paginator.page(1)
+    except EmptyPage:
+        page_results = paginator.page(paginator.num_pages)
+
+    context = {
+        'results': page_results,
+        'page_range': page_range
+    }
+
+    template = loader.get_template('posts/search_results.html')
+    return HttpResponse(template.render(context, request))
 
 
 class AdvancedSearch(ListView):

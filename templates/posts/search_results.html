@@ -1,4 +1,5 @@
 {% extends 'posts/base.html' %}
+{% load tags %}
 {% load filters %}
 {% load static %}
 {% block head_extras %}
@@ -38,5 +39,34 @@
         </article>
     {% else %}
         <p>No results.</p>
+    {% endif %}
+        {% if results.has_other_pages %}
+        <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
+            {% if results.has_previous %}
+                <li class="page-item"><a class="page-link"
+                                         href="{% url_replace request 'page' results.previous_page_number %}">&laquo;</a>
+                </li>
+            {% else %}
+                <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+            {% for i in page_range|default_if_none:results.paginator.get_elided_page_range %}
+                {% if results.number == i %}
+                    <li class="active page-item"><span class="page-link">{{ i }}</span>
+                    </li>
+                {% else %}
+                    {% if i == thread_list.paginator.ELLIPSIS %}
+                        <li class="page-item"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{% url_replace request 'page' i %}">{{ i }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if results.has_next %}
+                <li class="page-item"><a class="page-link" href="{% url_replace request 'page' results.next_page_number %}">&raquo;</a>
+                </li>
+            {% else %}
+                <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
     {% endif %}
 {% endblock %}

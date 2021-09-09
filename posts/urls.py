@@ -2,12 +2,12 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from . import views
-from .views import SearchResultsView, AdvancedSearch, timeseries_from_keywords, FrontendAppView
+from .views import AdvancedSearch, timeseries_from_keywords, FrontendAppView, search_results
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('search/advanced/', AdvancedSearch.as_view(), name='advanced_search'),
-    path('search/', SearchResultsView.as_view(), name='search_results'),
+    path('search/', search_results, name='search_results'),
     path('data/', timeseries_from_keywords, name='timeseries'),
     path('timeseries/', FrontendAppView.as_view(), name='timeseries_frontend'),
     path('drop/<int:drop_no>', views.drop, name='drop'),
