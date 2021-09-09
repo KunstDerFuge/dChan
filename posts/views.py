@@ -90,7 +90,7 @@ def thread(request, platform='8kun', board=None, thread_id=None, poster_hash=Non
             .query('match', board__name=board) \
             .query('match', thread_id=thread_id) \
             .sort('post_id') \
-            .extra(size=752)
+            .extra(size=800)
 
         if poster_hash:
             thread_posts = thread_posts.query('match', poster_hash=poster_hash)
@@ -161,11 +161,9 @@ def search_results(request):
     if q:
         s = Search(index='posts', model=Post).from_dict({
             'query': {
-                'match': {
-                    'body': {
-                        'query': q,
-                        'operator': 'and'
-                    }
+                'query_string': {
+                    'query': q,
+                    'default_field': 'body'
                 }
             }
         })
