@@ -22,20 +22,22 @@
             <span>{{ post.timestamp|timezone:"America/Los_Angeles" }}</span>
             <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
             &nbsp;
-            {% if platform_name == '4chan' %}
-                <span><a href="{{ post.get_archive_url }}"
-                         style="text-decoration: none">🗄️plebs</a></span>
-            {% else %}
-                <span><a href="{{ post.get_archive_url }}"
-                         style="text-decoration: none">🗄️.is</a></span>
-            {% endif %}
-            {% if platform_name == '8kun' %}
-                <span><a href="{{ post.get_8kun_url }}" target="_blank"
-                         style="text-decoration: none">🔗kun</a></span>
-            {% endif %}
-            {% if platform_name == '8chan' and board_name == 'qresearch' %}
-                <span><a href="{{ post.get_8kun_url }}" target="_blank"
-                         style="text-decoration: none">🔗kun</a></span>
+            {% if '/search/' not in request.path %}
+                {% if platform_name == '4chan' %}
+                    <span><a href="{{ post.get_archive_url }}"
+                             style="text-decoration: none">🗄️plebs</a></span>
+                {% else %}
+                    <span><a href="{{ post.get_archive_url }}"
+                             style="text-decoration: none">🗄️.is</a></span>
+                {% endif %}
+                {% if platform_name == '8kun' %}
+                    <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                             style="text-decoration: none">🔗kun</a></span>
+                {% endif %}
+                {% if platform_name == '8chan' and board_name == 'qresearch' %}
+                    <span><a href="{{ post.get_8kun_url }}" target="_blank"
+                             style="text-decoration: none">🔗kun</a></span>
+                {% endif %}
             {% endif %}
             <small>
                 {% if post.replies %}
