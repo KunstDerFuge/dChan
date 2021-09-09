@@ -157,7 +157,19 @@ def search_results(request):
     sort = request.GET.get('sort')
     if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
         return []
-    s = PostDocument.search()
+    s = Search(index='posts', model=Post).from_dict({
+        'query': {
+            'match': {
+                'body': {
+                    'query': q,
+                    'operator': 'and'
+                }
+            }
+        }
+    })
+    # Setting _model has to be done to use .to_queryset() since we are creating the search from a dict, not PostDocument
+    # There is almost definitely a better, less ugly way but this works
+    s._model = Post
     if thread_no:
         s = s.query('match', thread_id=thread_no)
     if subject:
@@ -172,13 +184,16 @@ def search_results(request):
         s = s.query('range', timestamp={'gte': date_start})
     if date_end:
         s = s.query('range', timestamp={'lte': date_end})
-    if q and q != '':
-        s = s.query('match', body=q)
     if sort:
         if sort == 'newest':
             s = s.sort('-timestamp')
         if sort == 'oldest':
             s = s.sort('timestamp')
+        if sort == 'relevance':
+            # Already sorted by relevance
+            pass
+    else:
+        s = s.sort('-timestamp')
 
     page = int(request.GET.get('page', 1))
     results_per_page = 50
