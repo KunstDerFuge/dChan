@@ -154,6 +154,7 @@ def search_results(request):
     user_id = request.GET.get('user_id')
     date_start = request.GET.get('date_start')
     date_end = request.GET.get('date_end')
+    sort = request.GET.get('sort')
     if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
         return []
     s = PostDocument.search()
@@ -173,6 +174,11 @@ def search_results(request):
         s = s.query('range', timestamp={'lte': date_end})
     if q and q != '':
         s = s.query('match', body=q)
+    if sort:
+        if sort == 'newest':
+            s = s.sort('-timestamp')
+        if sort == 'oldest':
+            s = s.sort('timestamp')
 
     page = int(request.GET.get('page', 1))
     results_per_page = 50
