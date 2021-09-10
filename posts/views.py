@@ -158,7 +158,7 @@ def search_results(request):
     if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
         return []
 
-    if q:
+    if q and q != '':
         s = Search(index='posts', model=Post).from_dict({
             'query': {
                 'query_string': {
