@@ -161,9 +161,11 @@ def search_results(request):
     if q and q != '':
         s = Search(index='posts', model=Post).from_dict({
             'query': {
-                'query_string': {
-                    'query': q,
-                    'default_field': 'body'
+                'match': {
+                    'body': {
+                        'query': q,
+                        'operator': 'and'
+                    }
                 }
             }
         })
