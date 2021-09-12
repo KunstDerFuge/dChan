@@ -1,5 +1,4 @@
 {% extends 'posts/base.html' %}
-{% load tz %}
 {% block content %}
     {% if board_name %}
         <nav aria-label="breadcrumb">
@@ -21,7 +20,7 @@
         <table class="table">
             {% for thread in thread_list %}
                 <tr>
-                    <td>{{ thread.timestamp.date|timezone:"America/Los_Angeles" }}</td>
+                    <td>{{ thread.timestamp.date }}</td>
                     <td>
                         <a href="{{ thread.get_thread_url }}">
                             {% if thread.subject %}
