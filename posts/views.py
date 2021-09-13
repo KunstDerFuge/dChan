@@ -279,6 +279,13 @@ def timeseries_from_keywords(request):
                                             'query': keywords,
                                             'default_field': 'body',
                                             'analyze_wildcard': True
+                                        },
+                                        'query': {
+                                            'range': {
+                                                'timestamp': {
+                                                    'gte': '2017-10-28'
+                                                }
+                                            }
                                         }
                                     }
                                 ]
