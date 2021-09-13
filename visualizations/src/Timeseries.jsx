@@ -77,7 +77,7 @@ const Timeseries = (props) => {
       .attr('x', width / 2)
       .attr('y', 20)
       .style('text-anchor', 'middle')
-      .text(`Posts by ${agg} matching query "${keywords}" ${perMille ? 'per 1000 posts' : ''}`)
+      .text(`Posts by ${agg} ${perMille ? 'per 1000 posts ' : ''} matching query: ${keywords}`)
 
     // y axis label
     svg.select('.y-label')
