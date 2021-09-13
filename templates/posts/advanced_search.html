@@ -1,13 +1,32 @@
-{% extends 'posts/8chan_base.html' %}
+{% extends 'posts/base.html' %}
 {% block content %}
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height:200px">
         <div style="font-weight: 700; font-size: 5em; padding-bottom: 0.2em; text-shadow: 2px 2px 4px #444;">
-            <span style="color: blue">Q</span><span style="color: red">o</span><span style="color: gold">o</span><span style="color: blue">g</span><span style="color: green">l</span><span style="color: red">e</span>
+            <span style="color: blue">Q</span><span style="color: red">o</span><span style="color: gold">o</span><span
+                style="color: blue">g</span><span style="color: green">l</span><span style="color: red">e</span>
         </div>
-        <form>
-            <input name="q" type="search" style="font-size: 2em"/>
-            <button type="submit" style="font-size: 2em">Go!</button>
-            <input type="checkbox"
+        <form class="d-flex" action="{% url 'search_results' %}" method="get">
+            <div class="container">
+                <div class="row">
+                    <div class="input-group mb-3">
+                        <input name="q" class="form-control" type="search" placeholder="Search"
+                               aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-3">
+                        <div class="list-group">
+                            {% for board in boards %}
+                                <label class="list-group-item">
+                                    <input class="form-check-input me-1" type="checkbox" value="">
+                                    {{ board.0 }}/{{ board.1 }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 {% endblock %}
