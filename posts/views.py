@@ -275,8 +275,9 @@ def timeseries_from_keywords(request):
                             'bool': {
                                 'must': [
                                     {
-                                        'match_phrase': {
-                                            'body': keywords
+                                        'query_string': {
+                                            'query': keywords,
+                                            'default_field': 'body'
                                         }
                                     }
                                 ]
