@@ -260,6 +260,13 @@ def timeseries_from_keywords(request):
     agg = request.GET.get('agg')
 
     s = Search(index='posts').from_dict({
+        'query': {
+            'range': {
+                'timestamp': {
+                    'gte': '2017-10-28'
+                }
+            }
+        },
         'aggs': {
             "posts_over_time": {
                 "date_histogram": {
