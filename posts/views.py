@@ -275,19 +275,19 @@ def timeseries_from_keywords(request):
                             'bool': {
                                 'must': [
                                     {
+                                        'range': {
+                                            'timestamp': {
+                                                'gte': '2017-10-28'
+                                            }
+                                        }
+                                    },
+                                    {
                                         'query_string': {
                                             'query': keywords,
                                             'default_field': 'body',
                                             'analyze_wildcard': True
                                         },
-                                        'query': {
-                                            'range': {
-                                                'timestamp': {
-                                                    'gte': '2017-10-28'
-                                                }
-                                            }
-                                        }
-                                    }
+                                    },
                                 ]
                             }
                         },
