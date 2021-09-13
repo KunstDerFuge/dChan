@@ -16,7 +16,7 @@
             {% if post.poster_hash != '' %}
                 <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}"><a
                         target="_blank" style="text-decoration: none; color: unset"
-                        href="{{ post.get_thread_url }}/{{ post.poster_hash | urlencode }}">ID:&nbsp;{{ post.poster_hash }}</a></span>
+                        href="{% url_replace request 'poster_hash' post.poster_hash %}">ID:&nbsp;{{ post.poster_hash }}</a></span>
             {% endif %}
             <span>{{ post.subject }}</span>
             <span>{{ post.timestamp|timezone:"America/Los_Angeles" }}</span>

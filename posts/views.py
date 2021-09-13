@@ -82,8 +82,9 @@ def index(request, platform=None, board=None):
     return HttpResponse(template.render(context, request))
 
 
-def thread(request, platform='8kun', board=None, thread_id=None, poster_hash=None):
+def thread(request, platform='8kun', board=None, thread_id=None):
     context = {}
+    poster_hash = request.GET.get('poster_hash')
     try:
         s = PostDocument.search()
         thread_posts = s.query('match', platform__name=platform) \
