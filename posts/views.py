@@ -277,7 +277,8 @@ def timeseries_from_keywords(request):
                                     {
                                         'query_string': {
                                             'query': keywords,
-                                            'default_field': 'body'
+                                            'default_field': 'body',
+                                            'analyze_wildcard': True
                                         }
                                     }
                                 ]
