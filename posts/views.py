@@ -165,7 +165,8 @@ def search_results(request):
                 'simple_query_string': {
                     'query': q,
                     'fields': ['subject^2', 'body'],
-                    'default_operator': 'and'
+                    'default_operator': 'and',
+                    'analyze_wildcard': True
                 }
             }
         })
