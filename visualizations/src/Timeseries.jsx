@@ -36,7 +36,7 @@ const Timeseries = (props) => {
 
   React.useEffect(() => {
     setWidth(props.parent.current.offsetWidth)
-    setHeight(props.parent.current.offsetHeight)
+    setHeight(width * 0.6)
     console.log(width, height)
   }, [props.parent])
 
