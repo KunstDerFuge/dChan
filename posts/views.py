@@ -316,7 +316,11 @@ def timeseries_from_keywords(request):
 
 
 def timeseries_frontend(request):
-    os.chdir(os.path.join('visualizations', 'build'))
-    js_chunks = glob.glob(os.path.join('static', 'js', '*.chunk.js'))
-    template = loader.get_template('posts/timeseries.html')
-    return HttpResponse(template.render({'js_chunks': js_chunks}, request))
+    try:
+        print(os.listdir())
+        os.chdir(os.path.join('visualizations', 'build'))
+        js_chunks = glob.glob(os.path.join('static', 'js', '*.chunk.js'))
+        template = loader.get_template('posts/timeseries.html')
+        return HttpResponse(template.render({'js_chunks': js_chunks}, request))
+    finally:
+        os.chdir(os.path.join('..', '..'))
