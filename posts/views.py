@@ -256,6 +256,11 @@ def first_to_say(request, phrase):
 def timeseries_from_keywords(request):
     keywords = request.GET.get('keywords')
     agg = request.GET.get('agg')
+    syntax = request.GET.get('syntax')
+    if syntax == 'simple':
+        query_type = 'simple_query_string'
+    else:
+        query_type = 'query_string'
 
     s = Search(index='posts').from_dict({
         'query': {
@@ -287,7 +292,7 @@ def timeseries_from_keywords(request):
                                         }
                                     },
                                     {
-                                        'query_string': {
+                                        query_type: {
                                             'query': keywords,
                                             'default_field': 'body',
                                             'default_operator': 'AND',
