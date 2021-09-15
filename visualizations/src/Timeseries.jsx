@@ -18,7 +18,7 @@ const Timeseries = (props) => {
     const resizeListener = () => {
       console.log('Updating size...')
       setWidth(props.parent.current.offsetWidth - 30)
-      setHeight(props.parent.current.offsetHeight - 30)
+      setHeight(width * 0.6)
       console.log(width, height)
     }
     window.addEventListener('resize', resizeListener)
