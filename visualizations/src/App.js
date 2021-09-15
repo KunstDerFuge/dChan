@@ -9,7 +9,7 @@ function App() {
     <>
       {
         <div style={{height: isMobile ? 1000 : 500, width: '100%', padding: '10px'}}>
-          <Timeseries width={1200} height={400}/>
+          <Timeseries width={1000} height={400}/>
         </div>
       }
     </>
