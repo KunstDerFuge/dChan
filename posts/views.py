@@ -316,6 +316,7 @@ def timeseries_from_keywords(request):
 
 
 def timeseries_frontend(request):
-    js_chunks = glob.glob(os.path.join('visualizations', 'build', 'static', 'js', '*.chunk.js'))
+    os.chdir(os.path.join('visualizations', 'build'))
+    js_chunks = glob.glob(os.path.join('static', 'js', '*.chunk.js'))
     template = loader.get_template('posts/timeseries.html')
     return HttpResponse(template.render({'js_chunks': js_chunks}, request))
