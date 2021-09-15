@@ -3,6 +3,6 @@
 {% load static %}
 {% block content %}
     {% for chunk in js_chunks %}
-        <script src="{{ chunk }}"></script>
+        <script src="/{{ chunk }}"></script>
     {% endfor %}
 {% endblock %}
