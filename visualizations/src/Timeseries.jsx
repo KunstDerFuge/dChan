@@ -28,7 +28,7 @@ const Timeseries = (props) => {
   }, [])
 
   const fetchData = () => {
-    axios.get('http://localhost:8000/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
+    axios.get('https://dchan.qorigins.org/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
       console.log(data)
     }).catch((e) => console.log(e))
