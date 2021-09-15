@@ -111,7 +111,7 @@ const Timeseries = (props) => {
         &nbsp;
         <label>Aggregate Interval:
           &nbsp;
-          <select name="interval" id="interval" value={agg} onChange={(event) => {
+          <select name="agg" id="agg" value={agg} onChange={(event) => {
             setAgg(event.target.value)
           }}>
             <option value="day">Day</option>
