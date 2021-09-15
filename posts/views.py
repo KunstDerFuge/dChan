@@ -1,21 +1,19 @@
-import datetime
-import logging
+import glob
 import os
 
 from django.contrib.postgres.search import SearchQuery
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.paginator import PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.template import loader
-from django.views import View
 from django.views.generic import ListView
 from django_elasticsearch_dsl.search import Search
 
 from dChan import settings
 from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument
-from posts.models import Post, Board, Platform, Drop
+from posts.models import Post, Platform, Drop
 
 
 def board_links(platform):
@@ -317,24 +315,7 @@ def timeseries_from_keywords(request):
     return JsonResponse({'data': results})
 
 
-class FrontendAppView(View):
-    """
-    Serves the compiled frontend entry point (only works if you have run `yarn
-    run build`).
-    """
-
-    def get(self, request):
-        print(os.path.join(settings.REACT_APP_DIR, 'build', 'index.html'))
-        try:
-            with open(os.path.join(settings.REACT_APP_DIR, 'build', 'index.html')) as f:
-                return HttpResponse(f.read())
-        except FileNotFoundError:
-            logging.exception('Production build of app not found')
-            return HttpResponse(
-                """
-                This URL is only used when you have built the production
-                version of the app. Visit http://localhost:3000/ instead, or
-                run `yarn run build` to test the production version.
-                """,
-                status=501,
-            )
+def timeseries_frontend(request):
+    js_chunks = glob.glob(os.path.join(settings.REACT_APP_DIR, 'build', 'static', 'js', '*.chunk.js'))
+    template = loader.get_template('posts/timeseries.html')
+    return HttpResponse(template.render({'js_chunks': js_chunks}, request))
