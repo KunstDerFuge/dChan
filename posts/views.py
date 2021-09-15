@@ -319,7 +319,7 @@ def timeseries_frontend(request):
     try:
         print(os.listdir())
         os.chdir(os.path.join('visualizations', 'build'))
-        js_chunks = glob.glob(os.path.join('static', 'js', '*.chunk.js'))
+        js_chunks = glob.glob(os.path.join('static', 'js', '*.js'))
         template = loader.get_template('posts/timeseries.html')
         return HttpResponse(template.render({'js_chunks': js_chunks}, request))
     finally:
