@@ -7,22 +7,38 @@ import {scaleTime} from 'd3'
 import * as d3 from 'd3'
 
 const Timeseries = (props) => {
-  const {
-    width,
-    height
-  } = props
-
   const [data, setData] = React.useState([])
   const [agg, setAgg] = React.useState('week')
   const [perMille, setPerMille] = React.useState(true)
   const [keywords, setKeywords] = React.useState('LARP')
+  const [width, setWidth] = React.useState(600)
+  const [height, setHeight] = React.useState(600)
+
+  React.useEffect(() => {
+    const resizeListener = () => {
+      console.log('Updating size...')
+      setWidth(props.parent.current.offsetWidth - 30)
+      setHeight(props.parent.current.offsetHeight - 30)
+      console.log(width, height)
+    }
+    window.addEventListener('resize', resizeListener)
+    return () => {
+      window.removeEventListener('resize', resizeListener)
+    }
+  }, [])
 
   const fetchData = () => {
-    axios.get('https://dchan.qorigins.org/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
+    axios.get('http://localhost:8000/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
       console.log(data)
     }).catch((e) => console.log(e))
   }
+
+  React.useEffect(() => {
+    setWidth(props.parent.current.offsetWidth)
+    setHeight(props.parent.current.offsetHeight)
+    console.log(width, height)
+  }, [props.parent])
 
   React.useEffect(() => {
     fetchData()
@@ -37,11 +53,10 @@ const Timeseries = (props) => {
       .domain(extent(data, datum => {
         if (datum.doc_count === 0) {
           return 0
-        }
-        else if (perMille) {
+        } else if (perMille) {
           return datum.per_mille.value
         } else {
-           return datum.keywords_filter.doc_count
+          return datum.keywords_filter.doc_count
         }
       }))
       .range([height, 40])
