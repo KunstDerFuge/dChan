@@ -104,7 +104,7 @@ const Timeseries = (props) => {
 
   React.useEffect(() => {
     const xScale = scaleTime()
-      .domain(extent(data, datum => new Date(datum.key)))
+      .domain(extent(data, datum => new Date(datum.key_as_string)))
       .range([50, width])
 
     const yScale = scaleLinear()
