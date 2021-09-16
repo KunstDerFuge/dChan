@@ -77,7 +77,7 @@ const Timeseries = (props) => {
   }, [])
 
   const fetchData = () => {
-    axios.get('https://dchan.qorigins.org/data', {
+    axios.get('https://dchan.qorigins.org/data/', {
       params: {
         keywords: keywords,
         agg: !hour_enabled && agg === 'hour' ? 'day' : agg,
@@ -240,9 +240,15 @@ const Timeseries = (props) => {
             </div>
             <div className="col-md-auto">
               <label htmlFor="timezone" className="form-label">Time Zone</label>
-              <input id="timezone" type="text" className="form-control" aria-label="Time Zone"
-                     aria-describedby="timezone" value={timezone}
-                     onChange={(e) => setTimezone(e.target.value)}/>
+              <select className="form-select" name="timezone" id="timezone" value={timezone} onChange={(event) => {
+                setTimezone(event.target.value)
+              }}>
+                <option value="America/Los_Angeles">America/Los_Angeles</option>
+                <option value="US/Central">US/Central</option>
+                <option value="US/Eastern">US/Eastern</option>
+                <option value="UTC">UTC</option>
+                <option value="Etc/GMT+8">Etc/GMT+8</option>
+              </select>
             </div>
           </div>
         </div>

@@ -298,7 +298,8 @@ def timeseries_from_keywords(request):
             "posts_over_time": {
                 "date_histogram": {
                     "field": "timestamp",
-                    "calendar_interval": agg
+                    "calendar_interval": agg,
+                    "time_zone": timezone
                 },
                 'aggs': {
                     'total': {
