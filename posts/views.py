@@ -259,6 +259,7 @@ def timeseries_from_keywords(request):
     syntax = request.GET.get('syntax')
     start_date = request.GET.get('start_date', '2017-10-28')
     end_date = request.GET.get('end_date', None)
+    timezone = request.GET.get('timezone', 'America/Los_Angeles')
     if start_date == '':
         start_date = '2017-10-28'
     if end_date == '':
@@ -287,6 +288,7 @@ def timeseries_from_keywords(request):
         'query': {
             'range': {
                 'timestamp': {
+                    'time_zone': timezone,
                     'gte': start_date,
                     'lte': end_date
                 }

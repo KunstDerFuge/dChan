@@ -14,6 +14,7 @@ const Timeseries = (props) => {
   const [syntax, setSyntax] = React.useState('simple')
   const [startDate, setStartDate] = React.useState('')
   const [endDate, setEndDate] = React.useState('')
+  const [timezone, setTimezone] = React.useState('America/Los_Angeles')
   const [width, setWidth] = React.useState(600)
   const [height, setHeight] = React.useState(600)
 
@@ -79,10 +80,11 @@ const Timeseries = (props) => {
     axios.get('https://dchan.qorigins.org/data', {
       params: {
         keywords: keywords,
-        agg: !hour_enabled && agg === 'hour' ? 'day': agg,
+        agg: !hour_enabled && agg === 'hour' ? 'day' : agg,
         syntax: syntax,
         start_date: startDate,
-        end_date: endDate
+        end_date: endDate,
+        timezone: timezone
       }
     }).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
@@ -235,6 +237,12 @@ const Timeseries = (props) => {
               <input id="date-end" type="date" className="form-control" aria-label="End Date"
                      aria-describedby="date-end" placeholder="YYYY-MM-DD" value={endDate}
                      onChange={(e) => setEndDate(e.target.value)}/>
+            </div>
+            <div className="col-md-auto">
+              <label htmlFor="timezone" className="form-label">Time Zone</label>
+              <input id="timezone" type="text" className="form-control" aria-label="Time Zone"
+                     aria-describedby="timezone" value={timezone}
+                     onChange={(e) => setTimezone(e.target.value)}/>
             </div>
           </div>
         </div>
