@@ -167,13 +167,73 @@ const Timeseries = (props) => {
         syntax === 'simple' ?
           <p>See hints and allowed operators for&nbsp;
             <code>simple_query_string</code> <a target="_blank"
-              href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax">here</a>.
+                                                href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax">here</a>.
           </p>
           :
-          <p>See hints and allowed operators for&nbsp;
-            <code>query_string</code> <a target="_blank"
-              href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax">here</a>.
-          </p>
+          <>
+            <p>See hints and allowed operators for&nbsp;
+              <code>query_string</code> <a target="_blank"
+                                           href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax">here</a>.
+            </p>
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col">Field</th>
+                <th scope="col">Description</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>platform</td>
+                <td><code>4chan</code> or <code>8kun</code>. Note: posts sourced from 8chan are encoded as 8kun.</td>
+              </tr>
+              <tr>
+                <td>board</td>
+                <td>Name of the board a post belongs to.</td>
+              </tr>
+              <tr>
+                <td>thread_id</td>
+                <td>The unique number of the thread a post belongs to.</td>
+              </tr>
+              <tr>
+                <td>post_id</td>
+                <td>The unique number of a post.</td>
+              </tr>
+              <tr>
+                <td>author</td>
+                <td>The name of the poster, usually "Anonymous". Note: default names differ depending on board
+                  settings.
+                </td>
+              </tr>
+              <tr>
+                <td>tripcode</td>
+                <td>The tripcode on a post, if any.</td>
+              </tr>
+              <tr>
+                <td>poster_hash</td>
+                <td>The hash after "ID:" identifying a poster within a thread. Note: some boards have disabled poster
+                  IDs.
+                </td>
+              </tr>
+              <tr>
+                <td>subject</td>
+                <td>The subject line of a post.</td>
+              </tr>
+              <tr>
+                <td>body</td>
+                <td>The actual comment in a post as a user would have typed it, including formatting syntax.</td>
+              </tr>
+              <tr>
+                <td>body_html</td>
+                <td>The raw HTML from the comment as scraped. Note: this field is not populated for many posts.</td>
+              </tr>
+              <tr>
+                <td>is_op</td>
+                <td>One of <code>True</code> or <code>False</code>; whether a post is an OP.</td>
+              </tr>
+              </tbody>
+            </table>
+          </>
       }
       <br/>
     </>
