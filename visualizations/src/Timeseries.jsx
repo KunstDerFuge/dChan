@@ -76,7 +76,7 @@ const Timeseries = (props) => {
   }, [])
 
   const fetchData = () => {
-    axios.get('http://dchan.qorigins.org/data', {
+    axios.get('https://dchan.qorigins.org/data', {
       params: {
         keywords: keywords,
         agg: !hour_enabled && agg === 'hour' ? 'day': agg,
