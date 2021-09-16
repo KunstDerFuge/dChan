@@ -184,11 +184,11 @@ const Timeseries = (props) => {
               </thead>
               <tbody>
               <tr>
-                <td>platform</td>
+                <td>platform.name</td>
                 <td><code>4chan</code> or <code>8kun</code>. Note: posts sourced from 8chan are encoded as 8kun.</td>
               </tr>
               <tr>
-                <td>board</td>
+                <td>board.name</td>
                 <td>Name of the board a post belongs to.</td>
               </tr>
               <tr>
@@ -222,10 +222,6 @@ const Timeseries = (props) => {
               <tr>
                 <td>body</td>
                 <td>The actual comment in a post as a user would have typed it, including formatting syntax.</td>
-              </tr>
-              <tr>
-                <td>body_html</td>
-                <td>The raw HTML from the comment as scraped. Note: this field is not populated for many posts.</td>
               </tr>
               <tr>
                 <td>is_op</td>
