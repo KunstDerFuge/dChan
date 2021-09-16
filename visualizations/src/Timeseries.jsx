@@ -229,7 +229,7 @@ const Timeseries = (props) => {
               </tr>
               <tr>
                 <td>is_op</td>
-                <td>One of <code>True</code> or <code>False</code>; whether a post is an OP.</td>
+                <td>One of <code>true</code> or <code>false</code>; whether a post is an OP.</td>
               </tr>
               </tbody>
             </table>
