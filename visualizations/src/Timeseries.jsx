@@ -12,8 +12,55 @@ const Timeseries = (props) => {
   const [perMille, setPerMille] = React.useState(true)
   const [keywords, setKeywords] = React.useState('LARP')
   const [syntax, setSyntax] = React.useState('simple')
+  const [startDate, setStartDate] = React.useState('')
+  const [endDate, setEndDate] = React.useState('')
   const [width, setWidth] = React.useState(600)
   const [height, setHeight] = React.useState(600)
+
+  const matches = data.length > 0 ? data.reduce((previousValue, curr) => previousValue + curr.keywords_filter.doc_count, 0) : 0
+  const total = data.length > 0 ? data.reduce((previousValue, curr) => previousValue + curr.total.value, 0) : 0
+  const percent = matches / total * 100
+
+  const hour_enabled = startDate !== '' && endDate !== '' &&
+    (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24) <= 120 // Only enable if range <= 120 days
+
+  const usefulDates = [
+    {date: '2017-10-28', description: <>First Q drop</>},
+    {date: '2017-11-09', description: <>Q uses tripcode for the first time; <code>!ITPb.qbhqo</code> (Matlock)</>},
+    {
+      date: '2018-01-03',
+      description: <>Dispute over the veracity of the Q poster; Ron verifies Q without a tripcode</>
+    },
+    {date: '2020-12-08', description: <>Final Q drop</>}
+  ]
+
+  const simple_operators = [
+    {operator: <><code>+</code></>, description: <>signifies AND operation</>},
+    {operator: <><code>|</code></>, description: <>signifies OR operation</>},
+    {operator: <><code>-</code></>, description: <>negates a single token</>},
+    {operator: <><code>"</code></>, description: <>wraps a number of tokens to signify a phrase for searching</>},
+    {operator: <><code>*</code></>, description: <>at the end of a term signifies a prefix query</>},
+    {operator: <><code>(</code> and <code>)</code></>, description: <>signify precedence</>},
+    {operator: <><code>~N</code></>, description: <>after a word signifies edit distance (fuzziness)</>},
+    {operator: <><code>~N</code></>, description: <>after a phrase signifies slop amount</>}
+  ]
+
+  const advanced_operators = [
+    {
+      operator: <><code>field_name: query</code></>,
+      description: <>Query a specific field; see below for available fields</>
+    },
+    {
+      operator: <><code>/regex/</code></>,
+      description: <>Attempt to search via regular expressions; see limitations <a
+        href="https://www.elastic.co/guide/en/elasticsearch/reference/current/regexp-syntax.html"
+        target="_blank">here</a></>
+    },
+    {operator: <><code>AND</code></>, description: <>signifies AND operation</>},
+    {operator: <><code>OR</code></>, description: <>signifies OR operation</>},
+    {operator: <><code>"</code></>, description: <>wraps a number of tokens to signify a phrase for searching</>},
+    {operator: <><code>(</code> and <code>)</code></>, description: <>signify precedence</>}
+  ]
 
   React.useEffect(() => {
     const resizeListener = () => {
@@ -29,11 +76,13 @@ const Timeseries = (props) => {
   }, [])
 
   const fetchData = () => {
-    axios.get('https://dchan.qorigins.org/data', {
+    axios.get('http://localhost:8000/data', {
       params: {
         keywords: keywords,
-        agg: agg,
-        syntax: syntax
+        agg: !hour_enabled && agg === 'hour' ? 'day': agg,
+        syntax: syntax,
+        start_date: startDate,
+        end_date: endDate
       }
     }).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
@@ -120,12 +169,25 @@ const Timeseries = (props) => {
         <text className="title"/>
         <text className="y-label"/>
       </svg>
+      {
+        data.length > 0 &&
+        <>
+          <p style={{paddingTop: '6px'}}>Matched {matches.toLocaleString()} of {total.toLocaleString()} —&nbsp;
+            {
+              percent > 25 ? percent.toFixed(0)
+                : percent > 1 ? percent.toFixed(1)
+                  : percent > 0.01 ? percent.toFixed(2)
+                    : percent.toFixed(3)
+            }% of total
+          </p>
+        </>
+      }
       <form onSubmit={(event => {
         event.preventDefault()
         fetchData()
       })}>
-        <div class="row g-2">
-          <div class="col-md-6">
+        <div className="row g-2">
+          <div className="col-md-6">
             <label htmlFor="query" className="form-label">Query</label>
             <input id="query" type="text" className="form-control" aria-label="Query"
                    aria-describedby="query" value={keywords} onChange={(e) => setKeywords(e.target.value)}/>
@@ -144,6 +206,7 @@ const Timeseries = (props) => {
             <select className="form-select" name="agg" id="agg" value={agg} onChange={(event) => {
               setAgg(event.target.value)
             }}>
+              {hour_enabled && <option value="hour">Hour</option>}
               <option value="day">Day</option>
               <option value="week">Week</option>
               <option value="month">Month</option>
@@ -160,6 +223,20 @@ const Timeseries = (props) => {
               <option value="total">Total volume</option>
             </select>
           </div>
+          <div className="row g-2">
+            <div className="col-md-auto">
+              <label htmlFor="date-start" className="form-label">Start Date</label>
+              <input id="date-start" type="date" className="form-control" aria-label="Start Date"
+                     aria-describedby="date-start" placeholder="YYYY-MM-DD" value={startDate}
+                     onChange={(e) => setStartDate(e.target.value)}/>
+            </div>
+            <div className="col-md-auto">
+              <label htmlFor="date-end" className="form-label">End Date</label>
+              <input id="date-end" type="date" className="form-control" aria-label="End Date"
+                     aria-describedby="date-end" placeholder="YYYY-MM-DD" value={endDate}
+                     onChange={(e) => setEndDate(e.target.value)}/>
+            </div>
+          </div>
         </div>
       </form>
       <br/>
@@ -170,67 +247,162 @@ const Timeseries = (props) => {
                                                 href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax">here</a>.
           </p>
           :
-          <>
-            <p>See hints and allowed operators for&nbsp;
-              <code>query_string</code> <a target="_blank"
-                                           href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax">here</a>.
-            </p>
-            <table class="table">
-              <thead>
-              <tr>
-                <th scope="col">Field</th>
-                <th scope="col">Description</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>platform.name</td>
-                <td><code>4chan</code> or <code>8kun</code>. Note: posts sourced from 8chan are encoded as 8kun.</td>
-              </tr>
-              <tr>
-                <td>board.name</td>
-                <td>Name of the board a post belongs to.</td>
-              </tr>
-              <tr>
-                <td>thread_id</td>
-                <td>The unique number of the thread a post belongs to.</td>
-              </tr>
-              <tr>
-                <td>post_id</td>
-                <td>The unique number of a post.</td>
-              </tr>
-              <tr>
-                <td>author</td>
-                <td>The name of the poster, usually "Anonymous". Note: default names differ depending on board
-                  settings.
-                </td>
-              </tr>
-              <tr>
-                <td>tripcode</td>
-                <td>The tripcode on a post, if any.</td>
-              </tr>
-              <tr>
-                <td>poster_hash</td>
-                <td>The hash after "ID:" identifying a poster within a thread. Note: some boards have disabled poster
-                  IDs.
-                </td>
-              </tr>
-              <tr>
-                <td>subject</td>
-                <td>The subject line of a post.</td>
-              </tr>
-              <tr>
-                <td>body</td>
-                <td>The actual comment in a post as a user would have typed it, including formatting syntax.</td>
-              </tr>
-              <tr>
-                <td>is_op</td>
-                <td>One of <code>true</code> or <code>false</code>; whether a post is an OP.</td>
-              </tr>
-              </tbody>
-            </table>
-          </>
+          <p>See hints and allowed operators for&nbsp;
+            <code>query_string</code> <a target="_blank"
+                                         href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax">here</a>.
+          </p>
       }
+      <div className="accordion" id="hints-accordion">
+        <div className="accordion-item">
+          <h2 className="accordion-header" id="syntax-tips-label">
+            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#syntax-tips" aria-expanded="false" aria-controls="syntax-tips">
+              Syntax Tips
+            </button>
+          </h2>
+          <div id="syntax-tips" className="accordion-collapse collapse" aria-labelledby="syntax-tips-label"
+               data-bs-parent="#hints-accordion">
+            <div className="accordion-body">
+              <table className="table">
+                <thead>
+                <tr>
+                  <th scope="col">Operator</th>
+                  <th scope="col">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {
+                  syntax === 'simple' ?
+                    simple_operators.map((tip) => {
+                      return (
+                        <tr>
+                          <td>{tip.operator}</td>
+                          <td>{tip.description}</td>
+                        </tr>
+                      )
+                    })
+                    :
+                    advanced_operators.map((tip) => {
+                      return (
+                        <tr>
+                          <td>{tip.operator}</td>
+                          <td>{tip.description}</td>
+                        </tr>
+                      )
+                    })
+                }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div className="accordion-item">
+          <h2 className="accordion-header" id="useful-dates-label">
+            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#useful-dates" aria-expanded="false" aria-controls="useful-dates">
+              Useful Dates
+            </button>
+          </h2>
+          <div id="useful-dates" className="accordion-collapse collapse" aria-labelledby="useful-dates-label"
+               data-bs-parent="#hints-accordion">
+            <div className="accordion-body">
+              <table className="table">
+                <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                {
+                  usefulDates.map((date) => {
+                    return (
+                      <tr>
+                        <td>{date.date}</td>
+                        <td>{date.description}</td>
+                      </tr>
+                    )
+                  })
+                }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        {
+          syntax === 'advanced' &&
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="fields-available-label">
+              <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#fields-available" aria-expanded="false" aria-controls="fields-available">
+                Fields Available
+              </button>
+            </h2>
+            <div id="fields-available" className="accordion-collapse collapse" aria-labelledby="fields-available-label"
+                 data-bs-parent="#hints-accordion">
+              <div className="accordion-body">
+                <table className="table">
+                  <thead>
+                  <tr>
+                    <th scope="col">Field</th>
+                    <th scope="col">Description</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td>platform.name</td>
+                    <td><code>4chan</code> or <code>8kun</code>. Note: posts sourced from 8chan are encoded as 8kun.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>board.name</td>
+                    <td>Name of the board a post belongs to.</td>
+                  </tr>
+                  <tr>
+                    <td>thread_id</td>
+                    <td>The unique number of the thread a post belongs to.</td>
+                  </tr>
+                  <tr>
+                    <td>post_id</td>
+                    <td>The unique number of a post.</td>
+                  </tr>
+                  <tr>
+                    <td>author</td>
+                    <td>The name of the poster, usually "Anonymous". Note: default names differ depending on board
+                      settings.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>tripcode</td>
+                    <td>The tripcode on a post, if any.</td>
+                  </tr>
+                  <tr>
+                    <td>poster_hash</td>
+                    <td>The hash after "ID:" identifying a poster within a thread. Note: some boards have disabled
+                      poster
+                      IDs.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>subject</td>
+                    <td>The subject line of a post.</td>
+                  </tr>
+                  <tr>
+                    <td>body</td>
+                    <td>The actual comment in a post as a user would have typed it, including formatting syntax.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>is_op</td>
+                    <td>One of <code>true</code> or <code>false</code>; whether a post is an OP.</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
       <br/>
     </>
   )

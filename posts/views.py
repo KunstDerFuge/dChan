@@ -257,16 +257,38 @@ def timeseries_from_keywords(request):
     keywords = request.GET.get('keywords')
     agg = request.GET.get('agg')
     syntax = request.GET.get('syntax')
+    start_date = request.GET.get('start_date', '2017-10-28')
+    end_date = request.GET.get('end_date', None)
+    if start_date == '':
+        start_date = '2017-10-28'
+    if end_date == '':
+        end_date = None
     if syntax == 'simple':
         query_type = 'simple_query_string'
+        query = {
+            query_type: {
+                'query': keywords,
+                'default_operator': 'AND',
+                'analyze_wildcard': True
+            }
+        }
     else:
         query_type = 'query_string'
+        query = {
+            query_type: {
+                'query': keywords,
+                'default_field': 'body',
+                'default_operator': 'AND',
+                'analyze_wildcard': True
+            }
+        }
 
     s = Search(index='posts').from_dict({
         'query': {
             'range': {
                 'timestamp': {
-                    'gte': '2017-10-28'
+                    'gte': start_date,
+                    'lte': end_date
                 }
             }
         },
@@ -284,21 +306,7 @@ def timeseries_from_keywords(request):
                         'filter': {
                             'bool': {
                                 'must': [
-                                    {
-                                        'range': {
-                                            'timestamp': {
-                                                'gte': '2017-10-28'
-                                            }
-                                        }
-                                    },
-                                    {
-                                        query_type: {
-                                            'query': keywords,
-                                            'default_field': 'body',
-                                            'default_operator': 'AND',
-                                            'analyze_wildcard': True
-                                        },
-                                    },
+                                    query
                                 ]
                             }
                         },
