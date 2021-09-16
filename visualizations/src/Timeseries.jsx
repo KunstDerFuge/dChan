@@ -11,6 +11,7 @@ const Timeseries = (props) => {
   const [agg, setAgg] = React.useState('week')
   const [perMille, setPerMille] = React.useState(true)
   const [keywords, setKeywords] = React.useState('LARP')
+  const [syntax, setSyntax] = React.useState('simple')
   const [width, setWidth] = React.useState(600)
   const [height, setHeight] = React.useState(600)
 
@@ -28,7 +29,13 @@ const Timeseries = (props) => {
   }, [])
 
   const fetchData = () => {
-    axios.get('https://dchan.qorigins.org/data', {params: {keywords: keywords, agg: agg}}).then((res) => {
+    axios.get('https://dchan.qorigins.org/data', {
+      params: {
+        keywords: keywords,
+        agg: agg,
+        syntax: syntax
+      }
+    }).then((res) => {
       setData(res.data.data.posts_over_time.buckets)
       console.log(data)
     }).catch((e) => console.log(e))
@@ -117,31 +124,58 @@ const Timeseries = (props) => {
         event.preventDefault()
         fetchData()
       })}>
-        <label>Keywords:
-          &nbsp;
-          <input style={{fontSize: '1em'}} value={keywords} onChange={(event => {
-            setKeywords(event.target.value)
-          })}/>
-        </label>
-        &nbsp;
-        <label>Aggregate Interval:
-          &nbsp;
-          <select name="agg" id="agg" value={agg} onChange={(event) => {
-            setAgg(event.target.value)
-          }}>
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-          </select>
-          <select name="interval" id="interval" value={perMille ? 'perMille' : 'total'} onChange={(event) => {
-            console.log(event.target.value)
-            setPerMille(event.target.value === 'perMille')
-          }}>
-            <option value="perMille">Per 1000 posts</option>
-            <option value="total">Total volume</option>
-          </select>
-        </label>
+        <div class="row g-2">
+          <div class="col-md-6">
+            <label htmlFor="query" className="form-label">Query</label>
+            <input id="query" type="text" className="form-control" aria-label="Query"
+                   aria-describedby="query" value={keywords} onChange={(e) => setKeywords(e.target.value)}/>
+          </div>
+          <div className="col-auto">
+            <label htmlFor="agg" className="form-label">Syntax</label>
+            <select className="form-select" name="syntax" id="syntax" value={syntax} onChange={(event) => {
+              setSyntax(event.target.value)
+            }}>
+              <option value="simple">Simple</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div className="col-md-2">
+            <label htmlFor="agg" className="form-label">Aggregate Interval</label>
+            <select className="form-select" name="agg" id="agg" value={agg} onChange={(event) => {
+              setAgg(event.target.value)
+            }}>
+              <option value="day">Day</option>
+              <option value="week">Week</option>
+              <option value="month">Month</option>
+            </select>
+          </div>
+          <div className="col-md-auto">
+            <label htmlFor="interval" className="form-label">Mode</label>
+            <select className="form-select" name="interval" id="interval" value={perMille ? 'perMille' : 'total'}
+                    onChange={(event) => {
+                      console.log(event.target.value)
+                      setPerMille(event.target.value === 'perMille')
+                    }}>
+              <option value="perMille">Per 1000 posts</option>
+              <option value="total">Total volume</option>
+            </select>
+          </div>
+        </div>
       </form>
+      <br/>
+      {
+        syntax === 'simple' ?
+          <p>See hints and allowed operators for&nbsp;
+            <code>simple_query_string</code> <a target="_blank"
+              href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html#simple-query-string-syntax">here</a>.
+          </p>
+          :
+          <p>See hints and allowed operators for&nbsp;
+            <code>query_string</code> <a target="_blank"
+              href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax">here</a>.
+          </p>
+      }
+      <br/>
     </>
   )
 }
