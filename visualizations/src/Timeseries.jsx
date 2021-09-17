@@ -152,6 +152,14 @@ const Timeseries = (props) => {
       .style('text-anchor', 'middle')
       .text(`Posts by ${agg} ${perMille ? 'per 1000 posts ' : ''} matching query: ${keywords}`)
 
+    // Chart subtitle
+    svg.select('.subtitle')
+      .attr('x', width / 2)
+      .attr('y', 40)
+      .style('text-anchor', 'middle')
+      .text(`${startDate && 'from ' + startDate} ${endDate && 'to ' + endDate}`)
+
+
     // y axis label
     svg.select('.y-label')
       .attr('transform', 'rotate(-90)')
@@ -169,6 +177,7 @@ const Timeseries = (props) => {
         <g className="x-axis"/>
         <g className="y-axis"/>
         <text className="title"/>
+        <text className="subtitle"/>
         <text className="y-label"/>
       </svg>
       {
