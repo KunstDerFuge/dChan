@@ -428,7 +428,7 @@ const Timeseries = (props) => {
       </div>
       <br/>
       <p>See notes on how we collected this data as well as some caveats and tips for its use <a
-        href="/timeseries/about/" target="_blank">here</a>.</p>
+        href="/about/#timeseries" target="_blank">here</a>.</p>
       <br/>
     </>
   )
