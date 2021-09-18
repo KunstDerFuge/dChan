@@ -105,7 +105,7 @@ const Timeseries = (props) => {
   React.useEffect(() => {
     const xScale = scaleTime()
       .domain(extent(data, datum => new Date(datum.key_as_string)))
-      .range([50, width])
+      .range([60, width])
 
     const yScale = scaleLinear()
       .domain(extent(data, datum => {
@@ -155,7 +155,7 @@ const Timeseries = (props) => {
     // Chart subtitle
     svg.select('.subtitle')
       .attr('x', width / 2)
-      .attr('y', 40)
+      .attr('y', 35)
       .style('text-anchor', 'middle')
       .text(`${startDate && 'from ' + startDate} ${endDate && 'to ' + endDate}`)
 
@@ -426,6 +426,9 @@ const Timeseries = (props) => {
           </div>
         }
       </div>
+      <br/>
+      <p>See notes on how we collected this data as well as some caveats and tips for its use <a
+        href="/timeseries/about/" target="_blank">here</a>.</p>
       <br/>
     </>
   )
