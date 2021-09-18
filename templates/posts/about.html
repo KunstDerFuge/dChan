@@ -1,0 +1,94 @@
+{% extends 'posts/base.html' %}
+{% load static %}
+{% block content %}
+    <h3 id="project">About the project</h3>
+    <p>dChan is an <a href="https://github.com/KunstDerFuge/dChan" target="_blank">open source</a> project created and
+        maintained by <a href="https://qoriginsproject.org" target="_blank">the Q Origins
+            Project</a>. The website is powered by <a href="https://www.djangoproject.com/" target="_blank">Django</a>
+        (hence the name).
+    </p>
+    <br/>
+    <h3 id="data">About the data</h3>
+    <p>The data comprising this archive—a total of over 14,000,000 posts—was mostly scraped from 8kun and <a
+            href="https://archive.is" target="_blank">archive.is</a>. 4chan threads were collected from the excellent
+        <a href="https://4plebs.org/" target="_blank">4plebs</a> API. Where possible, the original HTML of posts was
+        preserved and then parsed into a format resembling what the original users would have typed to create formatted
+        text.</p>
+    <br/>
+    <h3 id="acknowledgements">Acknowledgements</h3>
+    <p>This project was largely inspired by <a href="https://ctrlcctrlv.github.io/about-me.html" target="_blank">Fredrick
+        Brennan</a>, original creator of 8chan who now works to expose and deplatform the people behind the Q
+        phenomenon. He has also contributed <a href="https://github.com/KunstDerFuge/Q-notebook/issues/2"
+                                               target="_blank">crucial data and code</a> that made this project
+        possible.</p>
+    <br/>
+    <h3 id="timeseries">About the time series visualizer</h3>
+    <p>The <a href="/timeseries">time series visualizer</a> is a powerful tool for exploring the Q-related imageboard
+        posts for trends and correlations, but there are some caveats to be aware of when doing so.</p>
+    <br/>
+    <h5 id="trends">Identifying trends in the data</h5>
+    <p>When using the time series tool to find trends in topics, it's important to understand what you're looking at.
+        Consider a scenario in which you're trying to identify trends in the usage of the term "LARP" on the Q
+        boards.</p>
+    <figure class="figure">
+        <img src="{% static 'LARP1.png' %}" class="figure-img img-fluid rounded"
+             alt="A histogram of posts containing the term 'LARP' over time.">
+        <figcaption class="figure-caption">A histrogram of posts containing the term "LARP" over time.</figcaption>
+    </figure>
+    <p>At first glance, it would appear that the term gradually came into use, peaking around mid 2018, and then spiked
+        again in early 2021. However, this relies on the assumption that all of the data is evenly distributed. In
+        reality, the volume of posts we have archived is distributed like this:</p>
+    <figure class="figure">
+        <img src="{% static 'data_distribution.png' %}" class="figure-img img-fluid rounded"
+             alt="A histogram of total post volume as archived.">
+        <figcaption class="figure-caption">A histogram of total post volume as archived.</figcaption>
+    </figure>
+    <p>This means that any search term is inherently biased towards this distribution by virtue of the fact that there
+        is simply more data for certain points in time than others. You may also notice that there is a gap from August
+        to November of 2019. This was the period between <a href="https://en.wikipedia.org/wiki/8chan" target="_blank">8chan
+            going offline</a> and 8kun coming online.</p>
+    <p>To account for the uneven distribution of posts in the database, <strong>it is almost always preferable to use
+        "per 1000 posts" mode for identifying trends like this.</strong> This mode controls for the distribution of
+        posts by dividing the number of matches in each "bucket", or time slice in the histogram, by the total number of
+        posts archived for that period, and multiplying by 1000. The result is that Y values become normalized to values
+        between 0 and 1000, each representing the "<a href="about.htmlhttps://en.wikipedia.org/wiki/Per_mille"
+                                                      target="_blank">per mille</a>" concentration of matching posts for
+        each bucket.</p>
+    <figure class="figure">
+        <img src="{% static 'LARP2.png' %}" class="figure-img img-fluid rounded"
+             alt="A histogram showing posts containing the term 'LARP' per mille.">
+        <figcaption class="figure-caption">A histogram showing posts containing the term "LARP" <em>per mille</em> over
+            time.
+        </figcaption>
+    </figure>
+    <p>After controlling for the uneven distribution of collected data, it appears clear that usage of the term "LARP"
+        was
+        much more common on 4chan and quickly fell off after the 8chan switch, where it remained more or less
+        constant. <strong>Not so fast</strong>—there is another caveat here. Due to some technical differences between
+        data collection on 4chan and 8kun, the archive currently only contains 4chan threads in which Q posted, while
+        8chan and 8kun data has been archived beginning with Q threads and branching out to many threads that were
+        linked from those threads. In fact, there are over 20,000 8chan/8kun threads archived, most of which do not
+        contain Q posts. It is reasonable to believe that users would be more inclined to use the term "LARP" in threads
+        where Q was posting. In short, this is an example of <a href="https://en.wikipedia.org/wiki/Selection_bias"
+                                                                target="_blank">selection bias</a> and more thorough
+        investigation should be done to determine whether this trend remains visible when comparing only Q threads.</p>
+    <br/>
+    <h5 id="spikes">Identifying spikes in the data</h5>
+    <p>When exploring different search terms, you may notice pronounced spikes in usages for certain days or weeks. You
+        should always take these with a grain of salt before assuming they show a spike in interest in a topic.</p>
+    <figure class="figure">
+        <img src="{% static 'Turkey.png' %}" class="figure-img img-fluid rounded"
+             alt="A histogram showing posts containing the term 'Turkey' per mille, with a spike around March 2021.">
+        <figcaption class="figure-caption">A histogram showing posts containing the term "Turkey" <em>per mille</em>,
+            with a
+            spike around March 2021.
+        </figcaption>
+    </figure>
+    <p>This spike appears very significant even in "per 1000 posts" mode. However, upon auditing <a
+            href="https://dchan.qorigins.org/search/?q=Turkey&date_start=2021-03-01&date_end=2021-03-08"
+            target="_blank">the actual
+        posts</a> matched for the week of March 1, 2021, it is immediately clear that this spike mostly shows
+        <a href="https://twitter.com/fr_brennan/status/1437936846928072708" target="_blank">inauthentic bot activity</a>,
+        not organic conversation.</p>
+
+{% endblock %}

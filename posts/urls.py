@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.decorators.cache import cache_page
 
 from . import views
-from .views import AdvancedSearch, timeseries_from_keywords, timeseries_frontend, search_results
+from .views import AdvancedSearch, timeseries_from_keywords, timeseries_frontend, search_results, about
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -10,6 +10,7 @@ urlpatterns = [
     path('search/', search_results, name='search_results'),
     path('data/', timeseries_from_keywords, name='timeseries'),
     path('timeseries/', timeseries_frontend, name='timeseries_frontend'),
+    path('about/', about, name='about'),
     path('drop/<int:drop_no>', views.drop, name='drop'),
     path('first/<str:phrase>', views.first_to_say, name='index'),
     path('<str:platform>/', cache_page(15 * 60)(views.index), name='index'),

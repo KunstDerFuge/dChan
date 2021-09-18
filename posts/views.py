@@ -340,3 +340,8 @@ def timeseries_frontend(request):
         return HttpResponse(template.render({'js_chunks': js_chunks}, request))
     finally:
         os.chdir(os.path.join('..', '..'))
+
+
+def about(request):
+    template = loader.get_template('posts/about.html')
+    return HttpResponse(template.render({}, request))
