@@ -132,7 +132,7 @@ const Timeseries = (props) => {
       .call(xAxis)
 
     svg.select('.y-axis')
-      .attr('transform', `translate(45, 0)`)
+      .attr('transform', `translate(55, 0)`)
       .call(yAxis)
 
     svg
