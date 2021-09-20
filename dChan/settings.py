@@ -137,6 +137,10 @@ CELERY_BEAT_SCHEDULE = {
     'sync-elasticsearch': {
         'task': 'posts.tasks.sync_elasticsearch',
         'schedule': 20 * 60,
+    },
+    'fetch-chanscan-definitions': {
+        'task': 'chanscan.tasks.fetch_chanscan_definitions',
+        'schedule': 60 * 60 * 24
     }
 }
 
