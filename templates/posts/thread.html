@@ -31,3 +31,35 @@
         </div>
     {% endif %}
 {% endblock %}
+{% block extra_scripts %}
+    <script src="{% static 'js/mark.es6.min.js' %}"></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', function (e) {
+        let posts = document.getElementById('main-content')
+        let marker = new Mark(posts)
+        let options = {
+          'separateWordSearch': false,
+          'accuracy': {
+            'value': 'exactly',
+            'limiters': [',', '.', '#', '\'', '\"']
+          },
+          'element': 'span',
+          'className': 'definition'
+        }
+        for (const word of {{ definitions }}) {
+          options['each'] = function (el) {
+            let content = `<span class="d-flex justify-content-center mb-2"><span class="badge rounded-pill bg-secondary">${word.category}</span></span>${word.definition}<br/><a href="${word.report}" target="_blank"><small>See more at ChanScan</small>`
+            let popover = new bootstrap.Popover(el, {
+              container: 'body',
+              trigger: 'hover click',
+              content: content,
+              sanitize: false,
+              html: true,
+              placement: 'bottom'
+            })
+          }
+          marker.mark(word.word, options)
+        }
+      }, false)
+    </script>
+{% endblock %}

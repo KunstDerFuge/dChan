@@ -2,6 +2,7 @@ import glob
 import os
 
 from django.contrib.postgres.search import SearchQuery
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse
@@ -104,6 +105,11 @@ def thread(request, platform='8kun', board=None, thread_id=None):
 
         boards, other_boards = board_links(platform)
 
+        try:
+            definitions = cache.get('definitions', [])
+        except Exception as e:
+            definitions = []
+
         context = {
             'posts': thread_posts,
             'platform_name': platform,
@@ -111,7 +117,8 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             'thread': thread_id,
             'drop_links': drop_links,
             'boards_links': boards,
-            'other_boards': other_boards
+            'other_boards': other_boards,
+            'definitions': definitions
         }
 
         if len(thread_posts) == 0:

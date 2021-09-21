@@ -325,3 +325,7 @@ span.pln {
 .post-body {
     padding: 6px;
 }
+
+.definition {
+    text-decoration: underline dotted;
+}
