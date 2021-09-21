@@ -46,7 +46,7 @@
           'element': 'span',
           'className': 'definition'
         }
-        for (const word of JSON.parse('{{ definitions | escapejs }}')) {
+        for (const word of []) {
           options['each'] = function (el) {
             let content = `<span class="d-flex justify-content-center mb-2"><span class="badge rounded-pill bg-secondary">${word.category}</span></span>${word.definition}<br/><a href="${word.report}" target="_blank"><small>See more at ChanScan</small>`
             let popover = new bootstrap.Popover(el, {
