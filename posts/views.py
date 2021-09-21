@@ -1,4 +1,5 @@
 import glob
+import json
 import os
 
 from django.contrib.postgres.search import SearchQuery
@@ -118,7 +119,7 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             'drop_links': drop_links,
             'boards_links': boards,
             'other_boards': other_boards,
-            'definitions': definitions
+            'definitions': json.dumps(definitions)
         }
 
         if len(thread_posts) == 0:
