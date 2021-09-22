@@ -48,7 +48,7 @@
         function intersectionCallback(entries, observer, header) {
           entries.forEach((entry, i) => {
             if (entry.isIntersecting) {
-              processDefinitions(entry.element)
+              processDefinitions(entry.target)
             }
           })
         }
