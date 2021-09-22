@@ -53,7 +53,7 @@
           })
         }
         function processDefinitions(post) {
-          console.log(post)
+          console.log('Processed definitions for a post')
           let marker = new Mark(post)
           let options = {
             'separateWordSearch': false,
@@ -78,6 +78,7 @@
             }
             marker.mark(word.word, options)
           }
+          observer.unobserve(post)
         }
       }, false)
     </script>
