@@ -32,54 +32,54 @@
     {% endif %}
 {% endblock %}
 {% block extra_scripts %}
-    <script src="{% static 'js/mark.es6.min.js' %}"></script>
-    <script>
-      window.addEventListener('DOMContentLoaded', function (e) {
-        const definitions = JSON.parse('{{ definitions | escapejs }}')
-        let observerOptions = {
-          threshold: 0.01
-        }
-        let observer = new IntersectionObserver(intersectionCallback, observerOptions)
-
-        let posts = Array.from(document.getElementsByClassName('post-body'))
-        for (const post of posts) {
-          observer.observe(post)
-        }
-        function intersectionCallback(entries, observer, header) {
-          entries.forEach((entry, i) => {
-            if (entry.isIntersecting) {
-              processDefinitions(entry.target)
-            }
-          })
-        }
-        function processDefinitions(post) {
-          console.log('Processed definitions for a post')
-          let marker = new Mark(post)
-          let options = {
-            'separateWordSearch': false,
-            'accuracy': {
-              'value': 'exactly',
-              'limiters': [',', '.', '!', '?', '#', '\'', '\"', ':', '(', ')', '[', ']', '{', '}']
-            },
-            'element': 'span',
-            'className': 'definition'
-          }
-          for (const word of definitions) {
-            options['each'] = function (el) {
-              let content = `<span class="d-flex justify-content-center mb-2"><span class="badge rounded-pill bg-secondary">${word.category}</span></span>${word.definition}<br/><a href="${word.report}" target="_blank"><small>See more at ChanScan</small>`
-              let popover = new bootstrap.Popover(el, {
-                container: 'body',
-                trigger: 'hover click',
-                content: content,
-                sanitize: false,
-                html: true,
-                placement: 'bottom'
-              })
-            }
-            marker.mark(word.word, options)
-          }
-          observer.unobserve(post)
-        }
-      }, false)
-    </script>
+{#    <script src="{% static 'js/mark.es6.min.js' %}"></script>#}
+{#    <script>#}
+{#      window.addEventListener('DOMContentLoaded', function (e) {#}
+{#        const definitions = JSON.parse('{{ definitions | escapejs }}')#}
+{#        let observerOptions = {#}
+{#          threshold: 0.01#}
+{#        }#}
+{#        let observer = new IntersectionObserver(intersectionCallback, observerOptions)#}
+{##}
+{#        let posts = Array.from(document.getElementsByClassName('post-body'))#}
+{#        for (const post of posts) {#}
+{#          observer.observe(post)#}
+{#        }#}
+{#        function intersectionCallback(entries, observer, header) {#}
+{#          entries.forEach((entry, i) => {#}
+{#            if (entry.isIntersecting) {#}
+{#              processDefinitions(entry.target)#}
+{#            }#}
+{#          })#}
+{#        }#}
+{#        function processDefinitions(post) {#}
+{#          console.log('Processed definitions for a post')#}
+{#          let marker = new Mark(post)#}
+{#          let options = {#}
+{#            'separateWordSearch': false,#}
+{#            'accuracy': {#}
+{#              'value': 'exactly',#}
+{#              'limiters': [',', '.', '!', '?', '#', '\'', '\"', ':', '(', ')', '[', ']', '{', '}']#}
+{#            },#}
+{#            'element': 'span',#}
+{#            'className': 'definition'#}
+{#          }#}
+{#          for (const word of definitions) {#}
+{#            options['each'] = function (el) {#}
+{#              let content = `<span class="d-flex justify-content-center mb-2"><span class="badge rounded-pill bg-secondary">${word.category}</span></span>${word.definition}<br/><a href="${word.report}" target="_blank"><small>See more at ChanScan</small>`#}
+{#              let popover = new bootstrap.Popover(el, {#}
+{#                container: 'body',#}
+{#                trigger: 'hover click',#}
+{#                content: content,#}
+{#                sanitize: false,#}
+{#                html: true,#}
+{#                placement: 'bottom'#}
+{#              })#}
+{#            }#}
+{#            marker.mark(word.word, options)#}
+{#          }#}
+{#          observer.unobserve(post)#}
+{#        }#}
+{#      }, false)#}
+{#    </script>#}
 {% endblock %}
