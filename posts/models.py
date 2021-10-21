@@ -86,6 +86,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     replies = models.JSONField(default=dict)
+    source = models.CharField(max_length=6, null=True, blank=True)
 
     def __str__(self):
         return f'{self.platform.name}/{self.board.name}/{self.post_id}'
