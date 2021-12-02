@@ -131,3 +131,27 @@ class Post(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['platform', 'board', 'post_id'], name='unique_post'),
         ]
+
+
+class RedditPost(models.Model):
+    created_utc = models.DateTimeField()
+    edited = models.DateTimeField(null=True, blank=True, default=None)  # Unix timestamp
+    subreddit = models.CharField(max_length=24)
+    author_flair_text = models.CharField(max_length=64, null=True, default=None)
+    stickied = models.BooleanField()
+    scraped_on = models.DateTimeField()
+    permalink = models.URLField()
+    score = models.IntegerField()
+    post_hint = models.CharField(max_length=12, null=True)  # None, link, rich:video, hosted:video, self, image
+    title = models.CharField(max_length=250)
+    author = models.CharField(max_length=24)
+    author_fullname = models.CharField(max_length=14)
+    text = models.TextField()
+    url = models.URLField(null=True)
+    no_follow = models.BooleanField()
+    locked = models.BooleanField()
+    is_op = models.BooleanField()  # item_type == 'submission'
+    is_submitter = models.BooleanField()
+    is_self = models.BooleanField()
+    num_comments = models.PositiveIntegerField()
+
