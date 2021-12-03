@@ -6,17 +6,17 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from posts.documents import PostDocument
-from posts.models import Post, Board, Platform
+from posts.models import Post, Board, Platform, Subreddit, RedditPost
 
 
 def process_replies(threads):
     for platform, board, thread in tqdm(threads):
         s = PostDocument.search()
         posts = s.query('match', platform__name=platform) \
-                 .query('match', board__name=board) \
-                 .query('match', thread_id=thread) \
+            .query('match', board__name=board) \
+            .query('match', thread_id=thread) \
             .extra(size=752) \
-                 .to_queryset()
+            .to_queryset()
         posts_df = pd.DataFrame(posts.values_list('platform__name', 'board__name', 'thread_id', 'post_id', 'links'),
                                 columns=['platform', 'board', 'thread_no', 'post_no', 'links'])
         replies_df = process_replies_from_df(posts_df)
@@ -328,3 +328,40 @@ def parse_8chan_formatting(html):
 
     final_text = '\n'.join([line.get_text() for line in soup.find_all('div')])
     return final_text
+
+
+def commit_reddit_posts_from_df(df):
+    new_posts = []
+    for index, row in tqdm(df.iterrows(), total=len(df)):
+        try:
+            subreddit, created = Subreddit.objects.get_or_create(name=row['subreddit'])
+
+            post = RedditPost(subreddit=subreddit, timestamp=row['created_utc'], edited=row['edited'],
+                              author_flair_text=row['author_flair_text'], stickied=row['stickied'],
+                              scraped_on=row['scraped_on'], permalink=row['permalink'], score=row['score'],
+                              post_hint=row['post_hint'], subject=row['title'], author=row['author'],
+                              author_fullname=row['author_fullname'], body=row['text'], url=row['url'],
+                              no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
+                              is_submitted=row['is_submitter'], is_self=row['is_self'],
+                              num_comments=row['num_comments'], link_id=row['link_id'], parent_id=row['parent_id'])
+            new_posts.append(post)
+            if len(new_posts) >= 10000:
+                posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
+                posts_ids = [post.id for post in posts_created]
+                new_posts_qs = Post.objects.filter(id__in=posts_ids)
+                PostDocument().update(new_posts_qs)
+                new_posts = []
+        except Exception as e:
+            print('Failed to create Post object with row:')
+            print(row)
+            print(e)
+            continue
+
+    # Source on ES bulk update pattern:
+    # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
+    posts_created = Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+    posts_ids = [post.id for post in posts_created]
+    new_posts_qs = Post.objects.filter(id__in=posts_ids)
+    PostDocument().update(new_posts_qs)
+
+    return posts_ids

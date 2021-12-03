@@ -134,19 +134,19 @@ class Post(models.Model):
 
 
 class RedditPost(models.Model):
-    created_utc = models.DateTimeField()
+    timestamp = models.DateTimeField()  # renamed from "created_utc"
     edited = models.DateTimeField(null=True, blank=True, default=None)  # Unix timestamp
-    subreddit = models.CharField(max_length=24)
+    subreddit = models.ForeignKey('Subreddit', on_delete=models.CASCADE, related_name='posts')
     author_flair_text = models.CharField(max_length=64, null=True, default=None)
     stickied = models.BooleanField()
     scraped_on = models.DateTimeField()
     permalink = models.URLField()
     score = models.IntegerField()
     post_hint = models.CharField(max_length=12, null=True)  # None, link, rich:video, hosted:video, self, image
-    title = models.CharField(max_length=250)
+    subject = models.CharField(max_length=250)  # renamed from "title"
     author = models.CharField(max_length=24)
     author_fullname = models.CharField(max_length=14)
-    text = models.TextField()
+    body = models.TextField()  # renamed from 'text'
     url = models.URLField(null=True)
     no_follow = models.BooleanField()
     locked = models.BooleanField()
@@ -157,3 +157,9 @@ class RedditPost(models.Model):
     link_id = models.CharField(max_length=10, primary_key=True)
     parent_id = models.CharField(max_length=10, null=True)
 
+
+class Subreddit(models.Model):
+    name = models.CharField(max_length=24)
+
+    def __str__(self):
+        return f'/r/{self.name}'
