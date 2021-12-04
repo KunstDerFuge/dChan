@@ -347,8 +347,8 @@ def commit_reddit_posts_from_df(df):
             new_posts.append(post)
             if len(new_posts) >= 10000:
                 posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
-                posts_ids = [post.pk for post in posts_created]
-                new_posts_qs = RedditPost.objects.filter(id__in=posts_ids)
+                posts_ids = [post.link_id for post in posts_created]
+                new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
                 PostDocument().update(new_posts_qs)
                 new_posts = []
         except Exception as e:
