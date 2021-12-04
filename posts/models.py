@@ -143,7 +143,7 @@ class RedditPost(models.Model):
     permalink = models.URLField()
     score = models.IntegerField()
     post_hint = models.CharField(max_length=12, null=True)  # None, link, rich:video, hosted:video, self, image
-    subject = models.CharField(max_length=300)  # renamed from "title"
+    subject = models.CharField(max_length=400)  # renamed from "title"
     author = models.CharField(max_length=24)
     author_fullname = models.CharField(max_length=14)
     body = models.TextField()  # renamed from 'text'
