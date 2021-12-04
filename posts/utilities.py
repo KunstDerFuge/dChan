@@ -342,13 +342,13 @@ def commit_reddit_posts_from_df(df):
                               post_hint=row['post_hint'], subject=row['title'], author=row['author'],
                               author_fullname=row['author_fullname'], body=row['text'], url=row['url'],
                               no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
-                              is_submitted=row['is_submitter'], is_self=row['is_self'],
+                              is_submitter=row['is_submitter'], is_self=row['is_self'],
                               num_comments=row['num_comments'], link_id=row['link_id'], parent_id=row['parent_id'])
             new_posts.append(post)
             if len(new_posts) >= 10000:
                 posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
                 posts_ids = [post.id for post in posts_created]
-                new_posts_qs = Post.objects.filter(id__in=posts_ids)
+                new_posts_qs = RedditPost.objects.filter(id__in=posts_ids)
                 PostDocument().update(new_posts_qs)
                 new_posts = []
         except Exception as e:
@@ -359,9 +359,9 @@ def commit_reddit_posts_from_df(df):
 
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
-    posts_created = Post.objects.bulk_create(new_posts, ignore_conflicts=True)
+    posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
     posts_ids = [post.id for post in posts_created]
-    new_posts_qs = Post.objects.filter(id__in=posts_ids)
+    new_posts_qs = RedditPost.objects.filter(id__in=posts_ids)
     PostDocument().update(new_posts_qs)
 
     return posts_ids
