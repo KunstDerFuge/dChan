@@ -5,7 +5,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from posts.documents import PostDocument
+from posts.documents import PostDocument, RedditPostDocument
 from posts.models import Post, Board, Platform, Subreddit, RedditPost
 
 
@@ -349,7 +349,7 @@ def commit_reddit_posts_from_df(df):
                 posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
                 posts_ids = [post.link_id for post in posts_created]
                 new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
-                PostDocument().update(new_posts_qs)
+                RedditPostDocument().update(new_posts_qs)
                 new_posts = []
         except Exception as e:
             print('Failed to create Post object with row:')
@@ -362,6 +362,6 @@ def commit_reddit_posts_from_df(df):
     posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
     posts_ids = [post.link_id for post in posts_created]
     new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
-    PostDocument().update(new_posts_qs)
+    RedditPostDocument().update(new_posts_qs)
 
     return posts_ids
