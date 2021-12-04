@@ -59,6 +59,7 @@ class Command(BaseCommand):
                 df['edited'] = pd.to_datetime(df['edited'], unit='s')
                 df['created_utc'] = pd.to_datetime(df['created_utc'])
                 df['created_utc'] = df['created_utc'].dt.tz_localize(tz='UTC')
+                df['edited'] = df['edited'].dt.tz_localize(tz='UTC')
                 df = df.apply(process_link_id_and_parent, axis=1)
                 df['edited'] = df['edited'].astype(object).where(df['edited'].notnull(), None)
 
