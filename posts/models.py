@@ -147,7 +147,7 @@ class RedditPost(models.Model):
     author = models.CharField(max_length=24)
     author_fullname = models.CharField(max_length=14)
     body = models.TextField()  # renamed from 'text'
-    url = models.URLField(null=True)
+    url = models.URLField(null=True, max_length=2000)
     no_follow = models.BooleanField()
     locked = models.BooleanField()
     is_op = models.BooleanField()  # item_type == 'submission'
