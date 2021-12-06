@@ -333,29 +333,23 @@ def parse_8chan_formatting(html):
 def commit_reddit_posts_from_df(df):
     new_posts = []
     for index, row in tqdm(df.iterrows(), total=len(df)):
-        try:
-            subreddit, created = Subreddit.objects.get_or_create(name=row['subreddit'])
+        subreddit, created = Subreddit.objects.get_or_create(name=row['subreddit'])
 
-            post = RedditPost(subreddit=subreddit, timestamp=row['created_utc'], edited=row['edited'],
-                              author_flair_text=row['author_flair_text'], stickied=row['stickied'],
-                              scraped_on=row['scraped_on'], permalink=row['permalink'], score=row['score'],
-                              post_hint=row['post_hint'], subject=row['title'], author=row['author'],
-                              author_fullname=row['author_fullname'], body=row['text'], url=row['url'],
-                              no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
-                              is_submitter=row['is_submitter'], is_self=row['is_self'],
-                              num_comments=row['num_comments'], link_id=row['link_id'], parent_id=row['parent_id'])
-            new_posts.append(post)
-            if len(new_posts) >= 10000:
-                posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
-                posts_ids = [post.link_id for post in posts_created]
-                new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
-                RedditPostDocument().update(new_posts_qs)
-                new_posts = []
-        except Exception as e:
-            print('Failed to create RedditPost object with row:')
-            print(row)
-            print(e)
-            continue
+        post = RedditPost(subreddit=subreddit, timestamp=row['created_utc'], edited=row['edited'],
+                          author_flair_text=row['author_flair_text'], stickied=row['stickied'],
+                          scraped_on=row['scraped_on'], permalink=row['permalink'], score=row['score'],
+                          post_hint=row['post_hint'], subject=row['title'], author=row['author'],
+                          author_fullname=row['author_fullname'], body=row['text'], url=row['url'],
+                          no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
+                          is_submitter=row['is_submitter'], is_self=row['is_self'],
+                          num_comments=row['num_comments'], link_id=row['link_id'], parent_id=row['parent_id'])
+        new_posts.append(post)
+        if len(new_posts) >= 10000:
+            posts_created = RedditPost.objects.bulk_create(new_posts)
+            posts_ids = [post.link_id for post in posts_created]
+            new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
+            RedditPostDocument().update(new_posts_qs)
+            new_posts = []
 
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
