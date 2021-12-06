@@ -359,7 +359,7 @@ def commit_reddit_posts_from_df(df):
 
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
-    posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
+    posts_created = RedditPost.objects.bulk_create(new_posts)
     posts_ids = [post.link_id for post in posts_created]
     new_posts_qs = RedditPost.objects.filter(link_id__in=posts_ids)
     RedditPostDocument().update(new_posts_qs)
