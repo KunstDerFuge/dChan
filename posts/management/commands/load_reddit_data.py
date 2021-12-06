@@ -4,8 +4,6 @@ from django.core.management import BaseCommand
 from tqdm import tqdm
 
 from posts import utilities
-from posts.models import Platform
-from posts.utilities import parse_archive_is, process_links, parse_8chan_formatting, parse_formatting
 
 
 class Command(BaseCommand):
@@ -32,15 +30,12 @@ class Command(BaseCommand):
 
                 def process_link_id_and_parent(row):
                     try:
-                        if 'link_id' in row and row['link_id'] is not np.nan:
-                            row['link_id'] = row['link_id'].split('_')[-1]
-                        else:
-                            row['link_id'] = row['permalink'].split('/')[6]
-
-                        if 'parent_id' in row and row['parent_id'] is not np.nan:
+                        if row['item_type'] == 'comment':
+                            row['link_id'] = row['permalink'].split('/')[-2]
                             row['parent_id'] = row['parent_id'].split('_')[-1]
                         else:
-                            row['parent_id'] = row['permalink'].split('/')[6]
+                            row['link_id'] = row['permalink'].split('/')[6]
+                            row['parent_id'] = None
 
                         return row
 
