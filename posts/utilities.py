@@ -352,7 +352,7 @@ def commit_reddit_posts_from_df(df):
                 RedditPostDocument().update(new_posts_qs)
                 new_posts = []
         except Exception as e:
-            print('Failed to create Post object with row:')
+            print('Failed to create RedditPost object with row:')
             print(row)
             print(e)
             continue
