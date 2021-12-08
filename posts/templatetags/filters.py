@@ -1,4 +1,5 @@
 import hashlib
+import html
 import re
 import urllib.parse
 
@@ -26,7 +27,7 @@ def markdown(text, links):
 @register.filter(name='reddit_markdown')
 @stringfilter
 def markdown(text):
-    return mark_safe(md.markdown(text))
+    return mark_safe(md.markdown(html.unescape(text)))
 
 
 @register.filter(name='get_archive_link')
