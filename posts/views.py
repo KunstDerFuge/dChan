@@ -371,9 +371,11 @@ def reddit_index(request, subreddit=None):
     if subreddit:
         threads = s.query('match', is_op=True) \
             .query('match', subreddit__name=subreddit) \
+            .sort('-score') \
             .sort('-timestamp')
     else:
         threads = s.query('match', is_op=True) \
+            .sort('-score') \
             .sort('-timestamp')
 
     page = int(request.GET.get('page', 1))
