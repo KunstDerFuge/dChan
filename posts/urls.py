@@ -16,12 +16,12 @@ urlpatterns = [
     path('reddit/', views.reddit_index, name='reddit_index'),
     path('r/<str:subreddit>', views.reddit_index, name='reddit_index'),
     # Reddit threads:
-    path('r/<str:subreddit>/comments/<str:thread_id>/', views.reddit_thread, name='reddit_index'),
-    path('r/<str:subreddit>/comments/<str:thread_id>/<str:thread_slug>/', views.reddit_thread, name='reddit_index'),
+    path('r/<str:subreddit>/comments/<str:thread_hash>/', views.reddit_thread, name='reddit_index'),
+    path('r/<str:subreddit>/comments/<str:thread_hash>/<str:thread_slug>/', views.reddit_thread, name='reddit_index'),
     # Comments:
-    path('r/<str:subreddit>/comments/<str:thread_id>/<str:thread_slug>/<str:link_id>/', views.reddit_thread,
+    path('r/<str:subreddit>/comments/<str:thread_hash>/<str:thread_slug>/<str:link_id>/', views.reddit_thread,
          name='reddit_thread'),
-    path('r/<str:subreddit>/comments/<str:thread_id>/comment/<str:link_id>/', views.reddit_thread,
+    path('r/<str:subreddit>/comments/<str:thread_hash>/comment/<str:link_id>/', views.reddit_thread,
          name='reddit_thread'),
 
     # Chan platforms:

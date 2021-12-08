@@ -38,7 +38,7 @@ class PostDocument(Document):
 
         # The fields of the model you want to be indexed in Elasticsearch
         fields = [
-            'thread_id',
+            'thread_hash',
             'post_id',
             'is_op',
             'author',

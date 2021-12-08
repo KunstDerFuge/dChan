@@ -29,13 +29,13 @@ class Command(BaseCommand):
 
                 def process_link_id_and_parent(row):
                     try:
-                        row['thread_id'] = row['permalink'].split('/')[6]
+                        row['thread_hash'] = row['permalink'].split('/')[6]
                         row['thread_slug'] = row['permalink'].split('/')[7]
                         if row['item_type'] == 'comment':
                             row['link_id'] = row['permalink'].split('/')[-2]
                             row['parent_id'] = row['parent_id'].split('_')[-1]
                         else:
-                            row['link_id'] = row['thread_id']
+                            row['link_id'] = row['thread_hash']
                             row['parent_id'] = None
 
                         return row
@@ -58,7 +58,8 @@ class Command(BaseCommand):
                 df['edited'] = df['edited'].dt.tz_localize(tz='UTC')
                 df['scraped_on'] = pd.to_datetime(df['scraped_on'])
                 df['scraped_on'] = df['scraped_on'].dt.tz_localize(tz='UTC')
-                df = df.apply(process_link_id_and_parent, axis=1)
+                print('Processing data...')
+                df = df.progress_apply(process_link_id_and_parent, axis=1)
                 df['edited'] = df['edited'].astype(object).where(df['edited'].notnull(), None)
                 df['created_utc'] = df['created_utc'].astype(object).where(df['created_utc'].notnull(), None)
                 df = df.dropna(subset=['score', 'author', 'text'])

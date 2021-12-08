@@ -156,7 +156,7 @@ class RedditPost(models.Model):
     num_comments = models.PositiveIntegerField()
     link_id = models.CharField(max_length=10, unique=True)
     parent_id = models.CharField(max_length=10, null=True)
-    thread_id = models.CharField(max_length=10)
+    thread_hash = models.CharField(max_length=10)
     thread_slug = models.CharField(max_length=60)
 
     def get_thread_url(self):
