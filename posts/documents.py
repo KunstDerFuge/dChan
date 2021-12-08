@@ -81,6 +81,7 @@ class RedditPostDocument(Document):
             'timestamp',
             'edited',
             'link_id',
+            'parent_id',
             'thread_hash',
             'score',
             'is_op',

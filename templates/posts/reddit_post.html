@@ -1,68 +1,22 @@
 {% load filters %}
 {% load tz %}
 <article id="{{ post.post_id }}" class="article">
-    <div class="card shadow-sm post-card" style="display: inline-block">
-        <header class="header">
-            <div class="drop">
-                {% if post.drop %}
-                    &nbsp;{{ post.drop.number }}
-                {% endif %}
-            </div>
-            <span class="author">{{ post.author }}</span>
-            {% if post.tripcode %}
-                <span class="trip" data-bs-toggle="tooltip"
-                      title="{{ post.tripcode | get_cracked_pass }}">{{ post.tripcode }}</span>
-            {% endif %}
-            {% if post.poster_hash != '' %}
-                <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}"><a
-                        target="_blank" style="text-decoration: none; color: unset"
-                        href="{% url_replace request 'poster_hash' post.poster_hash %}">ID:&nbsp;{{ post.poster_hash }}</a></span>
-            {% endif %}
-            <span>{{ post.subject }}</span>
-            <span>{{ post.timestamp|timezone:"America/Los_Angeles" }}</span>
-            <span><a href="#{{ post.post_id }}">No.{{ post.post_id }}</a></span>
+<br />
+    <div style="display: inline-block">
+        <div class="header">
+            <strong>{{ post.author }}</strong>
             &nbsp;
-            {% if '/search/' not in request.path %}
-                {% if platform_name == '4chan' %}
-                    <span><a href="{{ post.get_archive_url }}"
-                             style="text-decoration: none">🗄️plebs</a></span>
-                {% else %}
-                    <span><a href="{{ post.get_archive_url }}"
-                             style="text-decoration: none">🗄️.is</a></span>
-                {% endif %}
-                {% if platform_name == '8kun' %}
-                    <span><a href="{{ post.get_8kun_url }}" target="_blank"
-                             style="text-decoration: none">🔗kun</a></span>
-                {% endif %}
-                {% if platform_name == '8chan' and board_name == 'qresearch' %}
-                    <span><a href="{{ post.get_8kun_url }}" target="_blank"
-                             style="text-decoration: none">🔗kun</a></span>
-                {% endif %}
-            {% endif %}
-            <small>
-                {% if post.replies %}
-                    &nbsp;
-                {% endif %}
-                {% for reply in post.replies %}
-                    <span>
-                        {% if reply.drop %}
-                            <a class="link-danger"
-                               href="{{ reply.1 }}">{{ reply.0 | reply_string }}</a><a
-                                style="text-decoration: none" href="{{ reply.1 }}"><b
-                                class="text-black-50">Q!</b></a>
-                        {% else %}
-                            <a class="link-secondary"
-                               href="{{ reply.1 }}">{{ reply.0 | reply_string }}</a>
-                        {% endif %}
-                    </span>
-                {% endfor %}
-            </small>
-        </header>
-        {% if '/search/' in request.path %}
-            <div class="post-body">{{ post.body | escape | markdown:post.links | truncatechars_html:750 }}</div>
-            <a class="stretched-link" href="{{ post.get_post_url }}"></a>
-        {% else %}
-            <div class="post-body">{{ post.body | escape | markdown:post.links }}</div>
-        {% endif %}
+            {{ post.timestamp }}
+        </div>
+        <div class="post-body">{{ post.body | reddit_markdown }}</div>
+        <div>
+            ⇧
+            {{ post.score }}
+            ⇩
+            &nbsp;
+        </div>
     </div>
+    {% for reply in post.replies %}
+        {% include 'posts/reddit_post.html' with post=reply %}
+    {% endfor %}
 </article>

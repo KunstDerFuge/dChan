@@ -411,22 +411,27 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
         s = RedditPostDocument.search()
         thread_posts = s.query('match', subreddit__name=subreddit) \
             .query('match', thread_hash=thread_hash) \
+            .sort('-timestamp') \
             .sort('-score') \
-            .extra(size=800)
+            .extra(size=800) \
 
-        op = thread_posts.query('match', is_op=True)
+        thread_replies = thread_posts.query('match', is_op=False).to_queryset()
 
-        thread_posts = thread_posts.to_queryset().select_related('subreddit')
+        for post in thread_replies:
+            post.replies = [reply for reply in thread_replies if reply.parent_id == post.link_id]
+
+        op = thread_posts.query('match', is_op=True).to_queryset().first()
+        top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
 
         context = {
             'op': op,
-            'posts': thread_posts,
+            'posts': top_level_replies,
             'subreddit_name': subreddit,
             'thread': thread_hash,
             'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
         }
 
-        if len(thread_posts) == 0:
+        if not op:
             raise ObjectDoesNotExist
 
     except ObjectDoesNotExist:

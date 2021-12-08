@@ -23,6 +23,12 @@ def markdown(text, links):
     return mark_safe(md.markdown(text, extensions=[ChanExtensions(links)]))
 
 
+@register.filter(name='reddit_markdown')
+@stringfilter
+def markdown(text):
+    return mark_safe(md.markdown(text))
+
+
 @register.filter(name='get_archive_link')
 @stringfilter
 def get_archive_link(path):
