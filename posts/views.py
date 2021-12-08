@@ -14,8 +14,8 @@ from django_elasticsearch_dsl.search import Search
 
 from dChan import settings
 from posts.DSEPaginator import DSEPaginator
-from posts.documents import PostDocument
-from posts.models import Post, Platform, Drop
+from posts.documents import PostDocument, RedditPostDocument
+from posts.models import Post, Platform, Drop, Subreddit
 
 
 def board_links(platform):
@@ -364,3 +364,81 @@ def timeseries_frontend(request):
 def about(request):
     template = loader.get_template('posts/about.html')
     return HttpResponse(template.render({}, request))
+
+
+def reddit_index(request, subreddit=None):
+    s = RedditPostDocument.search()
+    if subreddit:
+        threads = s.query('match', is_op=True) \
+            .query('match', subreddit__name=subreddit) \
+            .sort('-timestamp')
+    else:
+        threads = s.query('match', is_op=True) \
+            .sort('-timestamp')
+
+    page = int(request.GET.get('page', 1))
+    results_per_page = 40
+    start = (page - 1) * results_per_page
+    end = start + results_per_page
+    threads = threads[start:end]
+    queryset = threads.to_queryset().select_related('subreddit')
+    response = threads.execute()
+    paginator = DSEPaginator(response, results_per_page)
+    paginator.set_queryset(queryset)
+    page_range = paginator.get_elided_page_range(number=page)
+
+    try:
+        page_threads = paginator.page(page)
+    except PageNotAnInteger:
+        page_threads = paginator.page(1)
+    except EmptyPage:
+        page_threads = paginator.page(paginator.num_pages)
+
+    context = {
+        'thread_list': page_threads,
+        'subreddit_name': subreddit,
+        'page_range': page_range,
+        'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
+    }
+
+    template = loader.get_template('posts/reddit_index.html')
+    return HttpResponse(template.render(context, request))
+
+
+def reddit_thread(request, subreddit, thread_id, thread_slug=None):
+    context = {}
+    try:
+        s = RedditPostDocument.search()
+        thread_posts = s.query('match', subreddit__name=subreddit) \
+            .query('match', thread_id=thread_id) \
+            .sort('-score') \
+            .extra(size=800)
+
+        op = thread_posts.query('match', is_op=True)
+
+        thread_posts = thread_posts.to_queryset().select_related('subreddit')
+
+        context = {
+            'op': op,
+            'posts': thread_posts,
+            'subreddit_name': subreddit,
+            'thread': thread_id,
+            'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
+        }
+
+        if len(thread_posts) == 0:
+            raise ObjectDoesNotExist
+
+    except ObjectDoesNotExist:
+        # One of the .gets failed, i.e. this thread is not archived
+        template = loader.get_template('posts/reddit_thread.html')
+        return HttpResponse(template.render(context, request), status=404)
+
+    except Exception as e:
+        print(e)
+        template = loader.get_template('posts/reddit_thread.html')
+        return HttpResponse(template.render(context, request), status=500)
+
+    template = loader.get_template('posts/reddit_thread.html')
+    return HttpResponse(template.render(context, request))
+

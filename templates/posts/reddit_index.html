@@ -1,0 +1,60 @@
+{% extends 'posts/base.html' %}
+{% block content %}
+    {% if subreddit_name %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/reddit">r</a></li>
+                <li class="breadcrumb-item"><a href="/r/{{ subreddit_name }}">{{ subreddit_name }}</a></li>
+            </ol>
+        </nav>
+    {% endif %}
+    {% if thread_list %}
+        <table class="table">
+            {% for thread in thread_list %}
+                <tr>
+                    <td>{{ thread.timestamp.date }}</td>
+                    <td>
+                        <a href="{{ thread.get_thread_url }}">
+                            {% if thread.subject %}
+                                {{ thread.subject }}
+                            {% else %}
+                                [No subject]
+                            {% endif %}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No threads are available.</p>
+    {% endif %}
+    {% if thread_list.has_other_pages %}
+        <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
+            {% if thread_list.has_previous %}
+                <li class="page-item"><a class="page-link"
+                                         href="?page={{ thread_list.previous_page_number }}">&laquo;</a>
+                </li>
+            {% else %}
+                <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
+            {% endif %}
+            {% for i in page_range|default_if_none:thread_list.paginator.get_elided_page_range %}
+                {% if thread_list.number == i %}
+                    <li class="active page-item"><span class="page-link">{{ i }}</span>
+                    </li>
+                {% else %}
+                    {% if i == thread_list.paginator.ELLIPSIS %}
+                        <li class="page-item"><span class="page-link">{{ i }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            {% if thread_list.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ thread_list.next_page_number }}">&raquo;</a>
+                </li>
+            {% else %}
+                <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
+            {% endif %}
+        </ul>
+    {% endif %}
+{% endblock %}

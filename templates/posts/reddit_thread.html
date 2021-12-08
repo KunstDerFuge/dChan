@@ -1,0 +1,76 @@
+{% extends 'posts/base.html' %}
+{% load filters %}
+{% load static %}
+{% block head_extras %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
+{% block content %}
+    {% if posts %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/reddit">r</a></li>
+                <li class="breadcrumb-item"><a href="/r/{{ subreddit_name }}">{{ subreddit_name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ op.subject }}</li>
+            </ol>
+        </nav>
+        {% for post in posts %}
+            {% include 'posts/reddit_post.html' %}
+        {% endfor %}
+    {% else %}
+        <div class="text-center pt-2">
+            <h4>There was an error retrieving these posts!</h4>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block extra_scripts %}
+{#    <script src="{% static 'js/mark.es6.min.js' %}"></script>#}
+{#    <script>#}
+{#      window.addEventListener('DOMContentLoaded', function (e) {#}
+{#        const definitions = JSON.parse('{{ definitions | escapejs }}')#}
+{#        let observerOptions = {#}
+{#          threshold: 0.01#}
+{#        }#}
+{#        let observer = new IntersectionObserver(intersectionCallback, observerOptions)#}
+{##}
+{#        let posts = Array.from(document.getElementsByClassName('post-body'))#}
+{#        for (const post of posts) {#}
+{#          observer.observe(post)#}
+{#        }#}
+{#        function intersectionCallback(entries, observer, header) {#}
+{#          entries.forEach((entry, i) => {#}
+{#            if (entry.isIntersecting) {#}
+{#              processDefinitions(entry.target)#}
+{#            }#}
+{#          })#}
+{#        }#}
+{#        function processDefinitions(post) {#}
+{#          console.log('Processed definitions for a post')#}
+{#          let marker = new Mark(post)#}
+{#          let options = {#}
+{#            'separateWordSearch': false,#}
+{#            'accuracy': {#}
+{#              'value': 'exactly',#}
+{#              'limiters': [',', '.', '!', '?', '#', '\'', '\"', ':', '(', ')', '[', ']', '{', '}']#}
+{#            },#}
+{#            'element': 'span',#}
+{#            'className': 'definition'#}
+{#          }#}
+{#          for (const word of definitions) {#}
+{#            options['each'] = function (el) {#}
+{#              let content = `<span class="d-flex justify-content-center mb-2"><span class="badge rounded-pill bg-secondary">${word.category}</span></span>${word.definition}<br/><a href="${word.report}" target="_blank"><small>See more at ChanScan</small>`#}
+{#              let popover = new bootstrap.Popover(el, {#}
+{#                container: 'body',#}
+{#                trigger: 'hover click',#}
+{#                content: content,#}
+{#                sanitize: false,#}
+{#                html: true,#}
+{#                placement: 'bottom'#}
+{#              })#}
+{#            }#}
+{#            marker.mark(word.word, options)#}
+{#          }#}
+{#          observer.unobserve(post)#}
+{#        }#}
+{#      }, false)#}
+{#    </script>#}
+{% endblock %}
