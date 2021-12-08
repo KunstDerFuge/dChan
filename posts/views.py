@@ -405,12 +405,12 @@ def reddit_index(request, subreddit=None):
     return HttpResponse(template.render(context, request))
 
 
-def reddit_thread(request, subreddit, thread_id, thread_slug=None):
+def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
     context = {}
     try:
         s = RedditPostDocument.search()
         thread_posts = s.query('match', subreddit__name=subreddit) \
-            .query('match', thread_id=thread_id) \
+            .query('match', thread_hash=thread_hash) \
             .sort('-score') \
             .extra(size=800)
 
@@ -422,7 +422,7 @@ def reddit_thread(request, subreddit, thread_id, thread_slug=None):
             'op': op,
             'posts': thread_posts,
             'subreddit_name': subreddit,
-            'thread': thread_id,
+            'thread': thread_hash,
             'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
         }
 
