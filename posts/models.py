@@ -154,7 +154,7 @@ class RedditPost(models.Model):
     is_submitter = models.BooleanField()
     is_self = models.BooleanField()
     num_comments = models.PositiveIntegerField()
-    link_id = models.CharField(max_length=10, primary_key=True)
+    link_id = models.CharField(max_length=10, unique=True)
     parent_id = models.CharField(max_length=10, null=True)
 
 
