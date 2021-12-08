@@ -341,8 +341,9 @@ def commit_reddit_posts_from_df(df):
                           post_hint=row['post_hint'], subject=row['title'], author=row['author'],
                           author_fullname=row['author_fullname'], body=row['text'], url=row['url'],
                           no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
-                          is_submitter=row['is_submitter'], is_self=row['is_self'],
-                          num_comments=row['num_comments'], link_id=row['link_id'], parent_id=row['parent_id'])
+                          is_submitter=row['is_submitter'], is_self=row['is_self'], thread_id=row['thread_id'],
+                          thread_slug=row['thread_slug'], num_comments=row['num_comments'], link_id=row['link_id'],
+                          parent_id=row['parent_id'])
         new_posts.append(post)
         if len(new_posts) >= 10000:
             posts_created = RedditPost.objects.bulk_create(new_posts)
