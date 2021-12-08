@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from django.core.management import BaseCommand
 from tqdm import tqdm
@@ -30,11 +29,13 @@ class Command(BaseCommand):
 
                 def process_link_id_and_parent(row):
                     try:
+                        row['thread_id'] = row['permalink'].split('/')[6]
+                        row['thread_slug'] = row['permalink'].split('/')[7]
                         if row['item_type'] == 'comment':
                             row['link_id'] = row['permalink'].split('/')[-2]
                             row['parent_id'] = row['parent_id'].split('_')[-1]
                         else:
-                            row['link_id'] = row['permalink'].split('/')[6]
+                            row['link_id'] = row['thread_id']
                             row['parent_id'] = None
 
                         return row
@@ -59,6 +60,8 @@ class Command(BaseCommand):
                 df['scraped_on'] = df['scraped_on'].dt.tz_localize(tz='UTC')
                 df = df.apply(process_link_id_and_parent, axis=1)
                 df['edited'] = df['edited'].astype(object).where(df['edited'].notnull(), None)
+                df['created_utc'] = df['created_utc'].astype(object).where(df['created_utc'].notnull(), None)
+                df = df.dropna(subset=['score', 'author', 'text'])
 
                 print('Committing objects to database...')
                 utilities.commit_reddit_posts_from_df(df)
