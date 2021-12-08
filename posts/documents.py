@@ -42,7 +42,7 @@ class PostDocument(Document):
             'post_id',
             'is_op',
             'author',
-            'poster_id',
+            'poster_hash',
             'subject',
             'body',
             'timestamp',
