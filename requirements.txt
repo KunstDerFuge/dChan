@@ -18,3 +18,4 @@ python-scrapyd-api~=2.1.2
 itemadapter~=0.3.0
 setuptools~=49.2.1
 selenium==3.141.0
+django-embed-video==1.4.0
