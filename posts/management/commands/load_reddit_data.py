@@ -63,8 +63,11 @@ class Command(BaseCommand):
                 print('Processing data...')
                 df = df.progress_apply(process_link_id_and_parent, axis=1)
                 df['edited'] = df['edited'].astype(object).where(df['edited'].notnull(), None)
-                df['text'] = df.text.applymap(html.unescape)
-                df['title'] = df.title.applymap(html.unescape)
+                df['text'] = df.text.fillna('')
+                df['text'] = df.text.astype(str)
+                df['title'] = df.title.astype(str)
+                df['text'] = df.text.apply(html.unescape)
+                df['title'] = df.title.apply(html.unescape)
                 df['created_utc'] = df['created_utc'].astype(object).where(df['created_utc'].notnull(), None)
                 df = df.dropna(subset=['score', 'author', 'text'])
 
