@@ -5,22 +5,24 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="card shadow-sm post-card" style="display: inline-block">
+    <div class="card shadow-sm">
     {% if op %}
-        {% include 'posts/reddit_post.html' with post=op %}
+        {% include 'posts/reddit_op.html' with post=op %}
     {% else %}
         <div class="text-center pt-2">
             <h4>There was an error retrieving these posts!</h4>
         </div>
     {% endif %}
     </div>
-    <div class="card shadow-sm post-card" style="display: inline-block">
+    <br />
+    <div class="card shadow-sm post-card" style="background: white">
     {% if posts %}
         {% for post in posts %}
             {% include 'posts/reddit_post.html' %}
         {% endfor %}
     {% endif %}
     </div>
+    <br />
 {% endblock %}
 {% block extra_scripts %}
     {#    <script src="{% static 'js/mark.es6.min.js' %}"></script>#}

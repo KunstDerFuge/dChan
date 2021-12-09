@@ -1,22 +1,23 @@
 {% load filters %}
 {% load tz %}
 <article id="{{ post.post_id }}" class="article">
-<br />
-    <div style="display: inline-block">
+    <div style="padding-left: 20px; position: relative">
+        <div style="position: absolute; bottom: 0; left: 0; height: calc(100% - 25px); margin-left: 5px; width: 16px; display: inline-block">
+            <i style="border-right: 2px solid #edeff1; display: block; height: 100%; width: 50%;"></i>
+        </div>
         <div class="header">
             <strong>{{ post.author }}</strong>
-            &nbsp;
-            {{ post.timestamp }}
+            <small style="color: rgb(120, 124, 126);">· {{ post.timestamp }}</small>
         </div>
-        <div class="post-body">{{ post.body | reddit_markdown }}</div>
-        <div>
+        <div class="post-body" style="padding-bottom: 0">{{ post.body | reddit_markdown }}</div>
+        <div style="font-weight: bold">
             ⇧
             {{ post.score }}
             ⇩
             &nbsp;
         </div>
+        {% for reply in post.replies %}
+            {% include 'posts/reddit_post.html' with post=reply %}
+        {% endfor %}
     </div>
-    {% for reply in post.replies %}
-        {% include 'posts/reddit_post.html' with post=reply %}
-    {% endfor %}
 </article>
