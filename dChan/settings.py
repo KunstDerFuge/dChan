@@ -104,6 +104,7 @@ DATABASES = {
 ELASTICSEARCH_DSL = {
     'default': {
         'hosts': config('ES_HOST') + ':' + config('ES_PORT'),
+        'http_auth': (config('ELASTICSEARCH_USERNAME') + ':' + config('ELASTICSEARCH_PASSWORD'))
     },
 }
 
@@ -133,7 +134,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'revisit-recent-threads': {
         'task': 'posts.tasks.revisit_recent_threads',
-        'schedule':  60 * 60,
+        'schedule': 60 * 60,
     },
     'sync-elasticsearch': {
         'task': 'posts.tasks.sync_elasticsearch',
