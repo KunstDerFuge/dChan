@@ -45,8 +45,7 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'corsheaders',
     'debug_toolbar',
-    'django.contrib.humanize',
-    'embed_video'
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
@@ -81,7 +80,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.request',
             ],
         },
     },
