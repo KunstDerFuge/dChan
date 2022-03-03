@@ -101,7 +101,12 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         if poster_hash:
             thread_posts = thread_posts.query('match', poster_hash=poster_hash)
 
-        thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
+        try:
+            thread_posts = thread_posts.to_queryset().select_related('drop', 'platform', 'board')
+        except Exception as e:
+            print(e)
+            template = loader.get_template('posts/elasticsearch_error.html')
+            return HttpResponse(template.render(context, request), status=500)
 
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
             .select_related('post__platform', 'post__board') \
