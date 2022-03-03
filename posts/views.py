@@ -54,7 +54,12 @@ def index(request, platform=None, board=None):
     start = (page - 1) * results_per_page
     end = start + results_per_page
     threads = threads[start:end]
-    queryset = threads.to_queryset().select_related('platform', 'board')
+    try:
+        queryset = threads.to_queryset().select_related('platform', 'board')
+    except Exception as e:
+        template = loader.get_template('posts/elasticsearch_error.html')
+        return HttpResponse(template.render({}, request), status=500)
+
     response = threads.execute()
     paginator = DSEPaginator(response, results_per_page)
     paginator.set_queryset(queryset)
