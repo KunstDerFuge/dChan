@@ -303,7 +303,7 @@ def timeseries_from_keywords(request):
             }
         }
 
-    s = Search(index='posts').from_dict({
+    s = Search(index='posts', model=Post).from_dict({
         'query': {
             'range': {
                 'timestamp': {
