@@ -134,6 +134,7 @@ class Post(models.Model):
 
 
 class RedditPost(models.Model):
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='reddit_posts')
     timestamp = models.DateTimeField()  # renamed from "created_utc"
     edited = models.DateTimeField(null=True, blank=True, default=None)  # Unix timestamp
     subreddit = models.ForeignKey('Subreddit', on_delete=models.CASCADE, related_name='posts')
