@@ -60,7 +60,7 @@ class RedditPostDocument(Document):
     })
 
     def get_queryset(self):
-        return super(RedditPostDocument, self).get_queryset().select_related('board')
+        return super(RedditPostDocument, self).get_queryset().select_related('subreddit')
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, Subreddit):
