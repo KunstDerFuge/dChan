@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'corsheaders',
     'debug_toolbar',
-    'django.contrib.humanize'
+    'django.contrib.humanize',
+    'embed_video'
 ]
 
 MIDDLEWARE = [
