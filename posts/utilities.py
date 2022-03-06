@@ -334,6 +334,7 @@ def commit_reddit_posts_from_df(df):
     new_posts = []
     for index, row in tqdm(df.iterrows(), total=len(df)):
         subreddit, created = Subreddit.objects.get_or_create(name=row['subreddit'])
+        reddit, created = Platform.objects.get_or_create(name='reddit')
 
         post = RedditPost(subreddit=subreddit, timestamp=row['created_utc'], edited=row['edited'],
                           author_flair_text=row['author_flair_text'], stickied=row['stickied'],
@@ -343,7 +344,7 @@ def commit_reddit_posts_from_df(df):
                           no_follow=row['no_follow'], locked=row['locked'], is_op=row['is_op'],
                           is_submitter=row['is_submitter'], is_self=row['is_self'], thread_hash=row['thread_hash'],
                           thread_slug=row['thread_slug'], num_comments=row['num_comments'], link_id=row['link_id'],
-                          parent_id=row['parent_id'])
+                          parent_id=row['parent_id'], platform=reddit)
         new_posts.append(post)
         if len(new_posts) >= 10000:
             posts_created = RedditPost.objects.bulk_create(new_posts)
