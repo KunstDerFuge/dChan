@@ -288,6 +288,7 @@ def timeseries_from_keywords(request):
             query_type: {
                 'query': keywords,
                 'default_operator': 'AND',
+                'fields': ['subject', 'body'],
                 'analyze_wildcard': True
             }
         }
