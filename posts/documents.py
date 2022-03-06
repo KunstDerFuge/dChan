@@ -55,6 +55,9 @@ class PostDocument(Document):
 
 @registry.register_document
 class RedditPostDocument(Document):
+    platform = fields.ObjectField(properties={
+        'name': fields.TextField()
+    })
     subreddit = fields.ObjectField(properties={
         'name': fields.TextField()
     })
