@@ -54,6 +54,9 @@ class Command(BaseCommand):
                                                    'no_follow': convert_bool})
                 df = df.replace('None', None)
 
+                if 'edited' not in df:
+                    df['edited'] = None
+
                 df['subreddit'] = df.loc[0].subreddit
                 df['is_op'] = df['item_type'] == 'submission'
                 df['edited'] = pd.to_datetime(df['edited'], unit='s')
