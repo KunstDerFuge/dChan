@@ -27,6 +27,8 @@ class Command(BaseCommand):
                 def convert_int(val):
                     if not val:
                         return 0
+                    if isinstance(val, str):
+                        return int(float(val))
                     return val
 
                 def process_link_id_and_parent(row):
