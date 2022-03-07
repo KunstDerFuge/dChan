@@ -369,12 +369,15 @@ def about(request):
 def reddit_index(request, subreddit=None):
     s = RedditPostDocument.search()
     if subreddit:
-        threads = s.query('match', is_op=True) \
+        threads = s.query('match', platform__name='reddit') \
+            .query('match', is_op=True) \
             .query('match', subreddit__name=subreddit) \
             .sort('-score') \
             .sort('-timestamp')
     else:
-        threads = s.query('match', is_op=True) \
+        threads = s.query('match', platform__name='reddit') \
+            .query('match', is_op=True) \
+            .sort('-score') \
             .sort('-score') \
             .sort('-timestamp')
 
