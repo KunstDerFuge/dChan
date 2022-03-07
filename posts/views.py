@@ -12,7 +12,6 @@ from django.template import loader
 from django.views.generic import ListView
 from django_elasticsearch_dsl.search import Search
 
-from dChan import settings
 from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument, RedditPostDocument
 from posts.models import Post, Platform, Drop, Subreddit
