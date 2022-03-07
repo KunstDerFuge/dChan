@@ -386,7 +386,14 @@ def reddit_index(request, subreddit=None):
     start = (page - 1) * results_per_page
     end = start + results_per_page
     threads = threads[start:end]
-    queryset = threads.to_queryset().select_related('subreddit')
+
+    try:
+        queryset = threads.to_queryset().select_related('subreddit')
+    except Exception as e:
+        print(e)
+        template = loader.get_template('posts/elasticsearch_error.html')
+        return HttpResponse(template.render({}, request), status=500)
+
     response = threads.execute()
     paginator = DSEPaginator(response, results_per_page)
     paginator.set_queryset(queryset)
@@ -420,7 +427,12 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
             .sort('-score') \
             .extra(size=800) \
 
-        thread_replies = thread_posts.query('match', is_op=False).to_queryset()
+        try:
+            thread_replies = thread_posts.query('match', is_op=False).to_queryset()
+        except Exception as e:
+            print(e)
+            template = loader.get_template('posts/elasticsearch_error.html')
+            return HttpResponse(template.render(context, request), status=500)
 
         for post in thread_replies:
             post.replies = [reply for reply in thread_replies if reply.parent_id == post.link_id]
