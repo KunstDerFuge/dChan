@@ -14,7 +14,7 @@ urlpatterns = [
     path('drop/<int:drop_no>', views.drop, name='drop'),
     path('first/<str:phrase>', views.first_to_say, name='index'),
     path('reddit/', views.reddit_index, name='reddit_index'),
-    path('r/<str:subreddit>', views.reddit_index, name='reddit_index'),
+    path('r/<str:subreddit>/', views.reddit_index, name='reddit_index'),
     # Reddit threads:
     path('r/<str:subreddit>/comments/<str:thread_hash>/', views.reddit_thread, name='reddit_index'),
     path('r/<str:subreddit>/comments/<str:thread_hash>/<str:thread_slug>/', views.reddit_thread, name='reddit_index'),
