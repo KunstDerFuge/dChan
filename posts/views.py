@@ -371,14 +371,13 @@ def reddit_index(request, subreddit=None):
         threads = s.query('match', platform__name='reddit') \
             .query('match', is_op=True) \
             .query('match', subreddit__name=subreddit) \
-            .sort('-score') \
-            .sort('-timestamp')
+            .sort('-timestamp') \
+            .sort('-score')
     else:
         threads = s.query('match', platform__name='reddit') \
             .query('match', is_op=True) \
-            .sort('-score') \
-            .sort('-score') \
-            .sort('-timestamp')
+            .sort('-timestamp') \
+            .sort('-score')
 
     page = int(request.GET.get('page', 1))
     results_per_page = 40
