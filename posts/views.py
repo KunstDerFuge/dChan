@@ -415,7 +415,7 @@ def reddit_index(request, subreddit=None):
     return HttpResponse(template.render(context, request))
 
 
-def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
+def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=None):
     context = {}
     try:
         s = RedditPostDocument.search()
@@ -423,7 +423,7 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
             .query('match', thread_hash=thread_hash) \
             .sort('-timestamp') \
             .sort('-score') \
-            .extra(size=800) \
+            .extra(size=800)
 
         try:
             thread_replies = thread_posts.query('match', is_op=False).to_queryset()
@@ -436,7 +436,11 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
             post.replies = [reply for reply in thread_replies if reply.parent_id == post.link_id]
 
         op = thread_posts.query('match', is_op=True).to_queryset().first()
-        top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
+        if link_id:
+            top_level_replies = [post for post in thread_replies if
+                                 post.parent_id == op.link_id and post.link_id == link_id]
+        else:
+            top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
 
         context = {
             'op': op,
@@ -461,4 +465,3 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None):
 
     template = loader.get_template('posts/reddit_thread.html')
     return HttpResponse(template.render(context, request))
-
