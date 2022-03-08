@@ -24,6 +24,8 @@
             {% for reply in post.replies %}
                 {% include 'posts/reddit_post.html' with post=reply %}
             {% endfor %}
+        {% else %}
+            <a class="stretched-link" href="{{ post.get_thread_url }}"></a>
         {% endif %}
     </div>
 </article>

@@ -32,6 +32,9 @@
                 <a href="{{ post.url }}">{{ post.url }}</a>
             {% endif %}
         </div>
+        {% if '/u/' in request.path %}
+            <a class="stretched-link" href="{{ post.get_thread_url }}"></a>
+        {% endif %}
     </div>
     {% for reply in post.replies %}
         {% include 'posts/reddit_post.html' with post=reply %}
