@@ -470,7 +470,9 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
 def reddit_user_page(request, username):
     try:
         s = RedditPostDocument.search()
-        user_posts = s.query('match', author=username) \
+        if len(username) <= 2:
+            raise
+        user_posts = s.query('match_phrase', author=username) \
             .sort('-score') \
             .sort('-timestamp')
 
