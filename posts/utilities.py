@@ -347,7 +347,7 @@ def commit_reddit_posts_from_df(df):
                           parent_id=row['parent_id'], platform=reddit)
         new_posts.append(post)
         if len(new_posts) >= 10000:
-            posts_created = RedditPost.objects.bulk_create(new_posts, ignore_conflicts=True)
+            posts_created = RedditPost.objects.bulk_create(new_posts)
             posts_ids = [post.id for post in posts_created]
             new_posts_qs = RedditPost.objects.filter(id__in=posts_ids)
             RedditPostDocument().update(new_posts_qs)
