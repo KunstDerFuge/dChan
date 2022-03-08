@@ -16,6 +16,11 @@
     </div>
     <br />
     <div class="card shadow-sm post-card" style="background: white">
+    {% if viewing_comment %}
+        <div class="mb-2 p-1">
+            <a href="{{ op.get_thread_url }}">🠐 See all comments</a>
+        </div>
+    {% endif %}
     {% if posts %}
         {% for post in posts %}
             {% include 'posts/reddit_post.html' %}

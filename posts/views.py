@@ -437,8 +437,7 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
 
         op = thread_posts.query('match', is_op=True).to_queryset().first()
         if link_id:
-            top_level_replies = [post for post in thread_replies if
-                                 post.parent_id == op.link_id and post.link_id == link_id]
+            top_level_replies = [post for post in thread_replies if post.link_id == link_id]
         else:
             top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
 
@@ -447,6 +446,7 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
             'posts': top_level_replies,
             'subreddit_name': subreddit,
             'thread': thread_hash,
+            'viewing_comment': link_id is not None,
             'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
         }
 
