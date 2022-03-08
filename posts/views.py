@@ -465,3 +465,54 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
 
     template = loader.get_template('posts/reddit_thread.html')
     return HttpResponse(template.render(context, request))
+
+
+def reddit_user_page(request, username):
+    try:
+        s = RedditPostDocument.search()
+        user_posts = s.query('match', author=username) \
+            .sort('-score') \
+            .sort('-timestamp')
+
+        if user_posts.count() == 0:
+            raise
+    
+    except Exception as e:
+        print(e)
+        template = loader.get_template('posts/404.html')
+        return HttpResponse(template.render({}, request), status=500)
+
+    page = int(request.GET.get('page', 1))
+    results_per_page = 50
+    start = (page - 1) * results_per_page
+    end = start + results_per_page
+    user_posts = user_posts[start:end]
+
+    try:
+        queryset = user_posts.to_queryset().select_related('subreddit')
+    except Exception as e:
+        print(e)
+        template = loader.get_template('posts/elasticsearch_error.html')
+        return HttpResponse(template.render({}, request), status=500)
+
+    response = user_posts.execute()
+    paginator = DSEPaginator(response, results_per_page)
+    paginator.set_queryset(queryset)
+    page_range = paginator.get_elided_page_range(number=page)
+
+    try:
+        page_posts = paginator.page(page)
+    except PageNotAnInteger:
+        page_posts = paginator.page(1)
+    except EmptyPage:
+        page_posts = paginator.page(paginator.num_pages)
+        
+    context = {
+        'post_list': page_posts,
+        'page_range': page_range,
+        'username': username,
+        'total_posts': user_posts.count()
+    }
+
+    template = loader.get_template('posts/reddit_user_page.html')
+    return HttpResponse(template.render(context, request))

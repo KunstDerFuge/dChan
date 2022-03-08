@@ -23,6 +23,8 @@ urlpatterns = [
          name='reddit_thread'),
     path('r/<str:subreddit>/comments/<str:thread_hash>/comment/<str:link_id>/', views.reddit_thread,
          name='reddit_thread'),
+    # Reddit user page:
+    path('u/<str:username>/', views.reddit_user_page, name='reddit_thread'),
 
     # Chan platforms:
     path('<str:platform>/', cache_page(15 * 60)(views.index), name='index'),
