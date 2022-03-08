@@ -16,7 +16,8 @@
             <div>
                 <strong><a href="/r/{{ post.subreddit.name }}"
                            style="color: inherit; text-decoration: inherit">r/{{ post.subreddit.name }}</a></strong>
-                <small style="color: rgb(120, 124, 126);">• Posted by u/{{ post.author }}
+                <small style="color: rgb(120, 124, 126);">• Posted by
+                    <a href="/u/{{ post.author }}" style="color: unset; text-decoration: unset">u/{{ post.author }}</a>
                     on {{ post.timestamp }}</small>
             </div>
             <div style="padding-top: 8px">
@@ -26,7 +27,7 @@
             {% if post.post_hint == 'image' %}
                 <img src="{{ post.url }}" alt="{{ post.subject }}" class="rounded" style="width: 100%;"/>
             {% elif 'video' in post.post_hint %}
-                  {% video post.url "large" %}
+                {% video post.url "large" %}
             {% else %}
                 <a href="{{ post.url }}">{{ post.url }}</a>
             {% endif %}
