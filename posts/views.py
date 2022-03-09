@@ -371,16 +371,24 @@ def about(request):
 
 def reddit_index(request, subreddit=None):
     s = RedditPostDocument.search()
+    sort = request.GET.get('sort')
     if subreddit:
         threads = s.query('match', platform__name='reddit') \
             .query('match', is_op=True) \
-            .query('match', subreddit__name=subreddit) \
-            .sort('-timestamp') \
-            .sort('-score')
+            .query('match', subreddit__name=subreddit)
     else:
         threads = s.query('match', platform__name='reddit') \
-            .query('match', is_op=True) \
-            .sort('-timestamp') \
+            .query('match', is_op=True)
+
+    if sort == 'newest':
+        threads = threads.sort('-score') \
+            .sort('-timestamp')
+    elif sort == 'oldest':
+        threads = threads.sort('-score') \
+            .sort('timestamp')
+    else:
+        sort = 'top'
+        threads = threads.sort('-timestamp') \
             .sort('-score')
 
     page = int(request.GET.get('page', 1))
@@ -409,6 +417,7 @@ def reddit_index(request, subreddit=None):
         page_threads = paginator.page(paginator.num_pages)
 
     context = {
+        'sort': sort,
         'thread_list': page_threads,
         'subreddit_name': subreddit,
         'subreddits': subreddit_list(),

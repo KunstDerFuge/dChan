@@ -8,6 +8,19 @@
             </ol>
         </nav>
     {% endif %}
+    <div class="btn-group mt-2 mb-4" role="group" aria-label="Sort order">
+        <input type="radio" class="btn-check" name="btnradio" id="top" autocomplete="off"
+               onclick="parent.location='?sort=top'" {% if sort == 'top' %}checked{% endif %}>
+        <label class="btn btn-outline-primary" for="top">Top - All Time</label>
+
+        <input type="radio" class="btn-check" name="btnradio" id="newest" autocomplete="off"
+               onclick="parent.location='?sort=newest'" {% if sort == 'newest' %}checked{% endif %}>
+        <label class="btn btn-outline-primary" for="newest">Newest</label>
+
+        <input type="radio" class="btn-check" name="btnradio" id="oldest" autocomplete="off"
+               onclick="parent.location='?sort=oldest'" {% if sort == 'oldest' %}checked{% endif %}>
+        <label class="btn btn-outline-primary" for="oldest">Oldest</label>
+    </div>
     {% if thread_list %}
         <table class="table">
             {% for thread in thread_list %}
