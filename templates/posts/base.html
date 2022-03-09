@@ -86,6 +86,22 @@
                         </div>
                     </li>
                 {% endif %}
+                {% if subreddits %}
+                    <li class="mb-1">
+                        <button class="btn btn-toggle align-items-center rounded" data-bs-toggle="collapse"
+                                data-bs-target="#subreddits" aria-expanded="true">
+                            Subreddits
+                        </button>
+                        <div class="collapse show" id="subreddits">
+                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                {% for subreddit in subreddits %}
+                                    <li><a href="/r/{{ subreddit }}"
+                                           class="link-dark rounded">r/{{ subreddit }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
                 <li class="mb-1">
                     <button class="btn btn-toggle align-items-center rounded collapsed"
                             data-bs-toggle="collapse"
@@ -96,7 +112,7 @@
                             Jump to Drop
                         {% endif %}
                     </button>
-                    {% if thread and '/r/' not in request.path  %}
+                    {% if thread and '/r/' not in request.path %}
                         <div class="collapse {% if thread %}show{% endif %}" id="drops">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 {% if drop_links %}

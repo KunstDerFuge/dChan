@@ -33,6 +33,10 @@ def board_links(platform):
         return list(platform_obj.boards.values_list('name', flat=True).distinct()), None
 
 
+def subreddit_list():
+    return sorted(list(Subreddit.objects.values_list('name', flat=True)))
+
+
 def index(request, platform=None, board=None):
     s = PostDocument.search()
     if board:
@@ -407,6 +411,7 @@ def reddit_index(request, subreddit=None):
     context = {
         'thread_list': page_threads,
         'subreddit_name': subreddit,
+        'subreddits': subreddit_list(),
         'page_range': page_range,
         'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
     }
@@ -442,6 +447,7 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
             top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
 
         context = {
+            'subreddits': subreddit_list(),
             'op': op,
             'posts': top_level_replies,
             'subreddit_name': subreddit,
@@ -478,7 +484,7 @@ def reddit_user_page(request, username):
 
         if user_posts.count() == 0:
             raise
-    
+
     except Exception as e:
         print(e)
         template = loader.get_template('posts/404.html')
@@ -508,8 +514,9 @@ def reddit_user_page(request, username):
         page_posts = paginator.page(1)
     except EmptyPage:
         page_posts = paginator.page(paginator.num_pages)
-        
+
     context = {
+        'subreddits': subreddit_list(),
         'post_list': page_posts,
         'page_range': page_range,
         'username': username,
