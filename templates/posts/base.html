@@ -90,13 +90,13 @@
                     <button class="btn btn-toggle align-items-center rounded collapsed"
                             data-bs-toggle="collapse"
                             data-bs-target="#drops" aria-expanded="{% if thread %}true{% else %}false{% endif %}">
-                        {% if thread %}
+                        {% if thread and '/r/' not in request.path %}
                             Thread Drops
                         {% else %}
                             Jump to Drop
                         {% endif %}
                     </button>
-                    {% if thread %}
+                    {% if thread and '/r/' not in request.path  %}
                         <div class="collapse {% if thread %}show{% endif %}" id="drops">
                             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                 {% if drop_links %}
