@@ -14,7 +14,7 @@ from django_elasticsearch_dsl.search import Search
 
 from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument, RedditPostDocument
-from posts.models import Post, Platform, Drop, Subreddit
+from posts.models import Post, Platform, Drop, Subreddit, Board
 
 
 def board_links(platform):
@@ -118,6 +118,12 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             template = loader.get_template('posts/elasticsearch_error.html')
             return HttpResponse(template.render(context, request), status=500)
 
+        try:
+            board = Board.objects.get(name=board)
+        except Board.DoesNotExist:
+            template = loader.get_template('posts/404.html')
+            return HttpResponse(template.render({}, request), status=404)
+
         thread_drops = Drop.objects.filter(post__board__name=board, post__thread_id=thread_id) \
             .select_related('post__platform', 'post__board') \
             .order_by('number')
@@ -125,9 +131,6 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
 
         boards, other_boards = board_links(platform)
-        if boards is None:
-            template = loader.get_template('posts/404.html')
-            return HttpResponse(template.render(context, request), status=404)
 
         try:
             definitions = cache.get('definitions', [])
