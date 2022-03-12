@@ -23,7 +23,7 @@ def board_links(platform):
     try:
         platform_obj = Platform.objects.get(name=platform)
     except Platform.DoesNotExist:
-        return []
+        return None, None
 
     if platform == '8kun':
         q_boards = list(Drop.objects.filter(post__platform=platform_obj)
