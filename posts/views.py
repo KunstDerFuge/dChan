@@ -80,7 +80,7 @@ def index(request, platform=None, board=None):
         page_threads = paginator.page(paginator.num_pages)
 
     boards, other_boards = board_links(platform)
-    if boards is None:
+    if boards is None and platform is not None:
         template = loader.get_template('posts/404.html')
         return HttpResponse(template.render({}, request), status=404)
 
