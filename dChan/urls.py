@@ -15,6 +15,8 @@ Including another URLconf
 """
 import debug_toolbar
 from django.contrib import admin
+from django.http import HttpResponse
+from django.template import loader
 from django.urls import include, path
 
 urlpatterns = [
@@ -22,3 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('posts.urls')),
 ]
+
+
+def handler404(request, *args, **argv):
+    template = loader.get_template('posts/404.html')
+    return HttpResponse(template.render({}, request), status=404)
