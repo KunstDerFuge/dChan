@@ -79,6 +79,17 @@ def index(request, platform=None, board=None):
     except EmptyPage:
         page_threads = paginator.page(paginator.num_pages)
 
+    if board:
+        try:
+            # Attempt to fetch this board just to see if we need to 404
+            board = Board.objects.get(name=board)
+        except Board.DoesNotExist:
+            template = loader.get_template('posts/404.html')
+            return HttpResponse(template.render({}, request), status=404)
+        except Board.MultipleObjectsReturned:
+            # This just means there is more than one board by this name, like 4pol/8pol, all good
+            pass
+
     boards, other_boards = board_links(platform)
     if boards is None and platform is not None:
         template = loader.get_template('posts/404.html')
