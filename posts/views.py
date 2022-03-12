@@ -483,7 +483,7 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
 
     except ObjectDoesNotExist:
         # One of the .gets failed, i.e. this thread is not archived
-        template = loader.get_template('posts/reddit_thread.html')
+        template = loader.get_template('posts/404.html')
         return HttpResponse(template.render(context, request), status=404)
 
     except Exception as e:
