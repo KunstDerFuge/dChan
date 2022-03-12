@@ -20,7 +20,11 @@ from posts.models import Post, Platform, Drop, Subreddit
 def board_links(platform):
     if not platform:
         return None, None
-    platform_obj = Platform.objects.get(name=platform)
+    try:
+        platform_obj = Platform.objects.get(name=platform)
+    except Platform.DoesNotExist:
+        return []
+
     if platform == '8kun':
         q_boards = list(Drop.objects.filter(post__platform=platform_obj)
                         .values_list('post__board__name', flat=True)
@@ -76,6 +80,9 @@ def index(request, platform=None, board=None):
         page_threads = paginator.page(paginator.num_pages)
 
     boards, other_boards = board_links(platform)
+    if boards is None:
+        template = loader.get_template('posts/404.html')
+        return HttpResponse(template.render({}, request), status=404)
 
     context = {
         'thread_list': page_threads,
@@ -118,6 +125,9 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         drop_links = [(drop_.number, drop_.post.get_post_url()) for drop_ in thread_drops]
 
         boards, other_boards = board_links(platform)
+        if boards is None:
+            template = loader.get_template('posts/404.html')
+            return HttpResponse(template.render(context, request), status=404)
 
         try:
             definitions = cache.get('definitions', [])
