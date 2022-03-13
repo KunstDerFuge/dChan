@@ -46,7 +46,7 @@
             {% if thread_list.has_previous %}
                 <li class="page-item"><a class="page-link"
                                          href="?page=
-                                                 {{ thread_list.previous_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">&laquo;</a>
+                                                 {{ thread_list.previous_page_number }}{% if sort != 'top' %}&sort={{ sort }}{% endif %}/">&laquo;</a>
                 </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
@@ -60,13 +60,13 @@
                         <li class="page-item"><span class="page-link">{{ i }}</span></li>
                     {% else %}
                         <li class="page-item"><a class="page-link" href="?page=
-                                {{ i }}{% if sort %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
+                                {{ i }}{% if sort != 'top' %}&sort={{ sort }}{% endif %}">{{ i }}</a></li>
                     {% endif %}
                 {% endif %}
             {% endfor %}
             {% if thread_list.has_next %}
                 <li class="page-item"><a class="page-link" href="?page=
-                        {{ thread_list.next_page_number }}{% if sort %}&sort={{ sort }}{% endif %}">&raquo;</a>
+                        {{ thread_list.next_page_number }}{% if sort != 'top' %}&sort={{ sort }}{% endif %}">&raquo;</a>
                 </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&raquo;</span></li>
