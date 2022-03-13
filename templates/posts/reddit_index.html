@@ -45,7 +45,7 @@
         <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
             {% if thread_list.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ thread_list.previous_page_number }}{% if sort != 'top' %}&sort={{ sort }}{% endif %}/">&laquo;</a>
+                    <a class="page-link" href="?page={{ thread_list.previous_page_number }}{% if sort != 'top' %}&sort={{ sort }}{% endif %}">&laquo;</a>
                 </li>
             {% else %}
                 <li class="disabled page-item"><span class="page-link">&laquo;</span></li>
