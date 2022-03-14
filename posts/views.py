@@ -479,7 +479,15 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
 
         op = thread_posts.query('match', is_op=True).to_queryset().first()
         if link_id:
-            top_level_replies = [post for post in thread_replies if post.link_id == link_id]
+            # Focusing on one comment
+            focused_post = [post for post in thread_replies if post.link_id == link_id][0]
+
+            if focused_post.parent_id == op.link_id:
+                # This post is a top-level reply to the OP
+                top_level_replies = [post for post in thread_replies if post.link_id == link_id]
+            else:
+                # This post's parent is not the OP, so show its parent as well
+                top_level_replies = [post for post in thread_replies if post.link_id == focused_post.parent_id]
         else:
             top_level_replies = [post for post in thread_replies if post.parent_id == op.link_id]
 
