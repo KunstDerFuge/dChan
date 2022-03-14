@@ -14,9 +14,15 @@
         </div>
         <div>
             <div>
-                <strong><a href="/r/{{ post.subreddit.name }}"
-                           style="color: inherit; text-decoration: inherit">r/{{ post.subreddit.name }}</a></strong>
-                <small style="color: rgb(120, 124, 126);">• Posted by
+                {% if '/r/' in request.path and '/comments/' not in request.path %}
+                    {# Don't show the subreddit #}
+                {% else %}
+                    <strong><a href="/r/{{ post.subreddit.name }}"
+                               style="color: inherit; text-decoration: inherit">r/{{ post.subreddit.name }}</a></strong>
+                {% endif %}
+                <small style="color: rgb(120, 124, 126);">
+                    {% if '/r/' in request.path and '/comments/' not in request.path %}{% else %}• {% endif %}
+                    Posted by
                     <a href="/u/{{ post.author }}" style="color: unset; text-decoration: unset">u/{{ post.author }}</a>
                     on {{ post.timestamp }}</small>
             </div>
