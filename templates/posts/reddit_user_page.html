@@ -14,11 +14,13 @@
     {% if post_list %}
         {% for post in post_list %}
             <div class="card py-2 my-2">
+            <a class="stretched-link" href="{{ post.get_thread_url }}">
                 {% if post.is_op %}
                     {% include 'posts/reddit_op.html' %}
                 {% else %}
                     {% include 'posts/reddit_post.html' %}
                 {% endif %}
+            </a>
             </div>
         {% endfor %}
     {% else %}
