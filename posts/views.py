@@ -562,3 +562,7 @@ def reddit_user_page(request, username):
 
     template = loader.get_template('posts/reddit_user_page.html')
     return HttpResponse(template.render(context, request))
+
+
+def redirect_board(request, board):
+    return redirect(f'/8kun/{board}/')

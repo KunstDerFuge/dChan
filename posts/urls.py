@@ -27,7 +27,10 @@ urlpatterns = [
     path('u/<str:username>/', views.reddit_user_page, name='reddit_thread'),
 
     # Chan platforms:
+    path('<str:board>/index.html', views.redirect_board, name='index'),
+    path('<str:board>/catalog.html', views.redirect_board, name='index'),
     path('<str:platform>/', cache_page(15 * 60)(views.index), name='index'),
+    path('<str:platform>/<str:board>/', cache_page(60 * 60)(views.index), name='index'),
     path('<str:platform>/<str:board>/', cache_page(60 * 60)(views.index), name='index'),
     path('<str:platform>/<str:board>/res/<int:thread_id>.html', views.thread, name='thread'),
     path('<str:board>/res/<int:thread_id>.html', views.thread, name='thread'),
