@@ -36,13 +36,19 @@
                     {{ post.body | reddit_markdown }}
                 {% endif %}
             </div>
-            {% if post.post_hint == 'image' %}
+            {% if '.jpg' in post.url or '.png' in post.url or '.jpeg' in post.url %}
                 <img src="{{ post.url }}" alt="{{ post.subject }}" class="rounded"
                      style="max-width: 100%; {% if '/comments/' not in request.path %}max-height: 60vh{% endif %}"/>
             {% elif 'video' in post.post_hint %}
                 {% video post.url "medium" %}
-            {% elif '/comments/' in request.path %}
-                <a href="{{ post.url }}">{{ post.url }}</a>
+            {% elif post.post_hint != 'self' and 'https://www.reddit.com/r/' not in post.url %}
+                <div style="position: relative; z-index: 100">
+                    {% if '/comments/' not in request.path %}
+                        <a target="_blank" href="{{ post.url }}">{{ post.url | truncatechars:45 }}</a>
+                    {% else %}
+                        <a target="_blank" href="{{ post.url }}">{{ post.url }}</a>
+                    {% endif %}
+                </div>
             {% endif %}
         </div>
     </div>
