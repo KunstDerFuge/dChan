@@ -29,12 +29,19 @@
             <div style="padding-top: 8px">
                 <h5>{{ post.subject }}</h5>
             </div>
-            <div class="post-body">{{ post.body | reddit_markdown }}</div>
+            <div class="post-body">
+                {% if '/comments/' not in request.path %}
+                    {{ post.body | reddit_markdown | truncatewords_html:100 }}
+                {% else %}
+                    {{ post.body | reddit_markdown }}
+                {% endif %}
+            </div>
             {% if post.post_hint == 'image' %}
-                <img src="{{ post.url }}" alt="{{ post.subject }}" class="rounded" style="width: 100%;"/>
+                <img src="{{ post.url }}" alt="{{ post.subject }}" class="rounded"
+                     style="max-width: 100%; {% if '/comments/' not in request.path %}max-height: 60vh{% endif %}"/>
             {% elif 'video' in post.post_hint %}
                 {% video post.url "medium" %}
-            {% else %}
+            {% elif '/comments/' in request.path %}
                 <a href="{{ post.url }}">{{ post.url }}</a>
             {% endif %}
         </div>
