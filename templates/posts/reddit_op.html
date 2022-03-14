@@ -33,7 +33,7 @@
                 {% if '/comments/' not in request.path %}
                     {{ post.body | reddit_markdown | truncatewords_html:100 }}
                 {% else %}
-                    {{ post.body | reddit_markdown }}
+                    {{ post.body | urlize | reddit_markdown }}
                 {% endif %}
             </div>
             {% if '.jpg' in post.url or '.png' in post.url or '.jpeg' in post.url %}

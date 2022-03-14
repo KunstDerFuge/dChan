@@ -11,8 +11,7 @@
             <small style="color: rgb(120, 124, 126);">· {{ post.timestamp }}</small>
         </div>
         <div class="post-body" style="padding-bottom: 0; position: relative">
-            {{ post.body | reddit_markdown }}
-            <a class="stretched-link" href="{{ post.get_thread_url }}"></a>
+            {{ post.body | urlize | reddit_markdown }}
         </div>
         <div style="font-weight: bold">
             ⇧
