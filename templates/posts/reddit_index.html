@@ -1,4 +1,5 @@
 {% extends 'posts/base.html' %}
+{% load static %}
 {% block content %}
     {% if subreddit_name %}
         <nav aria-label="breadcrumb">
@@ -64,4 +65,7 @@
             {% endif %}
         </ul>
     {% endif %}
+{% endblock %}
+{% block extra_scripts %}
+    <script src="{% static 'js/replace-chan-links.js' %}"></script>
 {% endblock %}
