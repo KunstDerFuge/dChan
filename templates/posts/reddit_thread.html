@@ -5,31 +5,33 @@
     <link rel="stylesheet" href="{% static 'style.css' %}">
 {% endblock %}
 {% block content %}
-    <div class="card shadow-sm">
-    {% if op %}
-        {% include 'posts/reddit_op.html' with post=op %}
-    {% else %}
-        <div class="text-center pt-2">
-            <h4>There was an error retrieving these posts!</h4>
+    <div class="col-xxl-11 mx-auto">
+        <div class="card shadow-sm">
+            {% if op %}
+                {% include 'posts/reddit_op.html' with post=op %}
+            {% else %}
+                <div class="text-center pt-2">
+                    <h4>There was an error retrieving these posts!</h4>
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
-    </div>
-    <br />
-    <div class="card shadow-sm post-card" style="background: white">
-    {% if viewing_comment %}
-        <div class="mb-2 p-1">
-            <a href="{{ op.get_thread_url }}">🠐 See all comments</a>
+        <br/>
+        <div class="card shadow-sm post-card" style="background: white">
+            {% if viewing_comment %}
+                <div class="mb-2 p-1">
+                    <a href="{{ op.get_thread_url }}">🠐 See all comments</a>
+                </div>
+            {% endif %}
+            {% if posts %}
+                {% for post in posts %}
+                    {% include 'posts/reddit_post.html' %}
+                {% endfor %}
+            {% else %}
+                <h4 class="text-center text-black-50 pt-5 pb-4">No Comments.</h4>
+            {% endif %}
         </div>
-    {% endif %}
-    {% if posts %}
-        {% for post in posts %}
-            {% include 'posts/reddit_post.html' %}
-        {% endfor %}
-    {% else %}
-        <h4 class="text-center text-black-50 pt-5 pb-4">No Comments.</h4>
-    {% endif %}
     </div>
-    <br />
+    <br/>
 {% endblock %}
 {% block extra_scripts %}
     {#    <script src="{% static 'js/mark.es6.min.js' %}"></script>#}
