@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 
 import markdown as md
 from .markdown_extensions import ChanExtensions
-from ..models import Board, Platform
 
 register = template.Library()
 
@@ -27,7 +26,7 @@ def markdown(text, links):
 @register.filter(name='reddit_markdown')
 @stringfilter
 def markdown(text):
-    return mark_safe(md.markdown(html.unescape(text)))
+    return mark_safe(md.markdown(html.unescape(text), extensions=['mdx_linkify']))
 
 
 @register.filter(name='get_archive_link')
