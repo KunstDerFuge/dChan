@@ -24,18 +24,9 @@
     {% if thread_list %}
         <table class="table">
             {% for thread in thread_list %}
-                <tr>
-                    <td>{{ thread.timestamp.date }}</td>
-                    <td>
-                        <a href="{{ thread.get_thread_url }}">
-                            {% if thread.subject %}
-                                {{ thread.subject }}
-                            {% else %}
-                                [No subject]
-                            {% endif %}
-                        </a>
-                    </td>
-                </tr>
+                <div class="card mb-3 pb-3 mx-lg-5 px-3 col-xl-10" style="position: relative">
+                    {% include 'posts/reddit_op.html' with post=thread %}
+                </div>
             {% endfor %}
         </table>
     {% else %}
