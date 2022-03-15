@@ -545,7 +545,8 @@ def reddit_user_page(request, username):
 
     try:
         queryset = user_posts.to_queryset().select_related('subreddit')
-        op_posts = user_posts.query(is_op=True).to_queryset()
+        
+        op_posts = s.query('match_phrase', author=username).query(is_op=True).extra(size=10000).to_queryset()
         urls = op_posts.values_list('url', flat=True)
         parsed = [urlparse(url) for url in urls]
         domains = [url.netloc for url in parsed]
