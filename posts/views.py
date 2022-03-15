@@ -547,10 +547,8 @@ def reddit_user_page(request, username):
     try:
         queryset = user_posts.to_queryset().select_related('subreddit')
         op_posts = user_posts.query(is_op=True).to_queryset()
-        urls = op_posts.exclude(url=np.nan).values_list('url', flat=True)
-        for url in urls:
-            print(url[:25], urlparse(url).netloc)
-        parsed = [urlparse(url) for url in urls]
+        urls = op_posts.values_list('url', flat=True)
+        parsed = [urlparse(url) for url in urls if url is not None and url is not np.nan]
         domains = [url.netloc for url in parsed]
         counts = dict(zip(list(domains), [list(domains).count(i) for i in list(domains)]))
         counts = [{'domain': key, 'count': value} for key, value in counts.items()]
