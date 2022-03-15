@@ -537,7 +537,6 @@ def reddit_user_page(request, username):
         template = loader.get_template('posts/404.html')
         return HttpResponse(template.render({}, request), status=500)
 
-
     page = int(request.GET.get('page', 1))
     results_per_page = 50
     start = (page - 1) * results_per_page
@@ -548,10 +547,10 @@ def reddit_user_page(request, username):
         queryset = user_posts.to_queryset().select_related('subreddit')
         op_posts = user_posts.query(is_op=True).to_queryset()
         urls = op_posts.values_list('url', flat=True)
-        parsed = [urlparse(url) for url in urls if url is not None and url is not np.nan]
+        parsed = [urlparse(url) for url in urls]
         domains = [url.netloc for url in parsed]
-        counts = dict(zip(list(domains), [list(domains).count(i) for i in list(domains)]))
-        counts = [{'domain': key, 'count': value} for key, value in counts.items()]
+        counts = dict(zip(domains, [domains.count(i) for i in domains]))
+        counts = [{'domain': key, 'count': value} for key, value in counts.items() if key is not '']
 
     except Exception as e:
         print(e)
