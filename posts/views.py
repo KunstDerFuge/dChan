@@ -1,7 +1,9 @@
 import glob
 import json
 import os
+from urllib.parse import urlparse
 
+import numpy as np
 from django.contrib.postgres.search import SearchQuery
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
@@ -535,6 +537,7 @@ def reddit_user_page(request, username):
         template = loader.get_template('posts/404.html')
         return HttpResponse(template.render({}, request), status=500)
 
+
     page = int(request.GET.get('page', 1))
     results_per_page = 50
     start = (page - 1) * results_per_page
@@ -543,6 +546,15 @@ def reddit_user_page(request, username):
 
     try:
         queryset = user_posts.to_queryset().select_related('subreddit')
+        op_posts = user_posts.query(is_op=True).to_queryset()
+        urls = op_posts.exclude(url=np.nan).values_list('url', flat=True)
+        for url in urls:
+            print(url[:25], urlparse(url).netloc)
+        parsed = [urlparse(url) for url in urls]
+        domains = [url.netloc for url in parsed]
+        counts = dict(zip(list(domains), [list(domains).count(i) for i in list(domains)]))
+        counts = [{'domain': key, 'count': value} for key, value in counts.items()]
+
     except Exception as e:
         print(e)
         template = loader.get_template('posts/elasticsearch_error.html')
@@ -565,7 +577,8 @@ def reddit_user_page(request, username):
         'post_list': page_posts,
         'page_range': page_range,
         'username': username,
-        'total_posts': user_posts.count()
+        'total_posts': user_posts.count(),
+        'domain_counts': counts
     }
 
     template = loader.get_template('posts/reddit_user_page.html')

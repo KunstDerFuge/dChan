@@ -9,6 +9,24 @@
     <h4>/u/{{ username }}</h4>
     {% if post_list %}
         <p>{{ total_posts | intword | intcomma }} total posts archived.</p>
+        <br/>
+        <h5>Domains linked by /u/{{ username }}:</h5>
+        <table>
+            <thead>
+            <tr>
+                <th class="px-1">Domain</th>
+                <th class="px-1">Count</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for domain in domain_counts %}
+                <tr>
+                    <td class="px-1">{{ domain.domain }}</td>
+                    <td class="px-1">{{ domain.count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     {% endif %}
     <br/>
     {% if post_list %}
