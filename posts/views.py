@@ -552,6 +552,7 @@ def reddit_user_page(request, username):
         domains = [url.netloc for url in parsed]
         counts = dict(zip(domains, [domains.count(i) for i in domains]))
         counts = [{'domain': key, 'count': value} for key, value in counts.items() if key is not '']
+        counts = sorted(counts, key=lambda x: x['count'], reverse=True)
 
     except Exception as e:
         print(e)
