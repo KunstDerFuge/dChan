@@ -25,7 +25,7 @@
     {% if thread_list %}
         <table class="table">
             {% for thread in thread_list %}
-                <div class="card mb-3 pb-3 mx-lg-5 px-3 col-xl-10" style="position: relative">
+                <div class="card m2-3 pb-2 mx-lg-5 px-3 col-xl-10" style="position: relative">
                     {% include 'posts/reddit_op.html' with post=thread %}
                 </div>
             {% endfor %}
