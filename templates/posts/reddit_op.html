@@ -40,7 +40,7 @@
                      style="max-width: 100%; {% if '/comments/' not in request.path %}max-height: 60vh{% endif %}"/>
             {% elif 'video' in post.post_hint %}
                 {% video post.url "medium" %}
-            {% elif post.post_hint != 'self' and 'https://www.reddit.com/r/' not in post.url %}
+            {% elif post.body == '' and 'https://www.reddit.com/r/' not in post.url %}
                 <div style="position: relative; z-index: 100">
                     {% if '/comments/' not in request.path %}
                         <a target="_blank" href="{{ post.url }}">{{ post.url | truncatechars:45 }}</a>
