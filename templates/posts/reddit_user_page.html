@@ -11,22 +11,24 @@
         <p>{{ total_posts | intword | intcomma }} total posts archived.</p>
         <br/>
         <h5>Domains linked by /u/{{ username }}:</h5>
-        <table>
-            <thead>
-            <tr>
-                <th class="px-1">Domain</th>
-                <th class="px-1">Count</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for domain in domain_counts %}
+        <div style="max-height: 50vh; overflow-y: scroll">
+            <table>
+                <thead>
                 <tr>
-                    <td class="px-1"><a href="?domain={{ domain.domain }}">{{ domain.domain }}</a></td>
-                    <td class="px-1">{{ domain.count }}</td>
+                    <th class="px-1">Domain</th>
+                    <th class="px-1">Count</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for domain in domain_counts %}
+                    <tr>
+                        <td class="px-1"><a href="?domain={{ domain.domain }}">{{ domain.domain }}</a></td>
+                        <td class="px-1">{{ domain.count }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
     <br/>
     {% if post_list %}
