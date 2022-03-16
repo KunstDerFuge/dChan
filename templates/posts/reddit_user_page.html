@@ -21,7 +21,7 @@
             <tbody>
             {% for domain in domain_counts %}
                 <tr>
-                    <td class="px-1">{{ domain.domain }}</td>
+                    <td class="px-1"><a href="?domain={{ domain.domain }}">{{ domain.domain }}</a></td>
                     <td class="px-1">{{ domain.count }}</td>
                 </tr>
             {% endfor %}
@@ -43,7 +43,7 @@
     {% else %}
         <p>No posts found.</p>
     {% endif %}
-    {% if post_list.has_other_pages %}
+    {% if post_list.has_other_pages and paginate %}
         <ul class="pagination justify-content-center flex-wrap mt-2 mb-4">
             {% if post_list.has_previous %}
                 <li class="page-item"><a class="page-link"

@@ -16,7 +16,7 @@ from django_elasticsearch_dsl.search import Search
 
 from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument, RedditPostDocument
-from posts.models import Post, Platform, Drop, Subreddit, Board
+from posts.models import Post, Platform, Drop, Subreddit, Board, RedditPost
 
 
 def board_links(platform):
@@ -538,6 +538,7 @@ def reddit_user_page(request, username):
         return HttpResponse(template.render({}, request), status=500)
 
     page = int(request.GET.get('page', 1))
+    domain = request.GET.get('domain', None)
     results_per_page = 50
     start = (page - 1) * results_per_page
     end = start + results_per_page
@@ -545,6 +546,8 @@ def reddit_user_page(request, username):
 
     try:
         queryset = user_posts.to_queryset().select_related('subreddit')
+        if domain:
+            queryset = RedditPost.objects.filter(author=username, is_op=True, url__contains=domain)
         
         op_posts = s.query('match_phrase', author=username).query(is_op=True).extra(size=10000).to_queryset()
         urls = op_posts.values_list('url', flat=True)
@@ -577,7 +580,8 @@ def reddit_user_page(request, username):
         'page_range': page_range,
         'username': username,
         'total_posts': user_posts.count(),
-        'domain_counts': counts
+        'domain_counts': counts,
+        'paginate': domain is None
     }
 
     template = loader.get_template('posts/reddit_user_page.html')
