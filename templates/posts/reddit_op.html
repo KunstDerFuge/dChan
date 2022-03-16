@@ -38,7 +38,7 @@
             {% if '.jpg' in post.url or '.png' in post.url or '.jpeg' in post.url %}
                 <img src="{{ post.url }}" alt="{{ post.subject }}" class="rounded"
                      style="max-width: 100%; {% if '/comments/' not in request.path %}max-height: 60vh{% endif %}"/>
-            {% elif 'video' in post.post_hint %}
+            {% elif 'video' in post.post_hint or 'youtube.com' in post.url %}
                 {% video post.url "medium" %}
             {% elif post.body == '' and 'https://www.reddit.com/r/' not in post.url %}
                 <div style="position: relative; z-index: 100">
