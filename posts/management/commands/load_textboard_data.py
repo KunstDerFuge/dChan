@@ -27,6 +27,7 @@ class Command(BaseCommand):
                     print(f'Loading {file}...')
 
                     df = pd.read_csv(file, sep='\t')
+                    df = df.where(pd.notnull(df), None)
 
                     print('Committing objects to database...')
                     commit_textboard_posts_from_df(df, platform, board_name)
