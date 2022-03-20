@@ -45,7 +45,7 @@ def commit_textboard_posts_from_df(df, platform_name, board_name):
         board, created = Board.objects.get_or_create(name=board_name, platform=platform)
 
         jst = timezone('Asia/Tokyo')
-        if type(row['date'] != str):
+        if type(row['date']) != str:
             date = None
         else:
             try:
