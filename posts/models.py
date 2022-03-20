@@ -183,12 +183,11 @@ class TextboardPost(models.Model):
     subject = models.CharField(max_length=150, null=True)
     body = models.TextField()
     timestamp = models.DateTimeField(null=True)
-    tripcode = models.CharField(max_length=30, default=None)
-    capcode = models.CharField(max_length=30, default=None)
+    tripcode = models.CharField(max_length=30, default=None, null=True)
+    capcode = models.CharField(max_length=30, default=None, null=True)
     is_op = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     
     def get_thread_url(self):
         return f'/{self.platform.name}/read.cgi/{self.board.name}/{self.thread_id}/'
-
