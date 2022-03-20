@@ -5,8 +5,8 @@ from django.core.management import BaseCommand
 from tqdm import tqdm
 from pytz import timezone
 
-from posts.documents import BBSPinkPostDocument
-from posts.models import Board, Platform, BBSPinkPost
+from posts.documents import TextboardPostDocument
+from posts.models import Board, Platform, TextboardPost
 
 
 class Command(BaseCommand):
@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 df = pd.read_csv(file, sep='\t')
 
                 print('Committing objects to database...')
-                commit_bbspink_posts_from_df(df)
+                commit_textboard_posts_from_df(df)
 
         except Exception as e:
             print(f'Could not load BBSPink data.', e)
@@ -33,7 +33,7 @@ class Command(BaseCommand):
         print('Done!')
 
 
-def commit_bbspink_posts_from_df(df):
+def commit_textboard_posts_from_df(df):
     new_posts = []
     for index, row in tqdm(df.iterrows(), total=len(df)):
         bbspink, created = Platform.objects.get_or_create(name='bbspink')
@@ -50,24 +50,24 @@ def commit_bbspink_posts_from_df(df):
                 print(row['date'])
                 raise
 
-        post = BBSPinkPost(platform=bbspink, board=erobbs, thread_id=row['thread_no'], post_id=row['post_no'],
-                           author=row['author'], email=None, poster_hash=row['user_id'], subject=row['subject'],
-                           body=row['body'], timestamp=date, tripcode=row['tripcode'], capcode=row['capcode'],
-                           is_op=int(row['post_no']) == 1)
+        post = TextboardPost(platform=bbspink, board=erobbs, thread_id=row['thread_no'], post_id=row['post_no'],
+                             author=row['author'], email=None, poster_hash=row['user_id'], subject=row['subject'],
+                             body=row['body'], timestamp=date, tripcode=row['tripcode'], capcode=row['capcode'],
+                             is_op=int(row['post_no']) == 1)
 
         new_posts.append(post)
 
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
     try:
-        posts_created = BBSPinkPost.objects.bulk_create(new_posts)
+        posts_created = TextboardPost.objects.bulk_create(new_posts)
     except Exception as e:
         print(e)
         print('Failed on row:')
         print(row)
         raise e
     posts_ids = [post.id for post in posts_created]
-    new_posts_qs = BBSPinkPost.objects.filter(id__in=posts_ids)
-    BBSPinkPostDocument().update(new_posts_qs)
+    new_posts_qs = TextboardPost.objects.filter(id__in=posts_ids)
+    TextboardPostDocument().update(new_posts_qs)
 
     return posts_ids

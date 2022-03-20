@@ -172,9 +172,9 @@ class Subreddit(models.Model):
         return f'/r/{self.name}'
 
 
-class BBSPinkPost(models.Model):
-    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='bbspink_posts')
-    board = models.ForeignKey('Board', on_delete=models.CASCADE, related_name='bbspink_posts')
+class TextboardPost(models.Model):
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='textboard_posts')
+    board = models.ForeignKey('Board', on_delete=models.CASCADE, related_name='textboard_posts')
     thread_id = models.IntegerField()
     post_id = models.IntegerField()
     author = models.CharField(max_length=180)
