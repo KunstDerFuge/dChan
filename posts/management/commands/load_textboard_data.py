@@ -41,8 +41,8 @@ class Command(BaseCommand):
 def commit_textboard_posts_from_df(df, platform_name, board_name):
     new_posts = []
     for index, row in tqdm(df.iterrows(), total=len(df)):
-        platform, created = Platform.objects.get_or_create(name='platform_name')
-        board, created = Board.objects.get_or_create(name='board_name', platform=platform)
+        platform, created = Platform.objects.get_or_create(name=platform_name)
+        board, created = Board.objects.get_or_create(name=board_name, platform=platform)
 
         jst = timezone('Asia/Tokyo')
         if type(row['date'] != str):
