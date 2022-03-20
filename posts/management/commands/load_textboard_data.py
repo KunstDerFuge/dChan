@@ -10,34 +10,39 @@ from posts.models import Board, Platform, TextboardPost
 
 
 class Command(BaseCommand):
-    help = "Load data from CSV files scraped from BBSPink data."
+    help = "Load data from CSV files scraped from textboard data."
 
     def handle(self, *args, **options):
         tqdm.pandas()
         import glob
 
-        files = glob.glob(f'data/bbspink/*.tsv')
-        try:
-            for file in files:
-                print(f'Loading {file}...')
+        for platform in ['2ch', 'bbspink']:
+            files = glob.glob(f'data/{platform}/*.tsv')
+            if platform == '2ch':
+                board_name = 'operate'
+            else:
+                board_name = 'erobbs'
+            try:
+                for file in files:
+                    print(f'Loading {file}...')
 
-                df = pd.read_csv(file, sep='\t')
+                    df = pd.read_csv(file, sep='\t')
 
-                print('Committing objects to database...')
-                commit_textboard_posts_from_df(df)
+                    print('Committing objects to database...')
+                    commit_textboard_posts_from_df(df, platform, board_name)
 
-        except Exception as e:
-            print(f'Could not load BBSPink data.', e)
-            raise e
+            except Exception as e:
+                print(f'Could not load BBSPink data.', e)
+                raise e
 
-        print('Done!')
+            print('Done!')
 
 
-def commit_textboard_posts_from_df(df):
+def commit_textboard_posts_from_df(df, platform_name, board_name):
     new_posts = []
     for index, row in tqdm(df.iterrows(), total=len(df)):
-        bbspink, created = Platform.objects.get_or_create(name='bbspink')
-        erobbs, created = Board.objects.get_or_create(name='erobbs', platform=bbspink)
+        platform, created = Platform.objects.get_or_create(name='platform_name')
+        board, created = Board.objects.get_or_create(name='board_name', platform=platform)
 
         jst = timezone('Asia/Tokyo')
         if type(row['date'] != str):
@@ -50,7 +55,7 @@ def commit_textboard_posts_from_df(df):
                 print(row['date'])
                 raise
 
-        post = TextboardPost(platform=bbspink, board=erobbs, thread_id=row['thread_no'], post_id=row['post_no'],
+        post = TextboardPost(platform=platform, board=board, thread_id=row['thread_no'], post_id=row['post_no'],
                              author=row['author'], email=None, poster_hash=row['user_id'], subject=row['subject'],
                              body=row['body'], timestamp=date, tripcode=row['tripcode'], capcode=row['capcode'],
                              is_op=int(row['post_no']) == 1)
