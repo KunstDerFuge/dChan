@@ -1,0 +1,8 @@
+{% load filters %}
+{% load tz %}
+<article id="{{ post.post_id }}" class="article">
+    <dt>{{ post.post_id }} ：<span style="color: green"><b>{{ post.author }}</b></span></a>：{{ post.timestamp }}
+        {% if post.poster_hash %}ID:
+            {{ post.poster_hash }}{% endif %}</dt>
+    <dd>{{ post.body | linebreaksbr }}</dd>
+</article>

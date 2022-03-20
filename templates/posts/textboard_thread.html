@@ -1,0 +1,35 @@
+{% extends 'posts/base.html' %}
+{% load filters %}
+{% load static %}
+{% block head_extras %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
+{% block content %}
+    {% if posts %}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">All</a></li>
+                <li class="breadcrumb-item"><a href="/{{ platform_name }}">{{ platform_name }}</a></li>
+                <li class="breadcrumb-item"><a
+                        href="/{{ platform_name }}/{{ board_name }}">{{ board_name }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ posts.0.thread_id }}</li>
+            </ol>
+        </nav>
+        <br/>
+        <h1 style="color:red;font-size:larger;font-weight:normal;margin:-.5em 0 0;">{{ posts.0.subject }}</h1>
+        <br/>
+        <dl class="thread" style="margin-right:185px;word-wrap:break-word; ">
+            {% for post in posts %}
+                {% include 'posts/textboard_post.html' %}
+            {% endfor %}
+        </dl>
+    {% else %}
+        <div class="text-center pt-2">
+            <h4>This page is not archived!</h4>
+            <h5>...Yet.</h5>
+            <p>Try archive.is: <a
+                    href="{{ request.path|get_archive_link }}">{{ request.path|get_archive_link }}</a>
+            </p>
+        </div>
+    {% endif %}
+{% endblock %}

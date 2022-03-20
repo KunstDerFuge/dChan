@@ -590,3 +590,63 @@ def reddit_user_page(request, username):
 
 def redirect_board(request, board):
     return redirect(f'/8kun/{board}/')
+
+
+def textboard_thread(request, platform, board=None, thread_id=None):
+    context = {}
+    poster_hash = request.GET.get('poster_hash')
+    try:
+        print(board)
+        s = TextboardPostDocument.search()
+        thread_posts = s.query('match', platform__name=platform) \
+            .query('match', board__name=board) \
+            .query('match', thread_id=thread_id) \
+            .sort('post_id') \
+            .extra(size=1000)
+
+        if poster_hash:
+            thread_posts = thread_posts.query('match', poster_hash=poster_hash)
+
+        try:
+            thread_posts = thread_posts.to_queryset().select_related('platform', 'board')
+        except Exception as e:
+            print(e)
+            template = loader.get_template('posts/elasticsearch_error.html')
+            return HttpResponse(template.render(context, request), status=500)
+
+        try:
+            # Attempt to fetch this board just to see if we need to 404
+            board = Board.objects.get(name=board)
+        except Board.DoesNotExist:
+            template = loader.get_template('posts/404.html')
+            return HttpResponse(template.render({}, request), status=404)
+        except Board.MultipleObjectsReturned:
+            # This just means there is more than one board by this name, like 4pol/8pol, all good
+            pass
+
+        boards, other_boards = board_links(platform)
+
+        context = {
+            'posts': thread_posts,
+            'platform_name': platform,
+            'board_name': board,
+            'thread': thread_id,
+            'boards_links': boards,
+            'other_boards': other_boards,
+        }
+
+        if len(thread_posts) == 0:
+            raise ObjectDoesNotExist
+
+    except ObjectDoesNotExist:
+        # One of the .gets failed, i.e. this thread is not archived
+        template = loader.get_template('posts/textboard_thread.html')
+        return HttpResponse(template.render(context, request), status=404)
+
+    except Exception as e:
+        print(e)
+        template = loader.get_template('posts/textboard_thread.html')
+        return HttpResponse(template.render(context, request), status=500)
+
+    template = loader.get_template('posts/textboard_thread.html')
+    return HttpResponse(template.render(context, request))
