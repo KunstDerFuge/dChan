@@ -44,6 +44,8 @@ def commit_bbspink_posts_from_df(df):
                            body=row['body'], timestamp=row['date'], tripcode=row['tripcode'], capcode=row['capcode'],
                            is_op=int(row['post_no']) == 1)
 
+        new_posts.append(post)
+
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
     posts_created = BBSPinkPost.objects.bulk_create(new_posts)
