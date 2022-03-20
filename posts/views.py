@@ -15,7 +15,7 @@ from django.views.generic import ListView
 from django_elasticsearch_dsl.search import Search
 
 from posts.DSEPaginator import DSEPaginator
-from posts.documents import PostDocument, RedditPostDocument
+from posts.documents import PostDocument, RedditPostDocument, TextboardPostDocument
 from posts.models import Post, Platform, Drop, Subreddit, Board, RedditPost
 
 
@@ -44,7 +44,10 @@ def subreddit_list():
 
 
 def index(request, platform=None, board=None):
-    s = PostDocument.search()
+    if platform in ['2ch', 'bbspink']:
+        s = TextboardPostDocument.search()
+    else:
+        s = PostDocument.search()
     if board:
         threads = s.query('match', is_op=True) \
             .query('match', platform__name=platform) \
