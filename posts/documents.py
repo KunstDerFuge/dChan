@@ -1,6 +1,6 @@
 from django_elasticsearch_dsl import Document, fields
 from django_elasticsearch_dsl.registries import registry
-from .models import Post, Board, Platform, Drop, Subreddit, RedditPost
+from .models import Post, Board, Platform, Drop, Subreddit, RedditPost, BBSPinkPost
 
 
 @registry.register_document
@@ -95,3 +95,45 @@ class RedditPostDocument(Document):
             'post_hint'
         ]
         related_models = [Subreddit]
+
+
+@registry.register_document
+class BBSPinkPostDocument(Document):
+    platform = fields.ObjectField(properties={
+        'name': fields.TextField()
+    })
+    board = fields.ObjectField(properties={
+        'name': fields.TextField()
+    })
+
+    def get_queryset(self):
+        return super(BBSPinkPostDocument, self).get_queryset().select_related('board')
+
+    def get_instances_from_related(self, related_instance):
+        if isinstance(related_instance, Board):
+            return related_instance.posts.all()
+
+    class Index:
+        # Name of the Elasticsearch index
+        name = 'bbspink_posts'
+        # See Elasticsearch Indices API reference for available settings
+        settings = {'number_of_shards': 1,
+                    'number_of_replicas': 0}
+
+    class Django:
+        model = BBSPinkPost  # The model associated with this Document
+
+        # The fields of the model you want to be indexed in Elasticsearch
+        fields = [
+            'thread_id',
+            'post_id',
+            'author',
+            'poster_hash',
+            'subject',
+            'body',
+            'timestamp',
+            'tripcode',
+            'capcode',
+            'is_op'
+        ]
+        related_models = [Board]

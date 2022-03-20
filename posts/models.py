@@ -170,3 +170,21 @@ class Subreddit(models.Model):
 
     def __str__(self):
         return f'/r/{self.name}'
+
+
+class BBSPinkPost(models.Model):
+    platform = models.ForeignKey('Platform', on_delete=models.CASCADE, related_name='bbspink_posts')
+    board = models.ForeignKey('Board', on_delete=models.CASCADE, related_name='bbspink_posts')
+    thread_id = models.IntegerField()
+    post_id = models.IntegerField()
+    author = models.CharField(max_length=180)
+    email = models.CharField(max_length=180, null=True)
+    poster_hash = models.CharField(max_length=12, null=True)
+    subject = models.CharField(max_length=150, null=True)
+    body = models.TextField()
+    timestamp = models.DateTimeField(null=True)
+    tripcode = models.CharField(max_length=30, default=None)
+    capcode = models.CharField(max_length=30, default=None)
+    is_op = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
