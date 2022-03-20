@@ -28,6 +28,8 @@ class Command(BaseCommand):
 
                     df = pd.read_csv(file, sep='\t')
                     df = df.where(pd.notnull(df), None)
+                    df['author'] = df.author.where(pd.notnull(df.author), '')
+                    df['body'] = df.body.where(pd.notnull(df.body), '')
 
                     print('Committing objects to database...')
                     commit_textboard_posts_from_df(df, platform, board_name)
