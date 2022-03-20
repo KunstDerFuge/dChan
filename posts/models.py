@@ -188,3 +188,7 @@ class TextboardPost(models.Model):
     is_op = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    
+    def get_thread_url(self):
+        return f'/{self.platform.name}/read.cgi/{self.board.name}/{self.thread_id}/'
+
