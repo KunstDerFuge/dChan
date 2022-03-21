@@ -107,7 +107,7 @@ def index(request, platform=None, board=None):
     context = {
         'thread_list': page_threads,
         'platform_name': platform,
-        'board_name': board,
+        'board_name': board.name,
         'page_range': page_range,
         'boards_links': boards,
         'other_boards': other_boards
