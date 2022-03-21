@@ -1,7 +1,17 @@
 {% extends 'posts/base.html' %}
+{% load static %}
 {% block content %}
     <h2>Not found!</h2>
     <br/>
-    <p>We couldn't find what you're looking for. You might be in the wrong place, friend!</p>
-    <a href="/">Home</a>
+    <p>We couldn't find what you're looking for. You might be in the wrong place, friend!
+        <br/>
+        <a href="/" class="mb-2">Home</a>
+    </p>
+    <figure class="figure">
+        <figcaption class="figure-caption">
+            Art by <a href="https://twitter.com/dark_sparce" target="_blank">@dark_sparce</a> (NSFW)
+        </figcaption>
+        <img src="{% static 'img/dChan_404.png' %}" class="img-fluid rounded-3"
+             alt="Fred the Raccoon fishing in a boat">
+    </figure>
 {% endblock %}
