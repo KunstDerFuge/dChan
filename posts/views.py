@@ -89,6 +89,7 @@ def index(request, platform=None, board=None):
         page_threads = paginator.page(paginator.num_pages)
 
     if board:
+        board_name = board
         try:
             # Attempt to fetch this board just to see if we need to 404
             board = Board.objects.get(name=board)
@@ -98,6 +99,8 @@ def index(request, platform=None, board=None):
         except Board.MultipleObjectsReturned:
             # This just means there is more than one board by this name, like 4pol/8pol, all good
             pass
+    else:
+        board_name = None
 
     boards, other_boards = board_links(platform)
     if boards is None and platform is not None:
@@ -107,7 +110,7 @@ def index(request, platform=None, board=None):
     context = {
         'thread_list': page_threads,
         'platform_name': platform,
-        'board_name': board.name,
+        'board_name': board_name,
         'page_range': page_range,
         'boards_links': boards,
         'other_boards': other_boards
