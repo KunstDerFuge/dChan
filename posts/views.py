@@ -160,7 +160,7 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         context = {
             'posts': thread_posts,
             'platform_name': platform,
-            'board_name': board,
+            'board_name': board.name,
             'thread': thread_id,
             'drop_links': drop_links,
             'boards_links': boards,
@@ -551,13 +551,13 @@ def reddit_user_page(request, username):
         queryset = user_posts.to_queryset().select_related('subreddit')
         if domain:
             queryset = RedditPost.objects.filter(author=username, is_op=True, url__contains=domain)
-        
+
         op_posts = s.query('match_phrase', author=username).query(is_op=True).extra(size=10000).to_queryset()
         urls = op_posts.values_list('url', flat=True)
         parsed = [urlparse(url) for url in urls]
         domains = [url.netloc for url in parsed]
         counts = dict(zip(domains, [domains.count(i) for i in domains]))
-        counts = [{'domain': key, 'count': value} for key, value in counts.items() if key is not '']
+        counts = [{'domain': key, 'count': value} for key, value in counts.items() if key != '']
         counts = sorted(counts, key=lambda x: x['count'], reverse=True)
 
     except Exception as e:
@@ -632,7 +632,7 @@ def textboard_thread(request, platform, board=None, thread_id=None):
         context = {
             'posts': thread_posts,
             'platform_name': platform,
-            'board_name': board,
+            'board_name': board.name,
             'thread': thread_id,
             'boards_links': boards,
             'other_boards': other_boards,
