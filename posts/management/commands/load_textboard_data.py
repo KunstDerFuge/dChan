@@ -68,7 +68,7 @@ def commit_textboard_posts_from_df(df, platform_name, board_name):
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
     try:
-        posts_created = TextboardPost.objects.bulk_create(new_posts)
+        posts_created = TextboardPost.objects.bulk_create(new_posts, ignore_conflicts=True)
     except Exception as e:
         print(e)
         print('Failed on row:')
