@@ -146,7 +146,6 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             board = Board.objects.get(name=board)
             board_name = board.name
         except Board.DoesNotExist:
-            board_name = None
             template = loader.get_template('posts/404.html')
             return HttpResponse(template.render({}, request), status=404)
         except Board.MultipleObjectsReturned:
