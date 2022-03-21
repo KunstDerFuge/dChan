@@ -1,8 +1,18 @@
 {% load filters %}
 {% load tz %}
 <article id="{{ post.post_id }}" class="article">
-    <dt>{{ post.post_id }} ：<span style="color: green"><b>{{ post.author }}</b></span></a>：{{ post.timestamp }}
+    <dt style="font-weight: unset">{{ post.post_id }} ：
+        <span style="color: green">
+        <b>{{ post.author }}</b>
+            {% if post.tripcode %}◆{{ post.tripcode }}{% endif %}
+            {% if post.capcode %}<b>{{ post.capcode }} ★</b>{% endif %}
+    </span>
+        ：{% if post.timestamp %}{{ post.timestamp | jp_date }}{% endif %}
+        {% if post.author == 'うふ〜ん' or post.author == 'うふーん' %}{{ post.author }}{% endif %}
         {% if post.poster_hash %}ID:
-            {{ post.poster_hash }}{% endif %}</dt>
-    <dd>{{ post.body | linebreaksbr }}</dd>
+            <a style="text-decoration: unset; color: unset" href="?poster_hash={{ post.poster_hash | urlencode }}">
+            <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>{% endif %}
+        </a>
+    </dt>
+    <dd>{{ post.body | urlize | linebreaksbr }}<br/><br/></dd>
 </article>

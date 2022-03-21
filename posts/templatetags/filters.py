@@ -2,6 +2,7 @@ import hashlib
 import html
 import re
 import urllib.parse
+from datetime import datetime
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -119,3 +120,28 @@ def url_replace(request, field, value):
     dict_[field] = value
 
     return '?' + urllib.parse.urlencode(dict_)
+
+
+@register.filter(name='jp_date')
+@stringfilter
+def jp_date(date):
+    print(date)
+    print(type(date))
+    if date is None or 'None' in date:
+        return None
+
+    date = datetime.fromisoformat(date)
+    date_string = date.strftime('%Y/%m/%d %H:%M:%S')
+    weekday = date.weekday()
+    jp_weekday_map = {
+        0: '日',
+        1: '月',
+        2: '火',
+        3: '水',
+        4: '木',
+        5: '金',
+        6: '土'
+    }
+    date_parts = date_string.split(' ')
+
+    return mark_safe(f'{date_parts[0]} ({jp_weekday_map[weekday]}) {date_parts[1]}')

@@ -1,0 +1,9 @@
+@font-face {
+  font-family: "IPAGP Mona";
+  src: url('/static/fonts/ipagp-mona.woff2') format('woff2');
+}
+
+.thread {
+    font-family: "IPAGP Mona";
+    font-size: 1rem;
+}

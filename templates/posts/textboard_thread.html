@@ -3,6 +3,7 @@
 {% load static %}
 {% block head_extras %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/textboard.css' %}">
 {% endblock %}
 {% block content %}
     {% if posts %}
@@ -16,9 +17,11 @@
             </ol>
         </nav>
         <br/>
-        <h1 style="color:red;font-size:larger;font-weight:normal;margin:-.5em 0 0;">{{ posts.0.subject }}</h1>
+        {% if posts.0.subject %}
+            <h1 style="color:red;font-size:larger;font-weight:normal;margin:-.5em 0 0;">{{ posts.0.subject }}</h1>
+        {% endif %}
         <br/>
-        <dl class="thread" style="margin-right:185px;word-wrap:break-word; ">
+        <dl class="thread" style="margin-right:185px;word-wrap:break-word;">
             {% for post in posts %}
                 {% include 'posts/textboard_post.html' %}
             {% endfor %}
