@@ -27,7 +27,7 @@ class Command(BaseCommand):
                     print(f'Loading {file}...')
 
                     df = pd.read_csv(file, sep='\t')
-                    df = df.where(pd.notnull(df), None)
+                    df = df.astype(object).where(pd.notnull(df), None)
                     df['author'] = df.author.where(pd.notnull(df.author), '')
                     df['body'] = df.body.where(pd.notnull(df.body), '')
 
