@@ -144,10 +144,13 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         try:
             # Attempt to fetch this board just to see if we need to 404
             board = Board.objects.get(name=board)
+            board_name = board.name
         except Board.DoesNotExist:
+            board_name = None
             template = loader.get_template('posts/404.html')
             return HttpResponse(template.render({}, request), status=404)
         except Board.MultipleObjectsReturned:
+            board_name = None
             # This just means there is more than one board by this name, like 4pol/8pol, all good
             pass
 
@@ -167,7 +170,7 @@ def thread(request, platform='8kun', board=None, thread_id=None):
         context = {
             'posts': thread_posts,
             'platform_name': platform,
-            'board_name': board.name,
+            'board_name': board_name,
             'thread': thread_id,
             'drop_links': drop_links,
             'boards_links': boards,
