@@ -18,10 +18,6 @@ class Command(BaseCommand):
 
         for platform in ['2ch', 'bbspink']:
             files = glob.glob(f'data/{platform}/*.tsv')
-            if platform == '2ch':
-                board_name = 'operate'
-            else:
-                board_name = 'erobbs'
             try:
                 for file in files:
                     print(f'Loading {file}...')
@@ -30,6 +26,7 @@ class Command(BaseCommand):
                     df = df.astype(object).where(pd.notnull(df), None)
                     df['author'] = df.author.where(pd.notnull(df.author), '')
                     df['body'] = df.body.where(pd.notnull(df.body), '')
+                    board_name = df.loc[0].board
 
                     print('Committing objects to database...')
                     commit_textboard_posts_from_df(df, platform, board_name)
@@ -38,15 +35,17 @@ class Command(BaseCommand):
                 print(f'Could not load BBSPink data.', e)
                 raise e
 
+            TextboardPostDocument().update(TextboardPost.objects.all())
             print('Done!')
 
 
 def commit_textboard_posts_from_df(df, platform_name, board_name):
     new_posts = []
-    for index, row in tqdm(df.iterrows(), total=len(df)):
-        platform, created = Platform.objects.get_or_create(name=platform_name)
-        board, created = Board.objects.get_or_create(name=board_name, platform=platform)
 
+    platform, created = Platform.objects.get_or_create(name=platform_name)
+    board, created = Board.objects.get_or_create(name=board_name, platform=platform)
+
+    for index, row in tqdm(df.iterrows(), total=len(df)):
         jst = timezone('Asia/Tokyo')
         if type(row['date']) != str:
             date = None
@@ -59,7 +58,7 @@ def commit_textboard_posts_from_df(df, platform_name, board_name):
                 raise
 
         post = TextboardPost(platform=platform, board=board, thread_id=row['thread_no'], post_id=row['post_no'],
-                             author=row['author'], email=None, poster_hash=row['user_id'], subject=row['subject'],
+                             author=row['author'], email=row['email'], poster_hash=row['user_id'], subject=row['subject'],
                              body=row['body'], timestamp=date, tripcode=row['tripcode'], capcode=row['capcode'],
                              is_op=int(row['post_no']) == 1)
 
@@ -68,14 +67,9 @@ def commit_textboard_posts_from_df(df, platform_name, board_name):
     # Source on ES bulk update pattern:
     # https://github.com/django-es/django-elasticsearch-dsl/issues/32#issuecomment-736046572
     try:
-        posts_created = TextboardPost.objects.bulk_create(new_posts, ignore_conflicts=True)
+        TextboardPost.objects.bulk_create(new_posts, ignore_conflicts=True)
     except Exception as e:
         print(e)
         print('Failed on row:')
         print(row)
         raise e
-    posts_ids = [post.id for post in posts_created]
-    new_posts_qs = TextboardPost.objects.filter(id__in=posts_ids)
-    TextboardPostDocument().update(new_posts_qs)
-
-    return posts_ids
