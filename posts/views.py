@@ -485,6 +485,8 @@ def reddit_index(request, subreddit=None):
     context = {
         'sort': sort,
         'thread_list': page_threads,
+        'platform_name': 'reddit',
+        'board_name': subreddit,
         'subreddit_name': subreddit,
         'subreddits': subreddit_list(),
         'page_range': page_range,
