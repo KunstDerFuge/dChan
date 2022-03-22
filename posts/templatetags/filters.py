@@ -125,8 +125,6 @@ def url_replace(request, field, value):
 @register.filter(name='jp_date')
 @stringfilter
 def jp_date(date):
-    print(date)
-    print(type(date))
     if date is None or 'None' in date:
         return None
 
