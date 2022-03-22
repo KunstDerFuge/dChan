@@ -24,8 +24,11 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <form class="d-flex form-inline ms-auto" action="{% url 'search_results' %}" method="get">
-                <input name="q" class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form class="d-flex form-inline ms-auto" action="{% if board_name %}/{{ platform_name }}/{{ board_name }}/search{% elif platform_name %}/{{ platform_name }}/search{% endif %}"
+                  method="get">
+                <input name="q" class="form-control me-2" type="search" value="{{ q }}"
+                       placeholder="Search{% if board_name %} /{{ board_name }}/{% elif platform_name %} {{ platform_name }}{% endif %}"
+                       aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>

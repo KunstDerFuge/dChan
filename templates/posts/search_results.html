@@ -4,17 +4,32 @@
 {% load static %}
 {% block head_extras %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    {% if index == "textboard_posts" %}
+        <link rel="stylesheet" href="{% static 'css/textboard.css' %}">
+    {% endif %}
 {% endblock %}
 {% block content %}
     <h4>Search Results:</h4>
     {% if results %}
-    <p>{{ hits | intword | intcomma }} matches.</p>
+        <p>{{ hits | intword | intcomma }} matches.</p>
     {% endif %}
     <br/>
     {% if results %}
-        {% for post in results %}
-            {% include 'posts/post.html' %}
-        {% endfor %}
+        <div class="thread">
+            {% for post in results %}
+                {% if index == "textboard_posts" %}
+                    <div class="col">
+                        <small class="row ms-2 mt-1">{{ post.board.name }}/{{ post.thread_id }}</small>
+                        <div class="card p-2" style="display: inline-block">
+                            {% include 'posts/textboard_post.html' %}
+                            <a class="stretched-link" href="{{ post.get_post_url }}"></a>
+                        </div>
+                    </div>
+                {% else %}
+                    {% include 'posts/post.html' %}
+                {% endif %}
+            {% endfor %}
+        </div>
     {% else %}
         <p>No results.</p>
     {% endif %}

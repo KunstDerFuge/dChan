@@ -16,7 +16,7 @@ from django_elasticsearch_dsl.search import Search
 
 from posts.DSEPaginator import DSEPaginator
 from posts.documents import PostDocument, RedditPostDocument, TextboardPostDocument
-from posts.models import Post, Platform, Drop, Subreddit, Board, RedditPost
+from posts.models import Post, Platform, Drop, Subreddit, Board, RedditPost, TextboardPost
 
 
 def board_links(platform):
@@ -207,21 +207,35 @@ def drop(request, drop_no):
     return redirect(q_drop.post.get_post_url())
 
 
-def search_results(request):
+def search_results(request, platform=None, board=None):
     q = request.GET.get('q')
+    if platform in ['2ch', 'bbspink']:
+        post_index = 'textboard_posts'
+        document = TextboardPostDocument
+        model = TextboardPost
+    elif platform == 'reddit':
+        post_index = 'reddit_posts'
+        document = RedditPostDocument
+        model = RedditPost
+    else:
+        post_index = 'posts'
+        document = PostDocument
+        model = Post
+
     thread_no = request.GET.get('thread_no')
     subject = request.GET.get('subject')
     name = request.GET.get('name')
     tripcode = request.GET.get('tripcode')
+    capcode = request.GET.get('capcode')
     user_id = request.GET.get('user_id')
     date_start = request.GET.get('date_start')
     date_end = request.GET.get('date_end')
     sort = request.GET.get('sort')
-    if (not q or q == '') and not any([thread_no, subject, name, tripcode, user_id, date_start, date_end]):
+    if (not q or q == '') and not any([thread_no, subject, name, tripcode, capcode, user_id, date_start, date_end]):
         return []
 
     if q and q != '':
-        s = Search(index='posts', model=Post).from_dict({
+        s = Search(index=post_index, model=model).from_dict({
             'query': {
                 'simple_query_string': {
                     'query': q,
@@ -234,10 +248,14 @@ def search_results(request):
         # Setting _model has to be done to use .to_queryset() since we are creating the search from a dict,
         # not PostDocument
         # There is almost definitely a better, less ugly way but this works
-        s._model = Post
+        s._model = model
     else:
-        s = PostDocument.search()
+        s = document.search()
 
+    if platform:
+        s = s.query('match', platform__name=platform)
+    if board:
+        s = s.query('match', board__name=board)
     if thread_no:
         s = s.query('match', thread_id=thread_no)
     if subject:
@@ -246,6 +264,8 @@ def search_results(request):
         s = s.query('match', author=name)
     if tripcode:
         s = s.query('match', tripcode=tripcode)
+    if capcode:
+        s = s.query('match', capcode=capcode)
     if user_id:
         s = s.query('match', poster_hash=user_id)
     if date_start:
@@ -282,6 +302,10 @@ def search_results(request):
         page_results = paginator.page(paginator.num_pages)
 
     context = {
+        'q': q,
+        'index': post_index,
+        'platform_name': platform,
+        'board_name': board,
         'results': page_results,
         'page_range': page_range,
         'hits': s.count()

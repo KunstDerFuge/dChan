@@ -9,19 +9,14 @@
         {% endif %}
         <b>{{ post.author }}</b>
         {% if post.tripcode %}◆{{ post.tripcode }}{% endif %}
-        {% if post.capcode %}<b>{{ post.capcode }} ★</b>{% endif %}
-        {% if not post.email %}
-            </span>
-        {% else %}
-            </a>
-        {% endif %}
+        {% if post.capcode %}<b>{{ post.capcode }} ★</b>{% endif %}{% if not post.email %}</span>{% else %}</a>{% endif %}
         ：{% if post.timestamp %}&nbsp;{{ post.timestamp | jp_date }}{% endif %}
         {% if post.author == 'うふ〜ん' or post.author == 'うふーん' or post.author == 'あぼーん' or post.author == 'あは〜ん' %}
             {{ post.author }}{% endif %}
         {% if post.poster_hash %}ID:
             <a style="text-decoration: unset; color: unset" href="?poster_hash={{ post.poster_hash | urlencode }}">
-            <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 0 4px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>{% endif %}
+            <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 1px 5px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>{% endif %}
         </a>
     </dt>
-    <dd>{{ post.body | urlize | linebreaksbr }}<br/><br/></dd>
+    <dd>{{ post.body | urlize | linebreaksbr }}<br/>{% if not '/search/' in request.path %}<br/>{% endif %}</dd>
 </article>

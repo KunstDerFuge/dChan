@@ -191,3 +191,6 @@ class TextboardPost(models.Model):
     
     def get_thread_url(self):
         return f'/{self.platform.name}/read.cgi/{self.board.name}/{self.thread_id}/'
+
+    def get_post_url(self):
+        return self.get_thread_url() + f'#{self.post_id}'
