@@ -5,15 +5,12 @@
          style="display: inline-block">
         <article id="{{ post.post_id }}" class="article">
             <dt style="font-weight: unset; line-height: 1.5em;">{{ post.post_id }} ：
-                {% if post.email %}
-                    <a href="mailto:{{ post.email }}">
-                {% else %}
-                    <span style="color: green">
-                {% endif %}
+                <span style="color: green">
                 <b>{{ post.author }}</b>
-                {% if post.tripcode %}◆{{ post.tripcode }}{% endif %}
-                {% if post.capcode %}<b>{{ post.capcode }} ★</b>{% endif %}{% if not post.email %}</span>{% else %}
-                    </a>{% endif %}
+                    {% if post.tripcode %}◆{{ post.tripcode }}{% endif %}
+                    {% if post.capcode %}<b>{{ post.capcode }} ★</b>{% endif %}
+                    {% if post.email %}[{{ post.email }}]{% endif %}
+                </span>
                 ：{% if post.timestamp %}&nbsp;{{ post.timestamp | jp_date }}{% endif %}
                 {% if post.author == 'うふ〜ん' or post.author == 'うふーん' or post.author == 'あぼーん' or post.author == 'あは〜ん' %}
                     {{ post.author }}{% endif %}
