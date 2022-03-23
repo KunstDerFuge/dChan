@@ -20,7 +20,7 @@
                     <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 1px 5px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>{% endif %}
                 </a>
             </dt>
-            <dd>{{ post.body | urlize | linebreaksbr }}<br/></dd>
+            <dd>{{ post.body | escape | textboard_backlinks | urlize | linebreaksbr }}<br/></dd>
         </article>
     </div>
 </div>

@@ -143,3 +143,10 @@ def jp_date(date):
     date_parts = date_string.split(' ')
 
     return mark_safe(f'{date_parts[0]} ({jp_weekday_map[weekday]}) {date_parts[1]}')
+
+@register.filter(name='textboard_backlinks')
+@stringfilter
+def textboard_backlinks(text):
+    pattern = re.compile(r'&gt;&gt;([0-9]{1,4})')  # Match >>1 - >>9999
+    text = pattern.sub(r'<a href="#\1">&gt;&gt;\1</a>', text)
+    return mark_safe(text)
