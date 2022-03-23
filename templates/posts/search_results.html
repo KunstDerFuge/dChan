@@ -20,8 +20,10 @@
                 {% if index == "textboard_posts" %}
                     <div class="col">
                         <small class="row ms-2 mt-1">{{ post.board.name }}/{{ post.thread_id }}</small>
-                        {% include 'posts/textboard_post.html' %}
-                        <a class="stretched-link" href="{{ post.get_post_url }}"></a>
+                        <div style="position: relative">
+                            {% include 'posts/textboard_post.html' %}
+                            <a class="stretched-link" href="{{ post.get_post_url }}"></a>
+                        </div>
                     </div>
                 {% else %}
                     {% include 'posts/post.html' %}
