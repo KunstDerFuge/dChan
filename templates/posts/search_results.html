@@ -20,10 +20,8 @@
                 {% if index == "textboard_posts" %}
                     <div class="col">
                         <small class="row ms-2 mt-1">{{ post.board.name }}/{{ post.thread_id }}</small>
-                        <div class="card p-2" style="display: inline-block">
-                            {% include 'posts/textboard_post.html' %}
-                            <a class="stretched-link" href="{{ post.get_post_url }}"></a>
-                        </div>
+                        {% include 'posts/textboard_post.html' %}
+                        <a class="stretched-link" href="{{ post.get_post_url }}"></a>
                     </div>
                 {% else %}
                     {% include 'posts/post.html' %}

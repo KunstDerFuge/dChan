@@ -21,7 +21,7 @@
             <h1 style="color:red;font-size:larger;font-weight:normal;margin:-.5em 0 0; font-family: 'IPAGP Mona';">{{ posts.0.subject }}</h1>
         {% endif %}
         <br/>
-        <dl class="thread" style="margin-right:185px;word-wrap:break-word;">
+        <dl class="thread">
             {% for post in posts %}
                 {% include 'posts/textboard_post.html' %}
             {% endfor %}
