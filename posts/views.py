@@ -645,6 +645,29 @@ def textboard_thread(request, platform, board=None, thread_id=None):
             .sort('post_id') \
             .extra(size=1000)
 
+        if selected:
+            try:
+                selections = selected.split(',')
+                selected_post_ids = []
+                for selection in selections:
+                    if '-' in selection:
+                        lower, upper = selection.split('-')
+                        if lower == '':
+                            lower = 1
+                        if upper == '':
+                            upper = 1000
+                        lower, upper = int(lower), int(upper)
+                        assert lower < upper
+                        selected_post_ids.extend(range(lower, upper + 1))
+                    else:
+                        selected_post_ids.append(int(selection))
+
+                thread_posts = thread_posts.filter('terms', post_id=selected_post_ids)
+
+            except Exception:
+                template = loader.get_template('posts/404.html')
+                return HttpResponse(template.render({}, request), status=404)
+
         if poster_hash:
             thread_posts = thread_posts.query('match', poster_hash=poster_hash)
 
