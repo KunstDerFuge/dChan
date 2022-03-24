@@ -147,7 +147,7 @@ def jp_date(date):
 @register.filter(name='textboard_backlinks')
 @stringfilter
 def textboard_backlinks(text, path):
-    range_pattern = re.compile(r'(?<!>)&gt;&gt;(([0-9]{1,4})([,-][0-9]{1,4})([,-][0-9]{1,4})?)')  # Match >>1 - >>9999
+    range_pattern = re.compile(r'(?<!>)>>(([0-9]{1,4})([,-][0-9]{1,4})+)')  # Match range e.g. >>123-125,128,130
     reply_pattern = re.compile(r'(?<!>)&gt;&gt;([0-9]{1,4})')  # Match >>1 - >>9999
     path = path[:path.rindex('/')+1]  # Pop anything after the last /
     text = range_pattern.sub(rf'<a href="{path}\1">&gt;&gt;\1</a>', text)
