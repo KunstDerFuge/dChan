@@ -628,7 +628,7 @@ def redirect_board(request, board):
     return redirect(f'/8kun/{board}/')
 
 
-def textboard_thread(request, platform, board=None, thread_id=None):
+def textboard_thread(request, platform, board=None, thread_id=None, selected=None):
     context = {}
     poster_hash = request.GET.get('poster_hash')
 
@@ -637,7 +637,6 @@ def textboard_thread(request, platform, board=None, thread_id=None):
         return HttpResponse(template.render({}, request), status=404)
 
     try:
-        print(board)
         s = TextboardPostDocument.search()
         thread_posts = s.query('match', platform__name=platform) \
             .query('match', board__name=board) \
