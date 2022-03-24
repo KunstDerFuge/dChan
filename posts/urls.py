@@ -34,6 +34,7 @@ urlpatterns = [
     path('<str:platform>/', cache_page(15 * 60)(views.index), name='index'),
     path('<str:platform>/<str:board>/', cache_page(60 * 60)(views.index), name='index'),
     path('<str:platform>/<str:board>/res/<int:thread_id>.html', views.thread, name='thread'),
-    path('<str:platform>/read.cgi/<str:board>/<int:thread_id>/', views.textboard_thread, name='thread'),
     path('<str:board>/res/<int:thread_id>.html', views.thread, name='thread'),
+    path('<str:platform>/read.cgi/<str:board>/<int:thread_id>/', views.textboard_thread, name='thread'),
+    path('<str:platform>/read.cgi/<str:board>/<int:thread_id>/<str:selected>', views.textboard_thread, name='thread'),
 ]
