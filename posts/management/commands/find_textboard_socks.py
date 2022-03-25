@@ -13,6 +13,7 @@ class Command(BaseCommand):
     help = "Find posts which may be socks of trip posters"
 
     def handle(self, *args, **options):
+        TextboardPost.objects.update(sock_of=[])
         thread_ids = TextboardPost.objects.values_list('thread_id', flat=True).distinct()
         for thread in tqdm(thread_ids):
             posts = TextboardPostDocument.search().query('match', thread_id=thread).extra(size=1000).to_queryset()
