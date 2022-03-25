@@ -29,6 +29,6 @@ class Command(BaseCommand):
             for post in posts:
                 if not post.tripcode:
                     if post.poster_hash in hash_tripcodes_map:
-                        if post.poster_hash not in ['???', '???0', 'CAP_USER']:
+                        if post.poster_hash not in ['???', '???0', 'CAP_USER', '', None]:
                             post.sock_of = hash_tripcodes_map[post.poster_hash]
                             post.save()
