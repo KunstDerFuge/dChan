@@ -17,8 +17,15 @@
                 {% if post.poster_hash %}ID:
                     <a style="text-decoration: unset; color: unset"
                        href="?poster_hash={{ post.poster_hash | urlencode }}">
-                    <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 1px 5px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>{% endif %}
+                    <span style="background-color: {{ post.poster_hash|pastelize }}; border-radius: 8px; padding: 1px 5px; color: {{ post.poster_hash|pastelize|contrast_text }}">{{ post.poster_hash }}</span>
+                {% endif %}
                 </a>
+                {% if post.sock_of %}
+                    <span data-bs-toggle="tooltip" data-bs-placement="top" style="cursor: pointer;"
+                          title="User also posted w/ tripcode(s): {% for sock in post.sock_of %}◆{{ sock }}{% endfor %}">
+                        🧦
+                    </span>
+                {% endif %}
             </dt>
             <dd>{{ post.body | escape | urlize | textboard_backlinks:request.path | linebreaksbr }}<br/></dd>
         </article>
