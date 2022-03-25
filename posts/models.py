@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 
@@ -186,6 +187,7 @@ class TextboardPost(models.Model):
     tripcode = models.CharField(max_length=30, default=None, null=True)
     capcode = models.CharField(max_length=30, default=None, null=True)
     is_op = models.BooleanField(default=False)
+    sock_of = ArrayField(models.CharField(max_length=30), null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     
