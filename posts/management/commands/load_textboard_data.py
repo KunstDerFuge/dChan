@@ -35,6 +35,7 @@ class Command(BaseCommand):
                 print(f'Could not load BBSPink data.', e)
                 raise e
 
+            print('Updating Elasticsearch index...')
             TextboardPostDocument().update(TextboardPost.objects.all())
             print('Done!')
 
