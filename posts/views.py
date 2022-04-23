@@ -149,7 +149,7 @@ def thread(request, platform='8kun', board=None, thread_id=None):
             template = loader.get_template('posts/404.html')
             return HttpResponse(template.render({}, request), status=404)
         except Board.MultipleObjectsReturned:
-            board_name = None
+            board_name = board.lower()
             # This just means there is more than one board by this name, like 4pol/8pol, all good
             pass
 
