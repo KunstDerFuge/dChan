@@ -288,7 +288,10 @@ def search_results(request, platform=None, board=None):
     start = (page - 1) * results_per_page
     end = start + results_per_page
     results = s[start:end]
-    queryset = results.to_queryset().select_related('platform', 'board')
+    if platform == 'reddit':
+        queryset = results.to_queryset().select_related('platform', 'subreddit')
+    else:
+        queryset = results.to_queryset().select_related('platform', 'board')
     response = results.execute()
     paginator = DSEPaginator(response, results_per_page)
     paginator.set_queryset(queryset)
