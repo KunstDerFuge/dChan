@@ -255,7 +255,10 @@ def search_results(request, platform=None, board=None):
     if platform:
         s = s.query('match', platform__name=platform)
     if board:
-        s = s.query('match', board__name=board)
+        if platform == 'reddit':
+            s = s.query('match', subreddit__name=board)
+        else:
+            s = s.query('match', board__name=board)
     if thread_no:
         s = s.query('match', thread_id=thread_no)
     if subject:
@@ -539,6 +542,8 @@ def reddit_thread(request, subreddit, thread_hash, thread_slug=None, link_id=Non
             'op': op,
             'posts': top_level_replies,
             'subreddit_name': subreddit,
+            'board_name': subreddit,
+            'platform_name': 'reddit',
             'thread': thread_hash,
             'viewing_comment': link_id is not None,
             'subreddits_links': list(Subreddit.objects.values_list('name', flat=True).distinct())
