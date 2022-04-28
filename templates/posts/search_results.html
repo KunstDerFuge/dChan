@@ -27,8 +27,12 @@
                     </div>
                 {% elif index == "reddit_posts" %}
                     <div class="card shadow-sm my-2">
-                    <a class="stretched-link" href="{{ post.get_thread_url }}"></a>
-                        {% include 'posts/reddit_post.html' %}
+                        <a class="stretched-link" href="{{ post.get_thread_url }}"></a>
+                        {% if post.is_op %}
+                            {% include 'posts/reddit_op.html' %}
+                        {% else %}
+                            {% include 'posts/reddit_post.html' %}
+                        {% endif %}
                     </div>
                 {% else %}
                     {% include 'posts/post.html' %}
