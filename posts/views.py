@@ -45,10 +45,6 @@ def subreddit_list():
 
 def index(request, platform=None, board=None):
     if platform in ['2ch', 'bbspink']:
-        if not request.user.is_staff:
-            template = loader.get_template('posts/404.html')
-            return HttpResponse(template.render({}, request), status=404)
-
         s = TextboardPostDocument.search()
     else:
         s = PostDocument.search()
@@ -641,11 +637,6 @@ def redirect_board(request, board):
 def textboard_thread(request, platform, board=None, thread_id=None, selected=None):
     context = {}
     poster_hash = request.GET.get('poster_hash')
-
-    if not request.user.is_staff:
-        template = loader.get_template('posts/404.html')
-        return HttpResponse(template.render({}, request), status=404)
-
     try:
         s = TextboardPostDocument.search()
         thread_posts = s.query('match', platform__name=platform) \
