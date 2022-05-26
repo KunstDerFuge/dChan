@@ -1,4 +1,17 @@
 {% extends 'posts/base.html' %}
+{% block head_extras %}
+    <meta name="twitter:title"
+          content="dChan - {% if board_name %}{{ platform_name }} /{{ board_name }}/ Archive
+              {% elif platform_name %}{{ platform_name }} Archive{% else %}Q Origins Project Archives
+          {% endif %}">
+    <meta name=" twitter:description" content="Archive index">
+
+    <meta name="og:title"
+          content="dChan - {% if board_name %}{{ platform_name }} /{{ board_name }}/ Archive
+              {% elif platform_name %}{{ platform_name }} Archive{% else %}Q Origins Project Archives
+          {% endif %}">
+    <meta name=" og:description" content="Archive index">
+{% endblock %}
 {% block content %}
     {% if board_name %}
         <nav aria-label="breadcrumb">

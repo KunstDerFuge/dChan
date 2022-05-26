@@ -12,6 +12,19 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="{% static "/css/sidebar.css" %}" rel="stylesheet">
 
+    <meta name="description" content="Page description. No longer than 155 characters."/>
+
+    <!-- Twitter Card data -->
+    <meta name="twitter:card" content="dChan - Q Origins Project Archives">
+    <meta name="twitter:site" content="@QOrigins">
+    <meta name="twitter:creator" content="@QOrigins">
+    <meta name="twitter:image" content="{% static "qorigins_square.png" %}">
+
+    <!-- Open Graph data -->
+    <meta property="og:type" content="article"/>
+    <meta property="og:image" content="{% static "qorigins_square.png" %}"/>
+    <meta property="og:site_name" content="dChan - Q Origins Project Archives"/>
+
     {% block head_extras %}
     {% endblock %}
 </head>
@@ -24,10 +37,13 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <form class="d-flex form-inline ms-auto" action="{% if board_name %}/{{ platform_name }}/{{ board_name }}/search{% elif platform_name %}/{{ platform_name }}/search{% else %}/search{% endif %}"
+            <form class="d-flex form-inline ms-auto"
+                  action="{% if board_name %}/{{ platform_name }}/{{ board_name }}/search{% elif platform_name %}/{{ platform_name }}/search{% else %}/search{% endif %}"
                   method="get">
                 <input name="q" class="form-control me-2" type="search" value="{{ q }}"
-                       placeholder="Search{% if board_name %}{% if platform_name == 'reddit' %} r/{{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
+                       placeholder="Search{% if board_name %}{% if platform_name == 'reddit' %} r/
+
+                           {{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
                        aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
