@@ -1,18 +1,27 @@
 {% extends 'posts/base.html' %}
 {% load filters %}
 {% load static %}
+
 {% block head_extras %}
     <link rel="stylesheet" href="{% static 'style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/textboard.css' %}">
-
-    <meta name="twitter:title"
-          content="dChan - {{ platform_name }} /{{ board_name }}/ - '{{ posts.0.subject }}'">
-    <meta name=" twitter:description" content="{{ posts.0.body | truncatechars:200 }}">
-
-    <meta name="og:title"
-          content="dChan - {{ platform_name }} /{{ board_name }}/ - '{{ posts.0.subject }}'">
-    <meta name=" og:description" content="{{ posts.0.body | truncatechars:200 }}">
 {% endblock %}
+
+{% block twitter_meta %}
+    <meta name="twitter:title"
+          content="dChan - {{ platform_name }} /{{ board_name }}/ - &quot;{{ posts.0.subject }}&quot;">
+    <meta name=" twitter:description" content="{{ posts.0.body | truncatechars:200 }}">
+{% endblock %}
+
+{% block og_meta %}
+    <meta name="og:title"
+          content="dChan - {{ platform_name }} /{{ board_name }}/ - &quot;{{ posts.0.subject }}&quot;">
+    <meta name="og:description" content="{{ posts.0.body | truncatechars:200 }}">
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ posts.0.body | truncatechars:200 }}">
+{% endblock %}
+
 {% block content %}
     {% if posts %}
         <nav aria-label="breadcrumb">

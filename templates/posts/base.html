@@ -12,18 +12,35 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="{% static "/css/sidebar.css" %}" rel="stylesheet">
 
-    <meta name="description" content="Page description. No longer than 155 characters."/>
+    {% block description %}
+        <meta name="description"
+              content="Q Origins Project's archives including data from 4chan, 8kun, Reddit, and BBSPink.">
+    {% endblock %}
 
-    <!-- Twitter Card data -->
-    <meta name="twitter:card" content="dChan - Q Origins Project Archives">
-    <meta name="twitter:site" content="@QOrigins">
-    <meta name="twitter:creator" content="@QOrigins">
-    <meta name="twitter:image" content="{% static "qorigins_square.png" %}">
+    <meta name="twitter:image:src" content="{% static "qorigins_large.png" %}"/>
+    <meta name="twitter:site" content="@QOrigins"/>
+    <meta name="twitter:card" content="summary_large_image"/>
 
-    <!-- Open Graph data -->
-    <meta property="og:type" content="article"/>
-    <meta property="og:image" content="{% static "qorigins_square.png" %}"/>
-    <meta property="og:site_name" content="dChan - Q Origins Project Archives"/>
+    {% block twitter_meta %}
+        <meta name="twitter:title" content="dChan - Q Origins Project archives"/>
+        <meta name="twitter:description"
+              content="Q Origins Project's archives including data from 4chan, 8kun, Reddit, and BBSPink."/>
+    {% endblock %}
+
+    <meta property="og:image" content="{% static "qorigins_large.png" %}"/>
+    <meta property="og:image:alt"
+          content="Q Origins Project's archives including data from 4chan, 8kun, Reddit, and BBSPink."/>
+    <meta property="og:image:width" content="1200"/>
+    <meta property="og:image:height" content="600"/>
+    <meta property="og:site_name" content="dChan - Q Origins Project archives"/>
+    <meta property="og:url" content="https://dchan.qorigins.org"/>
+
+    {% block og_meta %}
+        <meta property="og:title" content="dChan - Q Origins Project archives"/>
+        <meta property="og:description"
+              content="Q Origins Project's archives including data from 4chan, 8kun, Reddit, and BBSPink."/>
+        <meta property="og:type" content="website"/>
+    {% endblock %}
 
     {% block head_extras %}
     {% endblock %}
@@ -42,6 +59,14 @@
                   method="get">
                 <input name="q" class="form-control me-2" type="search" value="{{ q }}"
                        placeholder="Search{% if board_name %}{% if platform_name == 'reddit' %} r/
+
+
+
+
+
+
+
+
 
                            {{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
                        aria-label="Search">
