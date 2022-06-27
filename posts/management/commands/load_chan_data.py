@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     df = df.fillna('')
 
                     print('Committing objects to database...')
-                    utilities.process_and_commit_from_df(df, platform_obj)
+                    utilities.commit_posts_from_df(df, platform_obj)
 
             except Exception as e:
                 print(f'Could not load {platform} data.', e)
