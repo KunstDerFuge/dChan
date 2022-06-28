@@ -84,7 +84,7 @@ def process_replies_from_df(df):
             continue
         thread_df.apply(aggregate_replies, axis=1)
         df_with_replies = pd.concat([df_with_replies, thread_df.apply(link_replies, axis=1)])
-    return df_with_replies.reset_index()
+    return df_with_replies.reset_index(drop=True)
 
 
 def process_and_commit_from_df(df, platform_obj):
@@ -117,7 +117,7 @@ def process_and_commit_from_df(df, platform_obj):
 
 def commit_posts_from_df(df, platform_obj):
     if platform_obj.name == '8chan':
-        platform_obj = Platform.objects.get(name='8kun')
+        platform_obj, created = Platform.objects.get_or_create(name='8kun')
     df = df.fillna('')
     new_posts = []
     threads = set()

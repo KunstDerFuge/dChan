@@ -4,7 +4,8 @@ from tqdm import tqdm
 
 from posts import utilities
 from posts.models import Platform
-from posts.utilities import parse_archive_is, process_links, parse_8chan_formatting, parse_formatting
+from posts.utilities import parse_archive_is, process_links, parse_8chan_formatting, parse_formatting, \
+    process_replies_from_df
 
 
 class Command(BaseCommand):
@@ -64,6 +65,12 @@ class Command(BaseCommand):
                     elif size_after != size_before:
                         print(f'Already archived {saved} of {size_before} posts.')
 
+                    # Fill later-added body_html field
+                    if platform != '4chan':
+                        df['body_html'] = df.body_text
+                    else:
+                        df['body_html'] = ''
+
                     if platform != '4chan':  # No format or link info from 4plebs API
                         print('Processing links...')
                         df['links'] = df.progress_apply(process_links, axis=1)
@@ -73,7 +80,12 @@ class Command(BaseCommand):
                             df['body_text'] = df.body_text.progress_apply(parse_8chan_formatting)
                         else:
                             df['body_text'] = df.body_text.progress_apply(parse_formatting)
+                    else:
+                        df['links'] = df.body_text.apply(lambda x: dict())
                     df = df.fillna('')
+
+                    # Process replies
+                    df = process_replies_from_df(df)
 
                     print('Committing objects to database...')
                     utilities.commit_posts_from_df(df, platform_obj)
