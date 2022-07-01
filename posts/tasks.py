@@ -248,7 +248,7 @@ def create_scrape_jobs_for_active_qresearch_threads():
     grid_images = soup.find_all("img", attrs={'class': 'thread-image'})
     # URLs are root-relative on 8kun so reconstruct full URL here
     # Can be made less dumb with urllib but should work for now
-    urls = ['https://8kun.top' + img.parent.get('href') for img in grid_images]
+    urls = ['https://8kun.top' + img.parent.get('href') for img in grid_images][:50]
     for url in urls:
         board, thread_id = parse_board_and_thread_id_from_url(url)
         if board is None:
