@@ -249,6 +249,7 @@ def create_scrape_jobs_for_active_qresearch_threads():
     # URLs are root-relative on 8kun so reconstruct full URL here
     # Can be made less dumb with urllib but should work for now
     urls = ['https://8kun.top' + img.parent.get('href') for img in grid_images][:50]
+    index = 0
     for url in urls:
         board, thread_id = parse_board_and_thread_id_from_url(url)
         if board is None:
@@ -256,6 +257,7 @@ def create_scrape_jobs_for_active_qresearch_threads():
         ScrapeJob.objects.update_or_create(platform='8kun', board=board,
                                            thread_id=thread_id,
                                            defaults={
-                                               'bounty': 275,
+                                               'bounty': 275 - index,
                                                'url': url
                                            })
+        index += 1
