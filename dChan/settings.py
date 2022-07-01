@@ -129,6 +129,10 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'posts.tasks.scrape_posts',
         'schedule': 5 * 60,
     },
+    'create_scrape_jobs_for_active_qresearch_threads': {
+        'task': 'posts.tasks.create_scrape_jobs_for_active_qresearch_threads',
+        'schedule': 10 * 60,
+    },
     'create-scrape-jobs': {
         'task': 'posts.tasks.create_scrape_jobs',
         'schedule': 10 * 60,

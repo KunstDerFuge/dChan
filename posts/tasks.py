@@ -2,6 +2,8 @@ import re
 from datetime import datetime, timedelta
 
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
 from celery import shared_task
 from scrapyd_api import ScrapydAPI
 
@@ -226,3 +228,34 @@ def sync_elasticsearch():
         recently_scraped.values_list('platform__name', 'board__name', 'thread_id').distinct())
     PostDocument().update(recently_scraped)
     process_replies(recently_scraped_threads)
+
+
+@shared_task
+def create_scrape_jobs_for_active_qresearch_threads():
+    def parse_board_and_thread_id_from_url(url):
+        try:
+            pattern = re.compile(r'.*/([a-z]+)/res/([0-9]+)')
+            match = re.match(pattern, url).groups()
+            board = match[0]
+            thread_id = match[1]
+        except Exception as e:
+            return None, None
+        return board, thread_id
+
+    qresearch_catalog_url = 'https://8kun.top/qresearch/catalog.html'
+    catalog = requests.get(qresearch_catalog_url)
+    soup = BeautifulSoup(catalog.content, 'html.parser')
+    grid_images = soup.find_all("img", attrs={'class': 'thread-image'})
+    # URLs are root-relative on 8kun so reconstruct full URL here
+    # Can be made less dumb with urllib but should work for now
+    urls = ['https://8kun.top' + img.parent.get('href') for img in grid_images]
+    for url in urls:
+        board, thread_id = parse_board_and_thread_id_from_url(url)
+        if board is None:
+            continue
+        ScrapeJob.objects.update_or_create(platform='8kun', board=board,
+                                           thread_id=thread_id,
+                                           defaults={
+                                               'bounty': 275,
+                                               'url': url
+                                           })
