@@ -129,10 +129,12 @@ def notify_discord(new_drop: Drop):
         "users": allowed_mentions_users
     }
     webhook_url = config('NEW_DROP_DISCORD_WEBHOOK')
-    webhook = DiscordWebhook(url=webhook_url, content=f"NEW Q DETECTED {config('NEW_DROP_MENTIONS_STRING')}\n" +
-                                                      f"[dChan link]({new_drop.post.get_post_url()})\n" +
-                                                      f"[8kun link]({new_drop.post.get_8kun_url()})",
+    webhook = DiscordWebhook(url=webhook_url, content=f"NEW Q DETECTED {config('NEW_DROP_MENTIONS_STRING')}",
                              allowed_mentions=allowed_mentions)
+    description_text = new_drop.post.body
+    description_text += "\n\n" + \
+                        f"[dChan link]({new_drop.post.get_post_url()})\n" + \
+                        f"[8kun link]({new_drop.post.get_8kun_url()})"
     embed = DiscordEmbed(title=f"Drop #{new_drop.number}", description=new_drop.post.body)
     webhook.add_embed(embed)
     res = webhook.execute()
