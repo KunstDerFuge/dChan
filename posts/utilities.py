@@ -1,12 +1,15 @@
 import html
 import re
+from typing import Final
 
 import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from posts.documents import PostDocument, RedditPostDocument
-from posts.models import Post, Board, Platform, Subreddit, RedditPost
+from posts.models import Post, Board, Platform, Subreddit, RedditPost, Drop
+
+Q_LATEST_TRIPCODE: Final[str] = '!!Hs1Jq13jV6'
 
 
 def process_replies(threads):
@@ -115,6 +118,28 @@ def process_and_commit_from_df(df, platform_obj):
     commit_posts_from_df(df, platform_obj)
 
 
+def notify_discord(new_drop: Drop):
+    from decouple import config, Csv
+    from discord_webhook import DiscordWebhook, DiscordEmbed
+
+    allowed_mentions_parse = config('ALLOWED_MENTIONS_PARSE', cast=Csv())
+    allowed_mentions_users = config('ALLOWED_MENTIONS_USERS', cast=Csv())
+    allowed_mentions = {
+        "parse": allowed_mentions_parse,
+        "users": allowed_mentions_users
+    }
+    webhook_url = config('NEW_DROP_DISCORD_WEBHOOK')
+    webhook = DiscordWebhook(url=webhook_url, content=f"NEW Q DETECTED {config('NEW_DROP_MENTIONS_STRING')}\n" +
+                                                      f"dChan URL: {new_drop.post.get_post_url()}\n" +
+                                                      f"8kun URL: {new_drop.post.get_8kun_url()}",
+                             allowed_mentions=allowed_mentions)
+    embed = DiscordEmbed(title=f"Drop #{new_drop.number}", description=new_drop.post.body)
+    webhook.add_embed(embed)
+    res = webhook.execute()
+    if res.status_code != 200:
+        print("Error notifying discord of new drop", res)
+
+
 def commit_posts_from_df(df, platform_obj):
     if platform_obj.name == '8chan':
         platform_obj, created = Platform.objects.get_or_create(name='8kun')
@@ -140,6 +165,21 @@ def commit_posts_from_df(df, platform_obj):
                 posts_ids = [post.id for post in posts_created]
                 new_posts_qs = Post.objects.filter(id__in=posts_ids)
                 PostDocument().update(new_posts_qs)
+                for post in new_posts:
+                    # Check for new drops
+                    if post.tripcode == Q_LATEST_TRIPCODE:
+                        try:
+                            # Fetch it from the database because due to ignore_conflicts,
+                            # this will not be a real Post reference yet
+                            drop_post = Post.objects.get(platform=platform_obj, board=board, post_id=post.post_id)
+                            new_drop_number = Drop.objects.last().number + 1
+                            new_drop, created = Drop.objects.get_or_create(post=drop_post, number=new_drop_number)
+                            if created:
+                                # This is indeed a previously unknown drop
+                                notify_discord(new_drop)
+                        except Exception as e:
+                            print('Error while trying to mark a new drop', e)
+                            pass
                 new_posts = []
         except Exception as e:
             print('Failed to create Post object with row:')
