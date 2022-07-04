@@ -133,7 +133,7 @@ def notify_discord(new_drop: Drop):
                              allowed_mentions=allowed_mentions)
     description_text = new_drop.post.body
     description_text += "\n\n" + \
-                        f"[dChan link]({new_drop.post.get_post_url()})\n" + \
+                        f"[dChan link](https://dchan.qorigins.org{new_drop.post.get_post_url()})\n" + \
                         f"[8kun link]({new_drop.post.get_8kun_url()})"
     embed = DiscordEmbed(title=f"Drop #{new_drop.number}", description=description_text)
     webhook.add_embed(embed)
