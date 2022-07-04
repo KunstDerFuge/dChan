@@ -169,7 +169,7 @@ def commit_posts_from_df(df, platform_obj):
                 PostDocument().update(new_posts_qs)
                 for post in new_posts:
                     # Check for new drops
-                    if post.tripcode == Q_LATEST_TRIPCODE:
+                    if post.tripcode == Q_LATEST_TRIPCODE or post.board.name == 'projectdcomms':
                         try:
                             # Fetch it from the database because due to ignore_conflicts,
                             # this will not be a real Post reference yet
