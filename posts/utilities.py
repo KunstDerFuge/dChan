@@ -135,7 +135,7 @@ def notify_discord(new_drop: Drop):
     description_text += "\n\n" + \
                         f"[dChan link]({new_drop.post.get_post_url()})\n" + \
                         f"[8kun link]({new_drop.post.get_8kun_url()})"
-    embed = DiscordEmbed(title=f"Drop #{new_drop.number}", description=new_drop.post.body)
+    embed = DiscordEmbed(title=f"Drop #{new_drop.number}", description=description_text)
     webhook.add_embed(embed)
     res = webhook.execute()
     if res.status_code != 200:
