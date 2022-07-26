@@ -65,6 +65,9 @@
 
 
 
+
+
+
                            {{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
                        aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
@@ -169,27 +172,31 @@
                             </ul>
                         </div>
                     {% else %}
-                        <form class="collapse text-center m-2" id="drops">
-                            <input class="form-control form-control-sm w-75 mx-auto" type="text" placeholder="Drop #"
-                                   aria-label="Drop Number" id="drop">
+                        <div class="collapse">
+                            <form class="text-center m-2" id="drops">
+                                <input class="form-control form-control-sm w-75 mx-auto" type="text"
+                                       placeholder="Drop #"
+                                       aria-label="Drop Number" id="drop">
+                            </form>
+                            <script>
+                              let goToDrop = function (event) {
+                                let drop = document.getElementById('drop').value
+                                console.log(drop)
+                                window.location.href = '/drop/' + drop
+                                event.preventDefault()
+                              }
+                              let form = document.getElementById('drops')
+                              form.addEventListener('submit', goToDrop, true)
+                            </script>
                             {% if last_five_drops %}
                                 <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                                     {% for drop in last_five_drops %}
-                                        <li><a href="{{ drop.post.get_post_url }}">{{ drop.number }}</a></li>
+                                        <li><a href="{{ drop.post.get_post_url }}"
+                                               class="link-dark rounded">{{ drop.number }}</a></li>
                                     {% endfor %}
                                 </ul>
                             {% endif %}
-                        </form>
-                        <script>
-                          let goToDrop = function (event) {
-                            let drop = document.getElementById('drop').value
-                            console.log(drop)
-                            window.location.href = '/drop/' + drop
-                            event.preventDefault()
-                          }
-                          let form = document.getElementById('drops')
-                          form.addEventListener('submit', goToDrop, true)
-                        </script>
+                        </div>
                     {% endif %}
                 </li>
                 <li class="mb-1">
