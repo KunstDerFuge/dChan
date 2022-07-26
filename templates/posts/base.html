@@ -64,6 +64,7 @@
 
 
 
+
                            {{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
                        aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
@@ -171,6 +172,13 @@
                         <form class="collapse text-center m-2" id="drops">
                             <input class="form-control form-control-sm w-75 mx-auto" type="text" placeholder="Drop #"
                                    aria-label="Drop Number" id="drop">
+                            {% if last_five_drops %}
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                                    {% for drop in last_five_drops %}
+                                        <li><a href="{{ drop.post.get_post_url }}">{{ drop.number }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </form>
                         <script>
                           let goToDrop = function (event) {
@@ -182,14 +190,6 @@
                           let form = document.getElementById('drops')
                           form.addEventListener('submit', goToDrop, true)
                         </script>
-                        {% if last_five_drops %}
-                            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                                {% for drop in last_five_drops %}
-                                    <li><a href="{{ drop.post.get_post_url }}">{{ drop.number }}</a></li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-
                     {% endif %}
                 </li>
                 <li class="mb-1">
