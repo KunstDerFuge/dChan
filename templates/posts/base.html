@@ -59,6 +59,7 @@
                   method="get">
                 <input name="q" class="form-control me-2" type="search" value="{{ q }}"
                        placeholder="Search{% if board_name %}{% if platform_name == 'reddit' %} r/
+
                            {{ board_name }}{% else %} /{{ board_name }}/{% endif %}{% elif platform_name %} {{ platform_name }}{% endif %}"
                        aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
@@ -177,6 +178,13 @@
                           let form = document.getElementById('drops')
                           form.addEventListener('submit', goToDrop, true)
                         </script>
+                    {% endif %}
+                    {% if last_five_drops %}
+                        {% for drop in last_five_drops %}
+                            <div>
+                                <a href="{{ drop.post.get_post_url }}">{{ drop.number }}</a>
+                            </div>
+                        {% endfor %}
                     {% endif %}
                 </li>
                 <li class="mb-1">

@@ -103,13 +103,16 @@ def index(request, platform=None, board=None):
         template = loader.get_template('posts/404.html')
         return HttpResponse(template.render({}, request), status=404)
 
+    last_five_drops = Drop.objects.all().order_by('-number')[:5]
+
     context = {
         'thread_list': page_threads,
         'platform_name': platform,
         'board_name': board_name,
         'page_range': page_range,
         'boards_links': boards,
-        'other_boards': other_boards
+        'other_boards': other_boards,
+        'last_five_drops': last_five_drops
     }
 
     template = loader.get_template('posts/index.html')
