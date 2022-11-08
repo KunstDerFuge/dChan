@@ -143,6 +143,23 @@ def notify_discord(new_drop: Drop):
 
 
 def commit_posts_from_df(df, platform_obj):
+    def check_for_drops(post_list):
+        for post in post_list:
+            # Check for new drops
+            if post.tripcode == Q_LATEST_TRIPCODE or post.board.name == 'projectdcomms':
+                try:
+                    # Fetch it from the database because due to ignore_conflicts,
+                    # this will not be a real Post reference yet
+                    drop_post = Post.objects.get(platform=platform_obj, board=board, post_id=post.post_id)
+                    new_drop_number = Drop.objects.last().number + 1
+                    new_drop, created = Drop.objects.get_or_create(post=drop_post, number=new_drop_number)
+                    if created:
+                        # This is indeed a previously unknown drop
+                        notify_discord(new_drop)
+                except Exception as e:
+                    print('Error while trying to mark a new drop', e)
+                    pass
+
     if platform_obj.name == '8chan':
         platform_obj, created = Platform.objects.get_or_create(name='8kun')
     df = df.fillna('')
@@ -167,21 +184,7 @@ def commit_posts_from_df(df, platform_obj):
                 posts_ids = [post.id for post in posts_created]
                 new_posts_qs = Post.objects.filter(id__in=posts_ids)
                 PostDocument().update(new_posts_qs)
-                for post in new_posts:
-                    # Check for new drops
-                    if post.tripcode == Q_LATEST_TRIPCODE or post.board.name == 'projectdcomms':
-                        try:
-                            # Fetch it from the database because due to ignore_conflicts,
-                            # this will not be a real Post reference yet
-                            drop_post = Post.objects.get(platform=platform_obj, board=board, post_id=post.post_id)
-                            new_drop_number = Drop.objects.last().number + 1
-                            new_drop, created = Drop.objects.get_or_create(post=drop_post, number=new_drop_number)
-                            if created:
-                                # This is indeed a previously unknown drop
-                                notify_discord(new_drop)
-                        except Exception as e:
-                            print('Error while trying to mark a new drop', e)
-                            pass
+                check_for_drops(new_posts)
                 new_posts = []
         except Exception as e:
             print('Failed to create Post object with row:')
@@ -195,6 +198,7 @@ def commit_posts_from_df(df, platform_obj):
     posts_ids = [post.id for post in posts_created]
     new_posts_qs = Post.objects.filter(id__in=posts_ids)
     PostDocument().update(new_posts_qs)
+    check_for_drops(new_posts)
 
     return threads
 
