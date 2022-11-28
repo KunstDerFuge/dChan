@@ -79,7 +79,7 @@ class Post(models.Model):
     subject = models.CharField(max_length=150)
     body = models.TextField()
     body_html = models.TextField(default='')
-    timestamp = models.DateTimeField()
+    timestamp = models.DateTimeField(db_index=True)
     tripcode = models.CharField(max_length=30, default=None)
     is_op = models.BooleanField(default=False)
     links = models.JSONField(default=dict)
